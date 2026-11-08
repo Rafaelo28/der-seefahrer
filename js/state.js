@@ -49,6 +49,8 @@ window.SF = window.SF || {};
       cosmetics: { owned: [], on: {} }, // Cosmetics fürs Schiff (js/cosmetics.js)
       hard: false,         // Schwer-Modus (nach dem ersten Durchspielen wählbar)
       secrets: {},         // gefundene Geheimnisse: { id: Zeitpunkt } (js/finale.js)
+      friends: {},         // Freunde aus Online-Seeschlachten: { name: Rekorde } (js/friends.js)
+      bottles: { opened: [] }, // geöffnete Flaschenpost (IDs)
       crew: {},            // Crew: { id: 'aboard' | 'gone' } (js/crew.js)
       fleet: [],           // alte Flotte in der Werft: [{ type, sails, hold, pantry, hull, hp, cannons }]
       stats: createDefaultStats(),
@@ -136,7 +138,7 @@ window.SF = window.SF || {};
     s.settings = Object.assign(createDefaultSettings(), isObj(data.settings) ? data.settings : {});
     s.ui = Object.assign({ zoom: 1, tips: {} }, isObj(data.ui) ? data.ui : {});
     if (!isObj(s.ui.tips)) s.ui.tips = {};
-    ['cargo', 'visited', 'market', 'pirateClock', 'islands', 'dives', 'cosmetics', 'crew', 'secrets'].forEach(k => { if (!isObj(s[k])) s[k] = {}; });
+    ['cargo', 'visited', 'market', 'pirateClock', 'islands', 'dives', 'cosmetics', 'crew', 'secrets', 'friends', 'bottles'].forEach(k => { if (!isObj(s[k])) s[k] = {}; });
     ['course', 'flotsam', 'pirates', 'fleet'].forEach(k => { if (!Array.isArray(s[k])) s[k] = []; });
     if (s.ship.hp != null && !(typeof s.ship.hp === 'number' && s.ship.hp > 0)) s.ship.hp = null;
     if (!isObj(s.pos) || !isFinite(s.pos.x) || !isFinite(s.pos.y)) s.pos = null;

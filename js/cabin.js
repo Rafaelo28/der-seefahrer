@@ -64,20 +64,27 @@ window.SF = window.SF || {};
       </div>
       <div class="card"><h3>${SF.icon('compass')} Auftrag</h3><p>${SF.story.goalText() || 'Folge der Spur des Diebes!'}</p></div>
       ${traitorHTML()}
-      ${secretsHTML()}
-      <div class="card"><h3>${SF.icon('swords')} Seeschlacht mit Freunden</h3>
-        <p class="small">Segle gegen einen Freund – jeder auf seinem eigenen Gerät mit seinem eigenen Schiff, seiner Crew und seinen Cosmetics.
-          Einer öffnet einen Raum, der andere tritt mit dem Code bei. Niemand verliert etwas, es geht um die Ehre.</p>
-        <div class="btn-row"><button type="button" class="btn btn-primary" id="duel-create">Raum öffnen</button>
-          <button type="button" class="btn" id="duel-join">Raum beitreten</button></div>
-        ${(s.stats.duels || 0) ? `<p class="muted small">Bisher: ${SF.formatInt(s.stats.duelWins || 0)} von ${SF.formatInt(s.stats.duels)} Duellen gewonnen.</p>` : ''}
-      </div>
       <div class="cabin-grid">
         <div class="card"><h3>${SF.icon('trophy')} Trophäen</h3>${trophies}</div>
         <div class="card"><h3>${SF.icon('ship')} Alte Flotte</h3>${fleet}</div>
       </div>
       <div class="card"><h3>${SF.icon('crew')} Crew</h3><div class="crew-list">${crewHTML}</div>
       </div>
+      <div class="card"><h3>${SF.icon('swords')} Seeschlacht mit Freunden</h3>
+        <p class="small">Segle gegen einen Freund – jeder auf seinem eigenen Gerät mit seinem eigenen Schiff, seiner Crew und seinen Cosmetics.
+          Einer öffnet einen Raum, der andere tritt mit dem Code bei. Niemand verliert etwas, es geht um die Ehre.</p>
+        <div class="btn-row"><button type="button" class="btn btn-primary" id="duel-create">Raum öffnen</button>
+          <button type="button" class="btn" id="duel-join">Raum beitreten</button></div>
+        ${(s.stats.duels || 0) ? `<p class="muted small">Bisher: ${SF.formatInt(s.stats.duelWins || 0)} von ${SF.formatInt(s.stats.duels)} Duellen gewonnen.</p>` : ''}
+        ${friendsHTML()}
+      </div>
+      <div class="card"><h3>${SF.icon('bottle')} Flaschenpost</h3>
+        <p class="small">Teile deine Beute wie die Likedeeler: Steck Bernstein oder Perlen und eine Nachricht in eine Flasche und schick deinem
+          Freund den Code. Was du einpackst, gibst du sofort ab.</p>
+        <div class="btn-row"><button type="button" class="btn" id="bottle-write">Flaschenpost schreiben</button>
+          <button type="button" class="btn" id="bottle-open">Flaschenpost öffnen</button></div>
+      </div>
+      ${secretsHTML()}
       <div class="card"><h3>${SF.icon('scroll')} Logbuch</h3><ul class="logbook">${log || '<li class="muted">Noch leer.</li>'}</ul></div>
       <div class="card"><h3>${SF.icon('chart')} Statistik</h3>
         <dl class="stats">
@@ -107,9 +114,83 @@ window.SF = window.SF || {};
     $('cabin-export').addEventListener('click', exportCode);
     $('duel-create').addEventListener('click', () => { SF.sound.play('tap'); SF.duel.createRoom(); });
     $('duel-join').addEventListener('click', () => { SF.sound.play('tap'); SF.duel.joinRoom(); });
+    $('bottle-write').addEventListener('click', () => { SF.sound.play('tap'); writeBottle(); });
+    $('bottle-open').addEventListener('click', () => { SF.sound.play('tap'); openBottle(); });
     $('cabin-body').querySelectorAll('[data-accuse]').forEach(b => b.addEventListener('click', () => accuse(b.dataset.accuse)));
     $('cabin-import').addEventListener('click', importCode);
     $('cabin-title').addEventListener('click', () => { SF.save(); SF.newgame.showTitle(); });
+  }
+
+  // Rangliste mit Freunden (aus den Online-Seeschlachten)
+  function friendsHTML() {
+    if (!SF.friends) return '';
+    const rows = SF.friends.board();
+    if (rows.length < 2) return '<p class="muted small">Nach deinem ersten Duell steht hier eine Rangliste mit deinen Freunden – mit Siegen, Bestzeiten und Geheimnissen.</p>';
+    const t = id => SF.island.LEVELS[id].name;
+    return `<div class="board-wrap"><table class="board">
+      <thead><tr><th></th><th>Kapitän</th><th>Siege</th>${SF.friends.ISLES.map(id => `<th title="Bestzeit ${t(id)}">${t(id)}</th>`).join('')}<th>Geheimnisse</th></tr></thead>
+      <tbody>${rows.map((r, i) => `<tr class="${r.me ? 'me' : ''}"><td>${i + 1}.</td>
+        <td class="board-name"><span class="board-fig">${SF.figure.svg(r.fig)}</span><span>${SF.escape(r.name)}${r.me ? ' (du)' : ''}${!r.me && (r.vsWon || r.vsLost) ? `<br><span class="muted small">gegen dich: ${r.vsWon}:${r.vsLost}</span>` : ''}</span></td>
+        <td>${r.wins}</td>${SF.friends.ISLES.map(id => `<td>${r.best[id] ? SF.formatDecimal(r.best[id], 1, 1) + ' s' : '–'}</td>`).join('')}<td>${r.secrets} %</td></tr>`).join('')}</tbody></table></div>`;
+  }
+
+  async function writeBottle() {
+    const s = SF.state;
+    const F = SF.friends;
+    const res = await SF.ui.dialog({
+      title: 'Flaschenpost schreiben',
+      html: `<p class="small">Du hast ${SF.amberHTML(s.amber)} und ${SF.icon('pearl')} ${s.pearls || 0} Perlen. Höchstens ${F.MAX_AMBER} Bernstein
+        und ${F.MAX_PEARLS} Perlen pro Flasche.</p>
+        <div class="bottle-form"><label>Bernstein <input id="bottle-amber" type="number" min="0" max="${F.MAX_AMBER}" value="0" inputmode="numeric"></label>
+        <label>Perlen <input id="bottle-pearls" type="number" min="0" max="${F.MAX_PEARLS}" value="0" inputmode="numeric"></label></div>
+        <p class="small">Nachricht (höchstens ${F.MAX_TEXT} Zeichen):</p>`,
+      input: true, rows: 2, placeholder: 'Ahoi! Viel Glück auf See …',
+      buttons: [{ label: 'Abbrechen', value: false }, { label: 'Flasche verschließen', value: true, kind: 'primary' }],
+      onOpen: layer => { layer.querySelector('.dialog-input').maxLength = F.MAX_TEXT; },
+      collect: layer => ({ amber: layer.querySelector('#bottle-amber').value, pearls: layer.querySelector('#bottle-pearls').value }),
+    });
+    if (!res.value) return;
+    const r = F.write(res.data.amber, res.data.pearls, res.text);
+    if (r.error) {
+      SF.sound.play('denied');
+      SF.ui.toast(r.error, 3500);
+      return;
+    }
+    SF.sound.play('splash');
+    SF.save();
+    const copied = await SF.ui.copy(r.code);
+    await SF.ui.dialog({
+      title: 'Flaschenpost verschlossen',
+      html: `<p>${copied ? SF.icon('check') + ' Der Code ist kopiert.' : 'Kopiere diesen Code'} – schick ihn deinem Freund. Er öffnet die Flasche in seiner Kajüte.</p>`,
+      input: true, value: r.code, readonly: true, rows: 4,
+      buttons: [{ label: 'Fertig', value: true, kind: 'primary' }],
+    });
+    render();
+  }
+
+  async function openBottle() {
+    const res = await SF.ui.dialog({
+      title: 'Flaschenpost öffnen',
+      html: '<p>Füge den Code der Flaschenpost ein:</p>',
+      input: true, placeholder: 'FP…',
+      buttons: [{ label: 'Abbrechen', value: false }, { label: 'Öffnen', value: true, kind: 'primary' }],
+    });
+    if (!res.value) return;
+    const r = SF.friends.open(res.text);
+    if (r.error) {
+      SF.sound.play('denied');
+      SF.ui.toast(r.error, 3500);
+      return;
+    }
+    SF.sound.play('amber');
+    SF.save();
+    const gifts = [r.amber ? SF.amberHTML(r.amber) : '', r.pearls ? `${SF.icon('pearl')} ${r.pearls} Perlen` : ''].filter(Boolean).join(' und ');
+    await SF.ui.dialog({
+      title: `${SF.icon('bottle')} Flaschenpost von ${SF.escape(r.from)}`,
+      html: `${r.text ? `<p class="bottle-text">„${SF.escape(r.text)}“</p>` : ''}${gifts ? `<p>In der Flasche: ${gifts}</p>` : '<p class="muted">Sonst ist die Flasche leer.</p>'}`,
+      buttons: [{ label: 'Danke!', value: true, kind: 'primary' }],
+    });
+    render();
   }
 
   // Geheimnisse für 100 % (nach dem Ende besonders wichtig, vorher schon sichtbar)

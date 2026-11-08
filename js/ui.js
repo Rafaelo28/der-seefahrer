@@ -57,9 +57,11 @@ window.SF = window.SF || {};
       if (input && opts.readonly) input.addEventListener('focus', () => input.select());
       const close = value => {
         if (openClose === close) openClose = null;
+        const data = opts.collect ? opts.collect(layer) : undefined; // Felder einsammeln, bevor das Fenster verschwindet
+        const text = input ? input.value : '';
         layer.hidden = true;
         layer.innerHTML = '';
-        resolve(opts.input ? { value, text: input ? input.value : '' } : value);
+        resolve(opts.input || opts.collect ? { value, text, data } : value);
       };
       openClose = close;
       layer.querySelectorAll('[data-i]').forEach(btn => btn.addEventListener('click', () => {

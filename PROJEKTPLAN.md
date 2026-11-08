@@ -294,8 +294,18 @@ grünen Tests, einem Pull Request nach `main` und dem Merge.
       (gleiche Physik wie gegen Computer-Piraten) und schickt 15-mal pro Sekunde einen Schnappschuss, der Freund schickt
       Lenkung und Schüsse. Beide segeln ihr eigenes Schiff mit Crew und Cosmetics, mit heilem Rumpf. Kein Einsatz,
       Siege werden gezählt. Verbindung über PeerJS (wie Gamble Klicker), zum Testen lokal zwischen zwei Tabs (`?lokal=1`).
-- [ ] **5.2 Flaschenpost:** Geschenke und Nachrichten als Code.
-- [ ] **5.3 Bestzeiten und Ranglisten** mit Freunden, Beute teilen wie die Likedeeler.
+- [x] **5.2 Flaschenpost:** Bernstein (bis 200) oder Perlen (bis 20) mit einer Nachricht in eine Flasche stecken und
+      als Code verschicken – Beute teilen wie die Likedeeler. Wer verschickt, gibt es sofort ab; jede Flasche lässt sich
+      pro Spielstand nur einmal öffnen, vertippte oder veränderte Codes fallen auf.
+- [x] **5.3 Rangliste mit Freunden:** Bei jeder Online-Seeschlacht tauschen beide ihre Rekorde aus (Duell-Siege,
+      Bestzeiten der vier Inseln, Geheimnisse). Die Kajüte zeigt eine Rangliste mit allen Freunden und wie oft man
+      gegen sie gewonnen hat.
+
+### Ideen für danach
+
+- Weitere Meeresgebiete (Sargassosee mit Algen, in denen das Schiff stecken bleibt), mehr Inseln und Wracks zum Tauchen
+- Muster für Segel, weitere Galionsfiguren
+- Level-Editor: eigene Inseln bauen und als Code teilen
 
 ---
 

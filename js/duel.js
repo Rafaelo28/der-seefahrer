@@ -122,10 +122,11 @@ window.SF = window.SF || {};
           const guest = cleanShip(msg.ship);
           const host = myShip();
           const w = SF.state.wind || { x: 1, y: 0, s: 0.5 };
-          const start = { t: 'start', seed: Math.floor(SF.rng.float() * 4294967295), wind: { x: r3(w.x), y: r3(w.y), s: r3(w.s) }, host, guest };
+          const start = { t: 'start', seed: Math.floor(SF.rng.float() * 4294967295), wind: { x: r3(w.x), y: r3(w.y), s: r3(w.s) }, host, guest,
+            rec: SF.friends ? SF.friends.myRecord() : null };
           chan.send(start);
           SF.ui.closeDialog('connected');
-          SF.battleView.startDuel({ role: 'host', chan, start, me: host, other: guest });
+          SF.battleView.startDuel({ role: 'host', chan, start, me: host, other: guest, rec: msg.rec });
         });
       }, err => {
         SF.ui.closeDialog('error');
@@ -162,9 +163,9 @@ window.SF = window.SF || {};
           if (!msg || msg.t !== 'start') return;
           const start = { seed: msg.seed >>> 0, wind: msg.wind, host: cleanShip(msg.host), guest: myShip() };
           SF.ui.closeDialog('connected');
-          SF.battleView.startDuel({ role: 'guest', chan, start, me: start.guest, other: start.host });
+          SF.battleView.startDuel({ role: 'guest', chan, start, me: start.guest, other: start.host, rec: msg.rec });
         });
-        chan.send({ t: 'hello', ship: myShip() });
+        chan.send({ t: 'hello', ship: myShip(), rec: SF.friends ? SF.friends.myRecord() : null });
       }, err => {
         SF.ui.closeDialog('error');
         SF.ui.toast(err === 'notfound' ? 'Kein Raum mit diesem Code gefunden.' : 'Keine Verbindung zum Online-Dienst. Bist du im Internet?', 4000);

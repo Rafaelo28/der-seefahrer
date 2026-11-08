@@ -96,7 +96,7 @@ window.SF = window.SF || {};
   // ---------- Geheimnisse für 100 % ----------
 
   const SECRETS = [
-    { id: 'dublone', name: 'Die Goldene Dublone zurückgebracht', check: () => SF.story.step() === 'done' },
+    { id: 'dublone', name: 'Die Goldene Dublone zurückgebracht', hint: 'Die ganze Geschichte', check: () => SF.story.step() === 'done' },
     { id: 'places', name: 'Alle Orte entdeckt', hint: 'Segle überall hin', check: () => SF.world.PLACES.filter(p => !p.hidden).every(p => st().visited[p.id]) },
     { id: 'islands', name: 'Alle vier Inseln geschafft', hint: 'An Land gehen', check: () => ['bay', 'volcano', 'ice', 'dragon'].every(id => st().islands && st().islands[id]) },
     { id: 'bluebeard', name: 'Käpt’n Blaubart besiegt', hint: 'An der Drachenküste kreuzt er', check: () => !!flags()['beat-bluebeard'] },
