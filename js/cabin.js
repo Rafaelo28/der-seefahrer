@@ -65,6 +65,13 @@ window.SF = window.SF || {};
       <div class="card"><h3>${SF.icon('compass')} Auftrag</h3><p>${SF.story.goalText() || 'Folge der Spur des Diebes!'}</p></div>
       ${traitorHTML()}
       ${secretsHTML()}
+      <div class="card"><h3>${SF.icon('swords')} Seeschlacht mit Freunden</h3>
+        <p class="small">Segle gegen einen Freund – jeder auf seinem eigenen Gerät mit seinem eigenen Schiff, seiner Crew und seinen Cosmetics.
+          Einer öffnet einen Raum, der andere tritt mit dem Code bei. Niemand verliert etwas, es geht um die Ehre.</p>
+        <div class="btn-row"><button type="button" class="btn btn-primary" id="duel-create">Raum öffnen</button>
+          <button type="button" class="btn" id="duel-join">Raum beitreten</button></div>
+        ${(s.stats.duels || 0) ? `<p class="muted small">Bisher: ${SF.formatInt(s.stats.duelWins || 0)} von ${SF.formatInt(s.stats.duels)} Duellen gewonnen.</p>` : ''}
+      </div>
       <div class="cabin-grid">
         <div class="card"><h3>${SF.icon('trophy')} Trophäen</h3>${trophies}</div>
         <div class="card"><h3>${SF.icon('ship')} Alte Flotte</h3>${fleet}</div>
@@ -98,6 +105,8 @@ window.SF = window.SF || {};
       </div>`;
     $('cabin-sound').addEventListener('change', e => SF.sound.setEnabled(e.target.checked));
     $('cabin-export').addEventListener('click', exportCode);
+    $('duel-create').addEventListener('click', () => { SF.sound.play('tap'); SF.duel.createRoom(); });
+    $('duel-join').addEventListener('click', () => { SF.sound.play('tap'); SF.duel.joinRoom(); });
     $('cabin-body').querySelectorAll('[data-accuse]').forEach(b => b.addEventListener('click', () => accuse(b.dataset.accuse)));
     $('cabin-import').addEventListener('click', importCode);
     $('cabin-title').addEventListener('click', () => { SF.save(); SF.newgame.showTitle(); });

@@ -716,6 +716,11 @@ body[data-screen="island"] .klabauter-tip { bottom: auto; top: calc(70px + var(-
 .secret-bar i { position: absolute; inset: 0; background: linear-gradient(90deg, var(--amber), var(--gold)); transform-origin: left center; }
 .tag-hard { background: var(--red); vertical-align: middle; }
 
+/* ---------- Seeschlacht mit Freunden ---------- */
+.duel-code { font-family: var(--font-display); font-size: 3rem; font-weight: 900; letter-spacing: .25em; text-align: center; color: var(--ink);
+  background: #fffaf0; border: 3px dashed var(--parchment-line); border-radius: 14px; padding: 6px 0 6px .25em; margin: 6px 0 12px; user-select: text; -webkit-user-select: text; }
+.duel-wait { text-align: center; font-weight: 700; animation: twinkle 1.6s ease-in-out infinite; }
+
 /* ---------- Kajüte ---------- */
 .cabin-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
 .cabin-h1 { margin: 0; color: var(--gold); font-size: 2rem; }

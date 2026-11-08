@@ -94,7 +94,17 @@ window.SF = window.SF || {};
     time += dt;
     const fire = input.fire;
     input.fire = null;
-    const events = SF.battle.step(b, dt, { tx: input.tx, ty: input.ty, fire });
+    let events;
+    if (duel && duel.role === 'guest') {
+      events = duelGuestStep(dt, fire);
+    } else if (duel) {
+      const remoteFire = duel.remote.fire;
+      duel.remote.fire = null;
+      events = SF.battle.step(b, dt, { tx: input.tx, ty: input.ty, fire }, { tx: duel.remote.tx, ty: duel.remote.ty, fire: remoteFire });
+      duelHostSend(dt, events);
+    } else {
+      events = SF.battle.step(b, dt, { tx: input.tx, ty: input.ty, fire });
+    }
     events.forEach(handle);
     // Kielwasser
     ['player', 'enemy'].forEach(side => {
@@ -135,6 +145,7 @@ window.SF = window.SF || {};
         fx.push({ k: 'splash', x: e.x, y: e.y, t: 0, life: 0.8 });
         break;
       case 'over':
+        if (duel) { duelOver(e.result); break; }
         finish(e.result);
         break;
       default:
@@ -348,10 +359,10 @@ window.SF = window.SF || {};
       $(`bt-${side}`).classList.toggle('loading', r > 0);
       $(`bt-${side}-load`).style.transform = `scaleX(${(1 - r).toFixed(3)})`;
     });
-    $('bt-board').hidden = !SF.battle.canBoard(b);
+    $('bt-board').hidden = !!duel || !SF.battle.canBoard(b);
     const d = SF.battle.distance(b);
     const near = p.x < 200 || p.y < 200 || p.x > SF.battle.ARENA_W - 200 || p.y > SF.battle.ARENA_H - 200;
-    SF.setText($('bt-info'), near && d > SF.battle.FLEE_EDGE ? 'Zum Rand: fliehen' : `${p.cannons} Kanone${p.cannons === 1 ? '' : 'n'} je Breitseite`);
+    SF.setText($('bt-info'), duel ? 'Online-Seeschlacht' : near && d > SF.battle.FLEE_EDGE ? 'Zum Rand: fliehen' : `${p.cannons} Kanone${p.cannons === 1 ? '' : 'n'} je Breitseite`);
   }
 
   // ---------- Bedienung ----------
@@ -428,5 +439,102 @@ window.SF = window.SF || {};
     }
   }
 
-  SF.battleView = { start, frame, bind, resize, current: () => b, busy: () => starting || !!b };
+  // ---------- Online-Seeschlacht mit Freunden (js/duel.js) ----------
+
+  let duel = null;  // { role, chan, me, other, remote, snap, clock }
+
+  function startDuel(d) {
+    const st = d.start;
+    // Gastgeber: player = er selbst. Freund: gespiegelt, player = er selbst (bekommt Schnappschüsse vom Gastgeber)
+    b = d.role === 'host' ? SF.duel.createBattle(st) : SF.duel.createBattle({ seed: st.seed, wind: st.wind, host: st.guest, guest: st.host });
+    duel = { role: d.role, chan: d.chan, me: d.me, other: d.other, remote: {}, snap: null, clock: 0, sentAt: 0, lastIn: '', events: [], ended: false };
+    d.chan.onMessage(msg => {
+      if (!msg || !duel) return;
+      if (msg.t === 'in' && duel.role === 'host') {
+        duel.remote.tx = typeof msg.tx === 'number' ? msg.tx : null;
+        duel.remote.ty = typeof msg.ty === 'number' ? msg.ty : null;
+        if (msg.fire === 'port' || msg.fire === 'star') duel.remote.fire = msg.fire;
+      } else if (msg.t === 'snap' && duel.role === 'guest') {
+        duel.snap = msg;
+      }
+    });
+    d.chan.onClose(() => {
+      if (duel && !duel.ended) duelOver('gone');
+    });
+    pirate = null;
+    input = {};
+    fx = [];
+    wakes.player = [];
+    wakes.enemy = [];
+    ending = false;
+    SF.ui.show('battle');
+    resize();
+    cam.x = (b.player.x + b.enemy.x) / 2;
+    cam.y = (b.player.y + b.enemy.y) / 2;
+    $('bt-enemy-name').textContent = d.other.name;
+    $('bt-board').hidden = true;
+    hudClock = 1;
+    updateHud();
+    SF.sound.play('horn');
+    SF.ui.toast(`${SF.icon('swords')} Seeschlacht gegen <b>${SF.escape(d.other.name)}</b>!`, 2500);
+  }
+
+  // Gastgeber: Schnappschüsse an den Freund
+  function duelHostSend(dt, events) {
+    duel.events.push(...events.filter(e => e.type !== 'over'));
+    duel.clock += dt;
+    if (duel.clock < SF.duel.SNAP_EVERY && !b.over) return;
+    duel.clock = 0;
+    duel.chan.send(SF.duel.pack(b, duel.events));
+    duel.events = [];
+  }
+
+  // Freund: Eingaben senden, neuesten Schnappschuss anwenden
+  function duelGuestStep(dt, fire) {
+    duel.clock += dt;
+    const sig = `${Math.round(input.tx || 0)}|${Math.round(input.ty || 0)}|${input.tx == null}`;
+    if (fire || (duel.clock >= SF.duel.INPUT_EVERY && sig !== duel.lastIn)) {
+      duel.clock = 0;
+      duel.lastIn = sig;
+      duel.chan.send({ t: 'in', tx: input.tx == null ? null : Math.round(input.tx), ty: input.ty == null ? null : Math.round(input.ty), fire: fire || null });
+    }
+    if (!duel.snap) return [];
+    const snap = duel.snap;
+    duel.snap = null;
+    const events = SF.duel.apply(b, snap);
+    if (b.over && !duel.ended) events.push({ type: 'over', result: b.over });
+    return events;
+  }
+
+  // Ende des Duells: result aus eigener Sicht ('sunk' = gewonnen, 'lost' = verloren, 'gone' = Verbindung weg)
+  function duelOver(result) {
+    if (!duel || duel.ended) return;
+    duel.ended = true;
+    const d = duel;
+    const s = SF.duel.stats();
+    if (result === 'sunk' || result === 'lost') {
+      s.duels++;
+      if (result === 'sunk') s.duelWins++;
+    }
+    if (result === 'sunk') SF.sound.play('fanfare');
+    else if (result === 'lost') SF.sound.play('lose');
+    SF.save();
+    setTimeout(async () => {
+      if (d.role === 'host' && result !== 'gone') d.chan.send(SF.duel.pack(b, [])); // letzter Stand mit Ergebnis
+      await SF.ui.dialog({
+        title: result === 'sunk' ? `${SF.icon('trophy')} Gewonnen!` : result === 'lost' ? 'Versenkt!' : 'Verbindung weg',
+        html: result === 'sunk' ? `<p>Du hast <b>${SF.escape(d.other.name)}</b> besiegt! Ruhm und Ehre gehören dir.</p>`
+          : result === 'lost' ? `<p><b>${SF.escape(d.other.name)}</b> hat gewonnen. Nächstes Mal!</p>`
+            : '<p>Die Verbindung zu deinem Freund ist abgerissen.</p>',
+        buttons: [{ label: 'Zurück', value: true, kind: 'primary' }],
+      });
+      setTimeout(() => d.chan.close(), 300);
+      duel = null;
+      b = null;
+      if (SF.state.docked) SF.harbor.open(SF.state.docked);
+      else SF.sea.open();
+    }, result === 'gone' ? 0 : 900);
+  }
+
+  SF.battleView = { start, startDuel, frame, bind, resize, current: () => b, duel: () => duel, busy: () => starting || !!b };
 })();

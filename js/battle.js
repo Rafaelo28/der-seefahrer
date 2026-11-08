@@ -97,7 +97,7 @@ window.SF = window.SF || {};
     if (s.reload[side] > 0 || b.over) return false;
     s.reload[side] = s.reloadTime;
     const n = sideNormal(s, side);
-    const spread = s.side === 'enemy' ? s.aim : 0.04;
+    const spread = s.side === 'enemy' && !b.duel ? s.aim : 0.04;
     const v = s.speed * windFactor(b, s);
     for (let i = 0; i < s.cannons; i++) {
       const along = s.cannons === 1 ? 0 : (i / (s.cannons - 1) - 0.5) * s.len * 0.6;
@@ -174,8 +174,9 @@ window.SF = window.SF || {};
     }
   }
 
-  // Ein Schritt. input: { tx, ty } (Finger: dorthin lenken) und fire: 'port' | 'star'
-  function step(b, dt, input = {}) {
+  // Ein Schritt. input: { tx, ty } (Finger: dorthin lenken) und fire: 'port' | 'star'.
+  // input2: Eingaben für das zweite Schiff, wenn ein Mensch es steuert (Online-Seeschlacht, b.duel) – sonst der Computer
+  function step(b, dt, input = {}, input2 = null) {
     const events = [];
     if (b.over) return events;
     b.t += dt;
@@ -183,7 +184,13 @@ window.SF = window.SF || {};
     const e = b.enemy;
     if (input.tx != null) steer(p, input.tx - p.x, input.ty - p.y, dt);
     if (input.fire) fire(b, p, input.fire, events);
-    ai(b, e, p, dt, events);
+    if (b.duel) {
+      const i2 = input2 || {};
+      if (i2.tx != null) steer(e, i2.tx - e.x, i2.ty - e.y, dt);
+      if (i2.fire) fire(b, e, i2.fire, events);
+    } else {
+      ai(b, e, p, dt, events);
+    }
     [p, e].forEach(s => {
       s.reload.port = Math.max(0, s.reload.port - dt);
       s.reload.star = Math.max(0, s.reload.star - dt);
@@ -224,7 +231,7 @@ window.SF = window.SF || {};
     // Ausgang
     if (e.hp <= 0) b.over = 'sunk';
     else if (p.hp <= 0) b.over = 'lost';
-    else if (dd > FLEE_DIST || (dd > FLEE_EDGE && atEdge(p))) b.over = 'fled';
+    else if (!b.duel && (dd > FLEE_DIST || (dd > FLEE_EDGE && atEdge(p)))) b.over = 'fled'; // im Duell kein Fliehen
     if (b.over) events.push({ type: 'over', result: b.over });
     return events;
   }
