@@ -54,7 +54,7 @@ window.SF = window.SF || {};
   }
 
   function syncSoundButtons() {
-    document.querySelectorAll('.sound-toggle').forEach(b => { b.textContent = SF.state.settings.sound ? '🔊' : '🔇'; });
+    document.querySelectorAll('.sound-toggle').forEach(b => { b.innerHTML = SF.icon(SF.state.settings.sound ? 'sound' : 'mute'); });
   }
 
   // ---------- Spielschleife ----------
@@ -79,6 +79,8 @@ window.SF = window.SF || {};
   }
 
   function boot() {
+    // Symbole in die Platzhalter im HTML setzen (<i data-ic="…">)
+    document.querySelectorAll('[data-ic]').forEach(el => { el.outerHTML = SF.icon(el.dataset.ic); });
     SF.load();
     SF.story.bind();
     SF.lastday.bind();
@@ -97,7 +99,7 @@ window.SF = window.SF || {};
     document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') saveNow(); });
     window.addEventListener('pagehide', saveNow);
     // Doppeltipp-Zoom verhindert das CSS (touch-action: manipulation) – schnelles Tippen bleibt so möglich
-    if (!SF.storageAvailable) SF.ui.toast('⚠️ Dieser Browser erlaubt kein Speichern – sichere deinen Spielstand als Code!', 6000);
+    if (!SF.storageAvailable) SF.ui.toast(SF.icon('warning') + ' Dieser Browser erlaubt kein Speichern – sichere deinen Spielstand als Code!', 6000);
     SF.newgame.showTitle();
     requestAnimationFrame(frame);
   }

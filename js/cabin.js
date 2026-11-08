@@ -26,9 +26,9 @@ window.SF = window.SF || {};
     if (gk && gk.bossLevel) {
       const tr = SF.gk.trophies(gk.bossLevel);
       trophies = `<div class="trophies">
-        ${tr.kraken ? `<div class="trophy"><span>🐙</span>Kraken-König${tr.kraken > 1 ? ` ×${tr.kraken}` : ''}</div>` : ''}
-        ${tr.dragon ? `<div class="trophy"><span>🐉</span>Seedrache${tr.dragon > 1 ? ` ×${tr.dragon}` : ''}</div>` : ''}
-        <div class="trophy"><span>🦑</span>${SF.formatInt(tr.monsters)} Seeungeheuer</div>
+        ${tr.kraken ? `<div class="trophy">${SF.icon('kraken')}Kraken-König${tr.kraken > 1 ? ` ×${tr.kraken}` : ''}</div>` : ''}
+        ${tr.dragon ? `<div class="trophy">${SF.icon('dragon')}Seedrache${tr.dragon > 1 ? ` ×${tr.dragon}` : ''}</div>` : ''}
+        <div class="trophy">${SF.icon('monster')}${SF.formatInt(tr.monsters)} Seeungeheuer</div>
       </div><p class="muted small">Aus Gamble Klicker: Boss-Stufe ${SF.formatInt(gk.bossLevel)} besiegt.</p>`;
     }
     const fleet = gk && gk.ships.length
@@ -36,7 +36,7 @@ window.SF = window.SF || {};
         <p class="muted small">Der Schatten hat deine alte Flotte aus Gamble Klicker gestohlen. Halte die Augen offen!</p>`
       : '<p class="muted small">Du hattest keine Flotte in Gamble Klicker.</p>';
     const wallpaper = s.lastDay && s.lastDay.leftover > 0
-      ? `<p class="small">🖼️ Die Wände sind mit alten Dublonen-Scheinen tapeziert: ${SF.dublonenHTML(s.lastDay.leftover)} – nichts mehr wert, aber hübsch.</p>` : '';
+      ? `<p class="small">Die Wände sind mit alten Dublonen-Scheinen tapeziert: ${SF.dublonenHTML(s.lastDay.leftover)} – nichts mehr wert, aber hübsch.</p>` : '';
     const log = s.story.log.slice().reverse().map(e => `<li><span class="muted small">Tag ${e.day}</span> ${SF.escape(e.text)}</li>`).join('');
     const known = Math.round(SF.world.explored() * 100);
     $('cabin-body').innerHTML = `
@@ -44,20 +44,20 @@ window.SF = window.SF || {};
         <div class="cabin-fig">${SF.figure.svg(SF.figure.mine())}</div>
         <div>
           <h2>Kapitän ${SF.escape(s.captain.name)}</h2>
-          <div class="cabin-title">${gk ? SF.rank.icon(gk.rank) + ' ' : ''}${title}</div>
+          <div class="cabin-title">${title}</div>
           <div class="cabin-ship">${SF.ships.sideSVG(t.id, SF.cosmetics.shipColors())}<span><b>${t.name}</b><br>
-            <span class="small">Tempo ${Math.round(st.speed)} · 📦 ${SF.ships.cargoCount()}/${st.hold} · 🛢️ ${SF.formatDecimal(s.food, 1, 1)}/${st.food} · 💣 ${st.cannons}/${st.cannonSlots}</span></span></div>
-          <div>${SF.amberHTML(s.amber)}${s.pearls ? ` · 🦪 ${SF.formatInt(s.pearls)} Perlen` : ''}</div>
+            <span class="small">Tempo ${Math.round(st.speed)} · ${SF.icon('crate')}${SF.ships.cargoCount()}/${st.hold} · ${SF.icon('barrel')}${SF.formatDecimal(s.food, 1, 1)}/${st.food} · ${SF.icon('cannon')}${st.cannons}/${st.cannonSlots}</span></span></div>
+          <div>${SF.amberHTML(s.amber)}${s.pearls ? ` · ${SF.icon('pearl')} ${SF.formatInt(s.pearls)} Perlen` : ''}</div>
           ${wallpaper}
         </div>
       </div>
-      <div class="card"><h3>🧭 Auftrag</h3><p>${SF.story.goalText() || 'Folge der Spur des Diebes!'}</p></div>
+      <div class="card"><h3>${SF.icon('compass')} Auftrag</h3><p>${SF.story.goalText() || 'Folge der Spur des Diebes!'}</p></div>
       <div class="cabin-grid">
-        <div class="card"><h3>🏆 Trophäen</h3>${trophies}</div>
-        <div class="card"><h3>⛵ Alte Flotte</h3>${fleet}</div>
+        <div class="card"><h3>${SF.icon('trophy')} Trophäen</h3>${trophies}</div>
+        <div class="card"><h3>${SF.icon('ship')} Alte Flotte</h3>${fleet}</div>
       </div>
-      <div class="card"><h3>📜 Logbuch</h3><ul class="logbook">${log || '<li class="muted">Noch leer.</li>'}</ul></div>
-      <div class="card"><h3>📊 Statistik</h3>
+      <div class="card"><h3>${SF.icon('scroll')} Logbuch</h3><ul class="logbook">${log || '<li class="muted">Noch leer.</li>'}</ul></div>
+      <div class="card"><h3>${SF.icon('chart')} Statistik</h3>
         <dl class="stats">
           <dt>Gesegelt</dt><dd>${SF.formatInt(s.stats.distance / 10)} Seemeilen</dd>
           <dt>Karte aufgedeckt</dt><dd>${known} %</dd>
@@ -71,8 +71,8 @@ window.SF = window.SF || {};
           <dt>Spielzeit</dt><dd>${SF.formatDuration(s.playTime)}</dd>
         </dl>
       </div>
-      <div class="card"><h3>⚙️ Einstellungen und Spielstand</h3>
-        <label class="setting"><span>🔊 Ton</span><input type="checkbox" class="switch" id="cabin-sound" ${s.settings.sound ? 'checked' : ''}></label>
+      <div class="card"><h3>${SF.icon('wheel')} Einstellungen und Spielstand</h3>
+        <label class="setting"><span>${SF.icon('sound')} Ton</span><input type="checkbox" class="switch" id="cabin-sound" ${s.settings.sound ? 'checked' : ''}></label>
         <p class="muted small">Dein Spielstand wird automatisch im Browser gespeichert. Sichere ihn ab und zu als Code –
           damit kannst du auch auf einem anderen Gerät weiterspielen.</p>
         <div class="btn-row">
@@ -93,7 +93,7 @@ window.SF = window.SF || {};
     const copied = await SF.ui.copy(code);
     SF.ui.dialog({
       title: 'Dein Spielstand',
-      html: `<p>${copied ? '✅ Der Code ist kopiert.' : 'Kopiere diesen Code'} und bewahre ihn gut auf (z. B. in den Notizen).</p>`,
+      html: `<p>${copied ? SF.icon('check') + ' Der Code ist kopiert.' : 'Kopiere diesen Code'} und bewahre ihn gut auf (z. B. in den Notizen).</p>`,
       input: true, value: code, readonly: true, rows: 6,
       buttons: [{ label: 'Fertig', value: true, kind: 'primary' }],
     });

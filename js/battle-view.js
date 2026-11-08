@@ -42,11 +42,11 @@ window.SF = window.SF || {};
     SF.voyage.setCourse([]);
     SF.sound.play('alarm');
     await SF.ui.dialog({
-      title: `☠️ ${SF.escape(p.name)} greift an!`,
+      title: `${SF.icon('skull')} ${SF.escape(p.name)} greift an!`,
       html: `<p>${k.name === p.name ? '' : `Ein ${k.name} in einer ${SF.ships.byId[k.ship].name}. `}Kopfgeld: ${SF.amberHTML(k.bounty)}</p>
         <p class="muted small">Steuern: Finger aufs Wasser halten. Feuern: Backbord (links) und Steuerbord (rechts), wenn der Gegner neben dir ist.
         Ist er schwer getroffen und nah, kannst du <b>entern</b>. Fliehen: an den Rand des Meeres segeln.</p>`,
-      buttons: [{ label: '⚔️ Zum Kampf!', value: true, kind: 'primary' }],
+      buttons: [{ label: `${SF.icon('swords')} Zum Kampf!`, value: true, kind: 'primary' }],
     });
     starting = false;
     const s = SF.state;
@@ -146,18 +146,18 @@ window.SF = window.SF || {};
     ending = true;
     const out = SF.pirates.resolve(pirate, result, b.player.hp);
     const k = SF.pirates.KINDS[pirate.kind];
-    const goods = o => Object.entries(o).map(([g, n]) => `${n}× ${SF.trade.byId[g].icon} ${SF.trade.byId[g].name}`).join(', ');
+    const goods = o => Object.entries(o).map(([g, n]) => `${n}× ${SF.icon(SF.trade.byId[g].icon)} ${SF.trade.byId[g].name}`).join(', ');
     let title = '';
     let html = '';
     if (result === 'boarded') {
       SF.sound.play('fanfare');
-      title = '🏴‍☠️ Geentert!';
+      title = `${SF.icon('hook')} Geentert!`;
       html = `<p>Du hast das Schiff von <b>${SF.escape(pirate.name)}</b> geentert! Das Kopfgeld gehört dir: ${SF.amberHTML(out.amber)}.</p>
         ${Object.keys(out.cargo).length ? `<p>Erbeutet: ${goods(out.cargo)}</p>` : '<p class="muted small">Für die Ladung der Piraten war kein Platz mehr.</p>'}`;
       SF.story.log(`${pirate.name} geentert – ${out.amber} Bernstein Kopfgeld.`);
     } else if (result === 'sunk') {
       SF.sound.play('fanfare');
-      title = '💥 Versenkt!';
+      title = `${SF.icon('blast')} Versenkt!`;
       html = `<p>Das Schiff von <b>${SF.escape(pirate.name)}</b> versinkt. Für einen versenkten Piraten gibt es das halbe Kopfgeld: ${SF.amberHTML(out.amber)}.</p>
         <p class="muted small">Tipp: Wer <b>entert</b>, bekommt das ganze Kopfgeld und die Ladung.</p>`;
       SF.story.log(`${pirate.name} versenkt – ${out.amber} Bernstein.`);
@@ -332,7 +332,7 @@ window.SF = window.SF || {};
     $('bt-board').hidden = !SF.battle.canBoard(b);
     const d = SF.battle.distance(b);
     const near = p.x < 200 || p.y < 200 || p.x > SF.battle.ARENA_W - 200 || p.y > SF.battle.ARENA_H - 200;
-    SF.setText($('bt-info'), near && d > SF.battle.FLEE_EDGE ? '🏃 Zum Rand: fliehen' : `💣 ${p.cannons} Kanone${p.cannons === 1 ? '' : 'n'} je Breitseite`);
+    SF.setText($('bt-info'), near && d > SF.battle.FLEE_EDGE ? 'Zum Rand: fliehen' : `${p.cannons} Kanone${p.cannons === 1 ? '' : 'n'} je Breitseite`);
   }
 
   // ---------- Bedienung ----------

@@ -26,7 +26,7 @@ const L = SF.lastday;
   assert(L.whyNot(s, 'cannon') === 'Alle Plätze voll', 'Grund: Plätze voll');
   assert(L.buy(s, 'brig') && s.ship === 'brig', 'Brigg gekauft');
   assert(L.room(s, 'cannon') === 2 && L.room(s, 'cloth') === 12, 'Brigg: 4 Kanonen, 12 Kisten');
-  assert(L.whyNot(s, 'brig') === 'Gekauft ✔', 'Brigg nur einmal');
+  assert(L.whyNot(s, 'brig') === 'Gekauft', 'Brigg nur einmal');
   assert(L.buy(s, 'frigate') && s.ship === 'frigate', 'Aufrüsten zur Fregatte geht');
   assert(L.whyNot(s, 'brig') === 'Du hast ein besseres Schiff', 'Danach keine Brigg mehr');
   // Proviant und Brot teilen sich die Vorratskammer

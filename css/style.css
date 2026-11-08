@@ -90,6 +90,25 @@ ul { margin: 0 0 .7em; padding-left: 1.3em; }
   box-shadow: inset 0 0 0 1.5px #8a6508;
 }
 
+/* ---------- Symbole (js/icons.js) ---------- */
+.ic { display: inline-block; width: 1.3em; height: 1.3em; vertical-align: -0.28em; flex: none; }
+.btn .ic { width: 1.45em; height: 1.45em; }
+h2 .ic, h3 .ic { width: 1.35em; height: 1.35em; vertical-align: -0.3em; margin-right: 2px; }
+.icon-btn .ic { width: 28px; height: 28px; vertical-align: middle; }
+.hud-stats .ic, .harbor-stats .ic { width: 24px; height: 24px; margin-right: 4px; }
+.hud-wind-arrow .ic { width: 28px; height: 28px; vertical-align: middle; }
+.hud-round .ic { width: 32px; height: 32px; vertical-align: middle; }
+.hud-btn .ic { width: 24px; height: 24px; margin-right: 6px; }
+.good-icon .ic { width: 38px; height: 38px; }
+.yard-icon .ic { width: 34px; height: 34px; }
+.ld-icon .ic { width: 54px; height: 54px; }
+.cos-swatch .ic { width: 26px; height: 26px; }
+.trophy .ic { width: 46px; height: 46px; margin-bottom: 4px; }
+.harbor-icon .ic { width: 46px; height: 46px; }
+.stat-line .ic { width: 17px; height: 17px; margin: 0 2px 0 8px; }
+.stat-line .ic:first-child { margin-left: 0; }
+.gk-facts .ic { width: 22px; height: 22px; margin-right: 4px; }
+
 /* ---------- Knöpfe & Karten ---------- */
 .btn {
   display: inline-flex;
@@ -100,18 +119,21 @@ ul { margin: 0 0 .7em; padding-left: 1.3em; }
   padding: 10px 20px;
   border: 2px solid var(--wood-dark);
   border-radius: 12px;
-  background: linear-gradient(180deg, var(--wood-light) 0%, var(--wood) 100%);
+  background: repeating-linear-gradient(176deg, rgba(255, 255, 255, 0) 0 7px, rgba(255, 255, 255, .05) 7px 9px),
+    linear-gradient(180deg, var(--wood-light) 0%, var(--wood) 100%);
   color: var(--text-light);
   font: inherit;
   font-weight: 700;
   cursor: pointer;
   touch-action: manipulation;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .35);
   transition: transform .08s ease;
   box-shadow: 0 3px 0 var(--wood-dark);
 }
 .btn:active { transform: translateY(2px); }
 .btn:disabled, .btn.off { opacity: .45; cursor: default; }
 .btn-primary {
+  text-shadow: none;
   background: linear-gradient(180deg, var(--amber-light) 0%, var(--amber) 60%, #d07a14 100%);
   color: var(--ink);
   border-color: var(--amber-dark);
@@ -145,7 +167,9 @@ ul { margin: 0 0 .7em; padding-left: 1.3em; }
   border-radius: var(--radius);
   padding: 20px;
   margin-bottom: 16px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, .35);
+  background-image: radial-gradient(ellipse at 30% 20%, rgba(255, 255, 255, .35), rgba(255, 255, 255, 0) 60%),
+    radial-gradient(ellipse at 80% 90%, rgba(160, 120, 60, .12), rgba(160, 120, 60, 0) 55%);
+  box-shadow: inset 0 0 0 5px var(--parchment), inset 0 0 0 6.5px rgba(184, 154, 94, .55), 0 8px 24px rgba(0, 0, 0, .35);
 }
 .card .muted { opacity: .75; }
 
@@ -445,6 +469,7 @@ ul { margin: 0 0 .7em; padding-left: 1.3em; }
   font-variant-numeric: tabular-nums;
 }
 .hud-day { color: var(--ink-soft); font-weight: 600; }
+.hud-stats > span { display: inline-flex; align-items: center; }
 .hud-food { display: inline-flex; align-items: center; gap: 6px; }
 .food-bar { position: relative; display: inline-block; width: 70px; height: 12px; border-radius: 6px; background: rgba(0, 0, 0, .18); overflow: hidden; vertical-align: middle; }
 .food-bar i { position: absolute; inset: 0; background: linear-gradient(90deg, #6fa35a, #2e8b57); transform-origin: left center; }
@@ -520,7 +545,9 @@ body[data-screen="battle"] .klabauter-tip,
 body[data-screen="boarding"] .klabauter-tip { bottom: auto; top: calc(84px + var(--safe-top)); }
 
 /* ---------- Hafen ---------- */
-.harbor-head { margin-bottom: 10px; }
+.harbor-head { margin-bottom: 10px; padding-top: 0; overflow: hidden; }
+.harbor-banner { height: 150px; margin: 0 -20px 12px; border-bottom: 3px solid var(--parchment-line); overflow: hidden; }
+.harbor-banner .scene-svg { width: 100%; height: 100%; }
 .harbor-title { display: flex; align-items: center; gap: 12px; }
 .harbor-title h2 { margin: 0; }
 .harbor-icon { font-size: 2.2rem; }
@@ -528,7 +555,12 @@ body[data-screen="boarding"] .klabauter-tip { bottom: auto; top: calc(84px + var
 .harbor-stats { display: flex; flex-wrap: wrap; gap: 6px 18px; font-weight: 700; font-size: 1.05rem; }
 .harbor-tabs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 10px; }
 .harbor-tab {
-  min-height: 54px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  min-height: 74px;
   border: 2px solid var(--parchment-line);
   border-radius: 12px;
   background: rgba(243, 230, 196, .55);
@@ -537,6 +569,7 @@ body[data-screen="boarding"] .klabauter-tip { bottom: auto; top: calc(84px + var
   font-weight: 700;
   cursor: pointer;
 }
+.harbor-tab .ic { width: 32px; height: 32px; }
 .harbor-tab.active { background: var(--parchment); border-color: var(--amber-dark); box-shadow: inset 0 -4px 0 var(--amber); }
 .harbor-tab.story { animation: twinkle 1.6s ease-in-out infinite; }
 .harbor-tab.story.active { animation: none; }
@@ -608,6 +641,10 @@ body[data-screen="boarding"] .klabauter-tip { bottom: auto; top: calc(84px + var
   overflow: hidden;
   cursor: pointer;
 }
+.fire-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; padding-bottom: 14px; }
+.fire-btn .ic { width: 44px; height: 44px; color: #fff; }
+.fire-btn .ic path[fill="#34363b"] { fill: #1e1f22; }
+.fire-btn.port .ic { transform: scaleX(-1); }
 .fire-btn.port { left: 14px; }
 .fire-btn.star { right: 14px; }
 .fire-btn.loading { background: linear-gradient(180deg, #7a6a5a, #4a3a2a); }
@@ -634,6 +671,10 @@ body[data-screen="boarding"] .klabauter-tip { bottom: auto; top: calc(84px + var
   cursor: pointer;
 }
 .bd-btn:active { transform: scale(.94); }
+.bd-btn { display: inline-flex; align-items: center; justify-content: center; }
+.bd-btn .ic { width: 46px; height: 46px; }
+.bd-jump { flex-direction: column; gap: 2px; }
+.bd-jump .ic { width: 40px; height: 40px; }
 .bd-jump { position: absolute; right: 14px; bottom: calc(16px + var(--safe-bottom)); width: 130px; height: 110px; border-radius: 24px; font-size: 1.1rem; background: rgba(240, 160, 48, .92); }
 
 /* ---------- Insel ---------- */

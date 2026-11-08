@@ -4,11 +4,11 @@ window.SF = window.SF || {};
 
 (function () {
   const GOODS = [
-    { id: 'fish', icon: '🐟', name: 'Fisch', base: 6 },
-    { id: 'salt', icon: '🧂', name: 'Salz', base: 10 },
-    { id: 'rum', icon: '🥃', name: 'Rum', base: 18 },
-    { id: 'cloth', icon: '🧵', name: 'Tuch', base: 26 },
-    { id: 'spice', icon: '🌶️', name: 'Gewürze', base: 40 },
+    { id: 'fish', icon: 'fish', name: 'Fisch', base: 6 },
+    { id: 'salt', icon: 'salt', name: 'Salz', base: 10 },
+    { id: 'rum', icon: 'rum', name: 'Rum', base: 18 },
+    { id: 'cloth', icon: 'cloth', name: 'Tuch', base: 26 },
+    { id: 'spice', icon: 'spice', name: 'Gewürze', base: 40 },
   ];
   const byId = Object.fromEntries(GOODS.map(g => [g.id, g]));
 

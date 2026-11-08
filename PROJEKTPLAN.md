@@ -172,15 +172,18 @@ js/main.js            Start, Spielschleife, automatisches Speichern
 tests/*.test.js       Tests mit node (Regeln, Physik, Spielstände) und Playwright (Browser)
 ```
 
-## 9. Entscheidungen zu offenen Punkten (Vorschläge, bis Rafaelo28 etwas anderes sagt)
+## 9. Entscheidungen (mit Rafaelo28 abgestimmt)
 
 | Frage | Vorschlag (so umgesetzt) |
 |---|---|
-| Name des ausgeraubten Hafens | Bleibt **Port Dublone** |
-| Alten Spielstand einmal oder öfter übernehmen? | **Einmal pro neuem Spielstand** (beim Start eines neuen Spiels) |
+| Name des ausgeraubten Hafens | **Port Dublone** (entschieden) |
+| Alten Spielstand einmal oder öfter übernehmen? | **Einmal pro neuem Spielstand** (entschieden) |
 | Hochkant oder quer? | Seekarte, Häfen, Kajüte und Geschichte **hoch und quer**; Schlacht und Jump'n'Run **nur quer** (Hinweis „Bitte drehen“) |
+| Gestaltung | **Keine Emojis** (Wunsch von Rafaelo28): eigene gezeichnete Symbole aus `js/icons.js`, im Stil des Spiels |
 | Ab wann Perlen und Cosmetics? | Perlen mit dem Tauchen am Korallenriff (Stufe 3), Cosmetics-Laden gleich danach |
-| Wer ist der Dieb, wer der Verräter, wie ist das Ende? | **Noch offen** – vor Stufe 4 entscheiden. Ideen: Dieb = **Long John** (hat in Gamble Klicker immer gegen dich verloren und will Rache); Verräter = jemand aus der Crew, den man in Stufe 2–3 anheuert; Endkampf gegen den Fliegenden Holländer |
+| Wer ist der Dieb? | **Long John** (entschieden): Er hat in Gamble Klicker immer gegen dich verloren und will Rache. Im Spiel heißt er zuerst nur „der Schatten“. |
+| Wer ist der Verräter? | Jemand aus der eigenen Crew (entschieden). Umsetzung: **Smutje Fiete**, der freundliche Schiffskoch, der in Kapitel 2 an Bord kommt – früher Koch bei Long John. Hinweise: Mehlspuren an der Schiffskasse, er weiß immer, wo Long John gerade ist. |
+| Wie endet das Spiel? | **Endkampf gegen den Fliegenden Holländer** (entschieden): Long John flieht auf das Geisterschiff, man besiegt es, holt die Goldene Dublone zurück und bringt sie nach Port Dublone. Danach Abspann, Schwer-Modus und Geheimnisse. |
 | Besucherzählung | Zählt vorerst bei `gamble-klicker.goatcounter.com` mit (Pfad `/der-seefahrer/`); eigene Seite später möglich |
 
 ---

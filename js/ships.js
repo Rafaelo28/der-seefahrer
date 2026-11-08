@@ -17,10 +17,10 @@ window.SF = window.SF || {};
 
   // Ausbau in der Werft (gilt für das aktuelle Schiff; ein neues Schiff fängt bei 0 an)
   const UPGRADES = [
-    { id: 'sails',  icon: '⛵', name: 'Bessere Segel',  max: 3, costs: [60, 140, 260], text: '+8 % Tempo je Stufe' },
-    { id: 'hold',   icon: '📦', name: 'Größerer Laderaum', max: 3, costs: [80, 170, 300], text: '+3 Kisten je Stufe' },
-    { id: 'pantry', icon: '🛢️', name: 'Vorratskammer',  max: 2, costs: [50, 120], text: '+2 Fässer Proviant je Stufe' },
-    { id: 'hull',   icon: '🛡️', name: 'Rumpf verstärken', max: 3, costs: [90, 190, 320], text: '+25 Rumpf für Seeschlachten' },
+    { id: 'sails',  icon: 'ship', name: 'Bessere Segel',  max: 3, costs: [60, 140, 260], text: '+8 % Tempo je Stufe' },
+    { id: 'hold',   icon: 'crate', name: 'Größerer Laderaum', max: 3, costs: [80, 170, 300], text: '+3 Kisten je Stufe' },
+    { id: 'pantry', icon: 'barrel', name: 'Vorratskammer',  max: 2, costs: [50, 120], text: '+2 Fässer Proviant je Stufe' },
+    { id: 'hull',   icon: 'shield', name: 'Rumpf verstärken', max: 3, costs: [90, 190, 320], text: '+25 Rumpf für Seeschlachten' },
   ];
   const REPAIR = 0.8; // Bernstein je Rumpfpunkt
   const upgradeById = Object.fromEntries(UPGRADES.map(u => [u.id, u]));
@@ -138,79 +138,115 @@ window.SF = window.SF || {};
     out += `<path d="M10 62 L110 62" stroke="${s.gold ? '#f5c542' : 'rgba(255,255,255,.25)'}" stroke-width="${s.gold ? 2.4 : 1.2}"/>`;
     if (s.ports) [30, 45, 60, 75, 90].forEach(x => { out += `<circle cx="${x}" cy="70" r="2.6" fill="#1a1008" stroke="${s.gold ? '#f5c542' : '#8a6a4a'}" stroke-width="0.8"/>`; });
     out += '<path d="M104 58 L116 52" stroke="#4a2d14" stroke-width="2.2"/>';
-    if (s.head) out += `<text x="111" y="66" font-size="13" text-anchor="middle">${s.head}</text>`;
+    if (s.head && SF.icon) out += SF.icon(s.head).replace('<svg ', '<svg x="103" y="56" width="16" height="16" ');
     out += '</svg>';
     svgCache[key] = out;
     return out;
   }
 
   // Von oben auf dem Canvas: Bug zeigt in Richtung (dx, dy) – gedreht über den Richtungsvektor, ohne Winkel.
-  // sway: leichtes Schaukeln (0 … 1)
+  // sway: leichtes Schaukeln (0 … 1) · colors: { sail, hull, flag, head } aus den Cosmetics
   function drawTop(ctx, id, x, y, dx, dy, scale = 1, sway = 0, colors = null) {
     const s = colors ? Object.assign({}, type(id), colors) : type(id);
     const L = s.len * scale;
     const B = L * 0.36;
+    const line = Math.max(1, 1.4 * scale);
     ctx.save();
     ctx.transform(dx, dy, -dy, dx, x, y);
+    ctx.lineJoin = 'round';
     // Schatten im Wasser
-    ctx.fillStyle = 'rgba(10, 30, 50, 0.25)';
+    ctx.fillStyle = 'rgba(10, 30, 50, 0.28)';
     ctx.beginPath();
-    ctx.ellipse(2 * scale, 3 * scale, L * 0.55, B * 0.62, 0, 0, Math.PI * 2);
+    ctx.ellipse(2.5 * scale, 4 * scale, L * 0.56, B * 0.66, 0, 0, Math.PI * 2);
     ctx.fill();
     // Rumpf
+    const hull = () => {
+      ctx.beginPath();
+      ctx.moveTo(L * 0.56, 0);
+      ctx.bezierCurveTo(L * 0.42, -B * 0.62, L * 0.05, -B * 0.62, -L * 0.3, -B * 0.52);
+      ctx.lineTo(-L * 0.46, -B * 0.4);
+      ctx.lineTo(-L * 0.46, B * 0.4);
+      ctx.lineTo(-L * 0.3, B * 0.52);
+      ctx.bezierCurveTo(L * 0.05, B * 0.62, L * 0.42, B * 0.62, L * 0.56, 0);
+      ctx.closePath();
+    };
+    hull();
     ctx.fillStyle = s.hull;
+    ctx.fill();
     ctx.strokeStyle = '#2a1a0c';
-    ctx.lineWidth = 1.5 * scale;
-    ctx.beginPath();
-    ctx.moveTo(L * 0.55, 0);
-    ctx.quadraticCurveTo(L * 0.25, -B * 0.62, -L * 0.2, -B * 0.5);
-    ctx.lineTo(-L * 0.45, -B * 0.4);
-    ctx.lineTo(-L * 0.45, B * 0.4);
-    ctx.lineTo(-L * 0.2, B * 0.5);
-    ctx.quadraticCurveTo(L * 0.25, B * 0.62, L * 0.55, 0);
-    ctx.fill();
+    ctx.lineWidth = line;
     ctx.stroke();
-    // Deck
+    // Deck mit Planken
+    ctx.save();
+    ctx.scale(0.8, 0.74);
+    hull();
+    ctx.restore();
     ctx.fillStyle = s.ghost ? '#4a5564' : '#c79a5b';
-    ctx.beginPath();
-    ctx.moveTo(L * 0.42, 0);
-    ctx.quadraticCurveTo(L * 0.2, -B * 0.42, -L * 0.18, -B * 0.36);
-    ctx.lineTo(-L * 0.38, -B * 0.3);
-    ctx.lineTo(-L * 0.38, B * 0.3);
-    ctx.lineTo(-L * 0.18, B * 0.36);
-    ctx.quadraticCurveTo(L * 0.2, B * 0.42, L * 0.42, 0);
     ctx.fill();
-    // Segel: Bögen quer zum Schiff, vom Wind nach vorn gebläht
-    const masts = s.masts === 1 ? [0.05] : s.masts === 2 ? [-0.12, 0.16] : [-0.22, 0.02, 0.24];
-    ctx.fillStyle = s.sail;
-    ctx.globalAlpha = s.ghost ? 0.8 : 1;
+    ctx.strokeStyle = s.ghost ? 'rgba(0,0,0,.25)' : 'rgba(110, 70, 30, .45)';
+    ctx.lineWidth = Math.max(0.6, 0.7 * scale);
+    ctx.beginPath();
+    for (let k = -2; k <= 2; k++) {
+      ctx.moveTo(-L * 0.34, k * B * 0.12);
+      ctx.lineTo(L * 0.36 - Math.abs(k) * L * 0.05, k * B * 0.12);
+    }
+    ctx.stroke();
+    // Stückpforten an den Seiten
+    if (s.ports || s.cannons >= 4) {
+      const n = Math.max(2, Math.round(s.cannons / 2));
+      ctx.fillStyle = '#1a1008';
+      for (let i = 0; i < n; i++) {
+        const px = -L * 0.22 + (i / Math.max(1, n - 1)) * L * 0.4;
+        ctx.fillRect(px - L * 0.025, -B * 0.56, L * 0.05, B * 0.1);
+        ctx.fillRect(px - L * 0.025, B * 0.46, L * 0.05, B * 0.1);
+      }
+    }
+    // Masten mit geblähten Segeln (vom Wind nach vorn gewölbt)
+    const masts = s.masts === 1 ? [0.06] : s.masts === 2 ? [-0.12, 0.17] : [-0.23, 0.02, 0.25];
+    const mid = Math.floor(masts.length / 2);
     masts.forEach((m, i) => {
       const mx = m * L;
-      const w = B * (i === Math.floor(masts.length / 2) ? 1.05 : 0.9);
-      const bulge = (0.16 + 0.03 * sway) * L;
+      const w = B * (i === mid ? 1.12 : 0.95);
+      const depth = L * (0.075 + 0.015 * sway);
       ctx.beginPath();
-      ctx.moveTo(mx - 0.03 * L, -w);
-      ctx.quadraticCurveTo(mx + bulge, 0, mx - 0.03 * L, w);
-      ctx.quadraticCurveTo(mx + bulge * 0.4, 0, mx - 0.03 * L, -w);
+      ctx.moveTo(mx - L * 0.03, -w);
+      ctx.quadraticCurveTo(mx + depth * 3.2, 0, mx - L * 0.03, w);
+      ctx.lineTo(mx - L * 0.06, w * 0.9);
+      ctx.quadraticCurveTo(mx + depth * 0.9, 0, mx - L * 0.06, -w * 0.9);
+      ctx.closePath();
+      ctx.globalAlpha = s.ghost ? 0.82 : 1;
+      ctx.fillStyle = s.sail;
       ctx.fill();
+      ctx.globalAlpha = 1;
+      ctx.strokeStyle = 'rgba(42, 26, 12, .85)';
+      ctx.lineWidth = line;
       ctx.stroke();
+      // Rah (Querbalken) und Mast
+      ctx.strokeStyle = '#4a2d14';
+      ctx.lineWidth = Math.max(1, 1.6 * scale);
+      ctx.beginPath();
+      ctx.moveTo(mx - L * 0.035, -w * 0.96);
+      ctx.lineTo(mx - L * 0.035, w * 0.96);
+      ctx.stroke();
+      ctx.fillStyle = '#4a2d14';
+      ctx.beginPath();
+      ctx.arc(mx - L * 0.035, 0, Math.max(1.2, L * 0.035), 0, Math.PI * 2);
+      ctx.fill();
     });
-    ctx.globalAlpha = 1;
     // Flagge am Heck
     ctx.fillStyle = s.flag || (s.ghost ? '#cfe0f0' : '#16181d');
+    ctx.strokeStyle = 'rgba(0,0,0,.4)';
+    ctx.lineWidth = Math.max(0.6, 0.8 * scale);
     ctx.beginPath();
-    ctx.moveTo(-L * 0.42, 0);
-    ctx.lineTo(-L * 0.62, -B * 0.18 + sway * B * 0.1);
-    ctx.lineTo(-L * 0.62, B * 0.18 + sway * B * 0.1);
+    ctx.moveTo(-L * 0.44, 0);
+    ctx.lineTo(-L * 0.66, -B * 0.2 + sway * B * 0.12);
+    ctx.lineTo(-L * 0.62, B * 0.02 + sway * B * 0.06);
+    ctx.lineTo(-L * 0.66, B * 0.2 + sway * B * 0.12);
     ctx.closePath();
     ctx.fill();
+    ctx.stroke();
     // Galionsfigur am Bug
-    if (s.head) {
-      ctx.font = `${Math.round(L * 0.34)}px system-ui, sans-serif`;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(s.head, L * 0.6, 0);
-    }
+    if (s.head && SF.icons) SF.icons.draw(ctx, s.head, L * 0.62, 0, L * 0.36);
     ctx.restore();
   }
 

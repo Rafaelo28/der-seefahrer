@@ -19,12 +19,12 @@ window.SF = window.SF || {};
 
   // share: Anteil am Startgeld zu Beginn (vor dem Vorsprung)
   const ITEMS = [
-    { id: 'frigate', icon: '🚢', name: 'Fregatte', share: 0.55, kind: 'ship', text: '16 Kisten · 6 Kanonen · schnell' },
-    { id: 'brig', icon: '⛵', name: 'Brigg', share: 0.12, kind: 'ship', text: '12 Kisten · 4 Kanonen' },
-    { id: 'cannon', icon: '💣', name: 'Kanone', share: 0.03, kind: 'cannon', text: 'Für Seeschlachten' },
-    { id: 'food', icon: '🛢️', name: 'Fass Proviant', share: 0.01, kind: 'food', text: 'Ohne Proviant murrt die Crew' },
-    { id: 'cloth', icon: '🧵', name: 'Kiste Tuch', share: 0.02, kind: 'cargo', good: 'cloth', text: 'Verkaufen gegen Bernstein' },
-    { id: 'bread', icon: '🍞', name: 'Brot', share: 0.0003, kind: 'bread', text: '10 Brote = 1 Fass Proviant' },
+    { id: 'frigate', icon: 'ship', name: 'Fregatte', share: 0.55, kind: 'ship', text: '16 Kisten · 6 Kanonen · schnell' },
+    { id: 'brig', icon: 'ship', name: 'Brigg', share: 0.12, kind: 'ship', text: '12 Kisten · 4 Kanonen' },
+    { id: 'cannon', icon: 'cannon', name: 'Kanone', share: 0.03, kind: 'cannon', text: 'Für Seeschlachten' },
+    { id: 'food', icon: 'barrel', name: 'Fass Proviant', share: 0.01, kind: 'food', text: 'Ohne Proviant murrt die Crew' },
+    { id: 'cloth', icon: 'cloth', name: 'Kiste Tuch', share: 0.02, kind: 'cargo', good: 'cloth', text: 'Verkaufen gegen Bernstein' },
+    { id: 'bread', icon: 'bread', name: 'Brot', share: 0.0003, kind: 'bread', text: '10 Brote = 1 Fass Proviant' },
   ];
   const byId = Object.fromEntries(ITEMS.map(x => [x.id, x]));
 
@@ -69,7 +69,7 @@ window.SF = window.SF || {};
     const item = byId[id];
     if (!item) return 'Gibt es nicht';
     if (room(s, id) <= 0) {
-      if (item.kind === 'ship') return s.ship === id ? 'Gekauft ✔' : 'Du hast ein besseres Schiff';
+      if (item.kind === 'ship') return s.ship === id ? 'Gekauft' : 'Du hast ein besseres Schiff';
       return item.kind === 'cannon' ? 'Alle Plätze voll' : 'Kein Platz mehr';
     }
     if (price(s, id) > s.money) return 'Zu teuer';
@@ -148,7 +148,7 @@ window.SF = window.SF || {};
 
   function buildGrid() {
     $('ld-grid').innerHTML = ITEMS.map(x => `<button type="button" class="ld-item ld-kind-${x.kind}" data-id="${x.id}">
-      <span class="ld-icon">${x.kind === 'ship' ? SF.ships.sideSVG(x.id) : x.icon}</span>
+      <span class="ld-icon">${x.kind === 'ship' ? SF.ships.sideSVG(x.id) : SF.icon(x.icon)}</span>
       <span class="ld-name">${x.name}</span>
       <span class="ld-text">${x.text}</span>
       <span class="ld-price"></span>
@@ -190,13 +190,13 @@ window.SF = window.SF || {};
     $('ld-bar-fill').style.transform = `scaleX(${into.toFixed(3)})`;
     SF.setText($('ld-bar-text'), `Preise ×2 in ${SF.formatDecimal(Math.max(0, DOUBLING - s.t % DOUBLING), 1, 1)} s`);
     SF.setHTML($('ld-money'), SF.dublonenHTML(s.money));
-    SF.setHTML($('ld-bread'), `🍞 Ein Brot kostet gerade <b>${SF.formatLong(price(s, 'bread'))}</b> Dublonen`);
+    SF.setHTML($('ld-bread'), `${SF.icon('bread')} Ein Brot kostet gerade <b>${SF.formatLong(price(s, 'bread'))}</b> Dublonen`);
     $('ld-grid').querySelectorAll('.ld-item').forEach(btn => {
       const id = btn.dataset.id;
       const why = whyNot(s, id);
       const item = byId[id];
       btn.classList.toggle('off', !!why);
-      btn.classList.toggle('done', why === 'Gekauft ✔');
+      btn.classList.toggle('done', why === 'Gekauft');
       SF.setHTML(btn.querySelector('.ld-price'), why && why !== 'Zu teuer' ? why : SF.dublonenHTML(price(s, id)));
       const t = shipType(s);
       const count = item.kind === 'ship' ? '' : item.kind === 'cannon' ? `${s.bought.cannon} / ${t.cannons}`
@@ -237,9 +237,9 @@ window.SF = window.SF || {};
       <div class="ld-result-ship">${SF.ships.sideSVG(r.ship)}</div>
       <ul class="ld-result-list">
         <li>${s.name}${r.ship === 'sloop' && !session.bought.brig ? ' <span class="muted">(eine alte Schaluppe vom Klabautermann)</span>' : ''}</li>
-        <li>💣 ${r.cannons} Kanonen</li>
-        <li>🛢️ ${SF.formatDecimal(r.food, 0, 1)} Fässer Proviant${r.bread ? ` <span class="muted">(davon ${r.bread} Brote)</span>` : ''}</li>
-        <li>🧵 ${r.cargo.cloth || 0} Kisten Tuch</li>
+        <li>${SF.icon('cannon')} ${r.cannons} Kanonen</li>
+        <li>${SF.icon('barrel')} ${SF.formatDecimal(r.food, 0, 1)} Fässer Proviant${r.bread ? ` <span class="muted">(davon ${r.bread} Brote)</span>` : ''}</li>
+        <li>${SF.icon('cloth')} ${r.cargo.cloth || 0} Kisten Tuch</li>
       </ul>
       <button type="button" class="btn btn-primary" id="ld-result-next">Weiter</button>
     </div>`;

@@ -37,6 +37,9 @@ Der ganze Plan mit allen Ausbaustufen steht in `PROJEKTPLAN.md` (Häkchen nach j
   Winkelfunktionen erlaubt; Schiffe werden mit Richtungsvektoren gedreht.)
 - **Besucherzählung** (`js/analytics.js`, GoatCounter): nur Seitenaufrufe und Ereignisse wie
   `SF.track('seefahrer-…')` – niemals Namen, Raum-Codes, Spieler-IDs oder Spielstände mitsenden.
+- **Keine Emojis** (Wunsch von Rafaelo28): Symbole kommen aus `js/icons.js` – im HTML `SF.icon('name')` bzw.
+  `<i data-ic="name"></i>`, auf dem Canvas `SF.icons.draw(ctx, 'name', x, y, größe)`. Neue Symbole dort auf dem
+  24 × 24-Raster zeichnen. Ein Test (`cosmetics.test.js`) schlägt fehl, wenn irgendwo ein Emoji steht.
 - **Alles ist Spielgeld.** Es gibt keine Käufe mit echtem Geld.
 - Code aus Gamble Klicker (`Rafaelo28/Gamble-Klicker`) darf übernommen und angepasst werden
   (`figure.js`, `rank.js`, `sound.js`, `format.js`, später `mp/room.js`, `mp/cannon.js`).

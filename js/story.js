@@ -187,6 +187,39 @@ window.SF = window.SF || {};
       ${[0, 1, 2, 3].map(i => `<rect x="${150 + i * 26}" y="${196 + (i % 2) * 8}" width="22" height="12" fill="#b9d3a0" stroke="#7a9a6a" transform="rotate(${i * 9 - 12} ${161 + i * 26} ${202 + (i % 2) * 8})"/>`).join('')}
     </svg>`,
 
+    // Bernsteinbucht: Fischerdorf am Strand, Netze, Bernstein im Sand
+    fischer: () => `${svgOpen}
+      <defs><linearGradient id="sc-f-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5a8ac8"/><stop offset="1" stop-color="#f4c890"/></linearGradient></defs>
+      <rect width="400" height="240" fill="url(#sc-f-sky)"/>
+      <circle cx="320" cy="120" r="24" fill="#ffe0a0" opacity=".9"/>
+      <rect x="0" y="150" width="400" height="90" fill="#2a6a8e"/>
+      ${waves(166)}
+      <path d="M0 196 C90 170 200 178 400 204 L400 240 L0 240 Z" fill="#e8d39a"/>
+      ${[[30, 44, '#7a4a3a'], [86, 36, '#5d6b7a'], [130, 40, '#8a6a4a']].map(([x, h, c]) => `<rect x="${x}" y="${190 - h}" width="40" height="${h}" fill="${c}"/>
+        <path d="M${x - 4} ${190 - h} L${x + 20} ${170 - h} L${x + 44} ${190 - h} Z" fill="#a83a2a"/>`).join('')}
+      <path d="M210 168 L222 140 L234 168 M216 156 L230 156" stroke="#6b4a2a" stroke-width="3" fill="none"/>
+      <path d="M180 192 q20 -24 40 0 q20 -24 40 0" stroke="#c8b48a" stroke-width="2" fill="none"/>
+      <g class="sc-bob">${ship('sloop', 280, 120, 80)}</g>
+      ${[[60, 214], [150, 222], [240, 216], [330, 226]].map(([x, y], i) => `<ellipse cx="${x}" cy="${y}" rx="8" ry="5" fill="#f0a030" stroke="#a05a10" stroke-width="1.5" class="sc-twinkle" style="animation-delay:${i * 0.4}s"/>`).join('')}
+    </svg>`,
+
+    // Schmugglerinsel: Hütten auf Pfählen in einer Bucht bei Nacht, Laternen
+    schmuggler: () => `${svgOpen}
+      <defs><linearGradient id="sc-s-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#101830"/><stop offset="1" stop-color="#3a4a6a"/></linearGradient></defs>
+      <rect width="400" height="240" fill="url(#sc-s-sky)"/>
+      ${[[40, 30], [120, 18], [200, 40], [290, 22], [360, 50]].map(([x, y], i) => `<circle cx="${x}" cy="${y}" r="1.4" fill="#fff" class="sc-twinkle" style="animation-delay:${i * 0.5}s"/>`).join('')}
+      <circle cx="70" cy="56" r="16" fill="#f4f1d0"/>
+      <path d="M260 160 C280 90 330 70 400 80 L400 170 Z" fill="#1e2a22"/>
+      <rect x="0" y="160" width="400" height="80" fill="#14304a"/>
+      ${waves(178, 'rgba(160,200,255,.25)')}
+      ${[[40, 120], [120, 110], [200, 124]].map(([x, y]) => `<path d="M${x + 6} ${y + 30} V176 M${x + 44} ${y + 30} V176" stroke="#3a2a1a" stroke-width="4"/>
+        <rect x="${x}" y="${y}" width="50" height="32" fill="#5a3a22"/><path d="M${x - 6} ${y} L${x + 25} ${y - 20} L${x + 56} ${y} Z" fill="#3a2a1a"/>
+        <rect x="${x + 18}" y="${y + 10}" width="12" height="12" fill="#ffd25e" class="flicker"/>`).join('')}
+      <path d="M30 150 H250" stroke="#4a3520" stroke-width="5"/>
+      <g class="sc-bob">${ship('brig', 290, 110, 90, { '#f4efe0': '#4a4a4a' })}</g>
+      ${[[90, 146], [170, 146]].map(([x, y]) => `<path d="M${x} ${y - 14} v14" stroke="#4a3520" stroke-width="2"/><circle cx="${x}" cy="${y - 16}" r="5" fill="#ffd25e" class="flicker"/>`).join('')}
+    </svg>`,
+
     // Ablegen: das eigene Schiff auf See, der Klabautermann am Bug
     ablegen: () => `${svgOpen}
       <defs><linearGradient id="sc-b-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7ab8e0"/><stop offset="1" stop-color="#f4e0b0"/></linearGradient></defs>

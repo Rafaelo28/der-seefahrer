@@ -3,20 +3,20 @@
 window.SF = window.SF || {};
 
 (function () {
-  const NAMED = [
-    { icon: '🐀', name: 'Landratte' },
-    { icon: '🧹', name: 'Schiffsjunge' },
-    { icon: '⚓', name: 'Matrose' },
-    { icon: '🪢', name: 'Bootsmann' },
-    { icon: '🧭', name: 'Steuermann' },
-    { icon: '🗝️', name: 'Quartiermeister' },
-    { icon: '🎖️', name: 'Erster Offizier' },
-    { icon: '🏴‍☠️', name: 'Kapitän' },
-    { icon: '⭐', name: 'Kommodore' },
-    { icon: '🌟', name: 'Admiral' },
-    { icon: '💫', name: 'Großadmiral' },
-    { icon: '👑', name: 'Piratenkönig' },
-    { icon: '🔱', name: 'Herrscher der Meere' },
+  const NAMED = [ // Namen der Ränge (wie in Gamble Klicker)
+    'Landratte',
+    'Schiffsjunge',
+    'Matrose',
+    'Bootsmann',
+    'Steuermann',
+    'Quartiermeister',
+    'Erster Offizier',
+    'Kapitän',
+    'Kommodore',
+    'Admiral',
+    'Großadmiral',
+    'Piratenkönig',
+    'Herrscher der Meere',
   ];
   const LEGEND = NAMED.length;
   const MAX = 999;
@@ -39,11 +39,10 @@ window.SF = window.SF || {};
   }
 
   const valid = r => (Number.isInteger(r) && r >= 0 && r <= MAX ? r : 0);
-  const name = r => (valid(r) < LEGEND ? NAMED[valid(r)].name : `Legende ${roman(valid(r) - LEGEND + 1)}`);
-  const icon = r => (valid(r) < LEGEND ? NAMED[valid(r)].icon : '🐉');
+  const name = r => (valid(r) < LEGEND ? NAMED[valid(r)] : `Legende ${roman(valid(r) - LEGEND + 1)}`);
 
   // Titel im Seefahrer: Landratten bleiben Landratten, alle anderen waren mal etwas
   const title = r => (valid(r) >= 1 ? `ehem. ${name(r)}` : 'Landratte');
 
-  SF.rank = { NAMED, LEGEND, MAX, threshold, of, name, icon, valid, title, roman };
+  SF.rank = { NAMED, LEGEND, MAX, threshold, of, name, valid, title, roman };
 })();
