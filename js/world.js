@@ -154,14 +154,14 @@ window.SF = window.SF || {};
 
   // harbor: Hafen zum Anlegen · gk: Ziel aus der Flotte von Gamble Klicker · reward: Bernstein beim Entdecken
   const PLACES = [
-    Object.assign({ id: 'dublone', name: 'Port Dublone', icon: '⚓', harbor: true }, coast('dublone', 1, 0.15)),
-    Object.assign({ id: 'amberbay', name: 'Bernsteinbucht', icon: '⚓', harbor: true }, coast('amber', -0.55, 0.85)),
-    Object.assign({ id: 'smuggler', name: 'Schmugglerinsel', icon: '🏴‍☠️', harbor: true, gk: true }, coast('smuggler', -1, -0.25)),
-    Object.assign({ id: 'bay', name: 'Nahe Bucht', icon: '🏝️', gk: true, reward: 15 }, coast('bay', 0.7, 0.75, 30)),
-    { id: 'reef', name: 'Korallenriff', icon: '🐚', gk: true, reward: 20, x: 1380, y: 1820 },
-    Object.assign({ id: 'volcano', name: 'Vulkaninsel', icon: '🌋', gk: true, reward: 30 }, coast('volcano', -0.85, 0.5)),
-    { id: 'ice', name: 'Eismeer', icon: '🧊', gk: true, reward: 40, x: 1500, y: 330 },
-    Object.assign({ id: 'dragon', name: 'Drachenküste', icon: '🐉', gk: true, reward: 50 }, coast('dragon', -0.75, -0.65)),
+    Object.assign({ id: 'dublone', name: 'Port Dublone', icon: 'anchor', harbor: true }, coast('dublone', 1, 0.15)),
+    Object.assign({ id: 'amberbay', name: 'Bernsteinbucht', icon: 'anchor', harbor: true }, coast('amber', -0.55, 0.85)),
+    Object.assign({ id: 'smuggler', name: 'Schmugglerinsel', icon: 'skull', harbor: true, gk: true }, coast('smuggler', -1, -0.25)),
+    Object.assign({ id: 'bay', name: 'Nahe Bucht', icon: 'palm', gk: true, reward: 15 }, coast('bay', 0.7, 0.75, 30)),
+    { id: 'reef', name: 'Korallenriff', icon: 'coral', gk: true, reward: 20, x: 1380, y: 1820 },
+    Object.assign({ id: 'volcano', name: 'Vulkaninsel', icon: 'volcano', gk: true, reward: 30 }, coast('volcano', -0.85, 0.5)),
+    { id: 'ice', name: 'Eismeer', icon: 'ice', gk: true, reward: 40, x: 1500, y: 330 },
+    Object.assign({ id: 'dragon', name: 'Drachenküste', icon: 'dragon', gk: true, reward: 50 }, coast('dragon', -0.75, -0.65)),
   ];
   const placeById = Object.fromEntries(PLACES.map(p => [p.id, p]));
   const START = placeById.dublone;

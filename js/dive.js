@@ -194,9 +194,9 @@ window.SF = window.SF || {};
       SF.sound.play(ok ? (keep ? 'fanfare' : 'splash') : 'lose');
       setTimeout(async () => {
         await SF.ui.dialog({
-          title: ok ? '🤿 Aufgetaucht!' : '😮‍💨 Keine Luft mehr!',
+          title: ok ? `${SF.icon('diver')} Aufgetaucht!` : `${SF.icon('bubbles')} Keine Luft mehr!`,
           html: ok
-            ? `<p>${keep ? `Du bringst <b>${keep} Perle${keep > 1 ? 'n' : ''}</b> 🦪 mit an Bord.` : 'Diesmal keine Perlen – die Muscheln waren zu.'}</p>`
+            ? `<p>${keep ? `Du bringst <b>${keep} Perle${keep > 1 ? 'n' : ''}</b> ${SF.icon('pearl')} mit an Bord.` : 'Diesmal keine Perlen – die Muscheln waren zu.'}</p>`
             : `<p>Die Crew zieht dich an der Leine hoch. Dabei fällt die Hälfte der Perlen ins Meer: Du behältst <b>${keep}</b> von ${found}.</p>`,
           buttons: [{ label: 'Zurück aufs Schiff', value: true, kind: 'primary' }],
         });

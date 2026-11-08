@@ -20,7 +20,7 @@
   <meta name="description" content="Der Seefahrer – ein Seefahrer-Abenteuer nach Gamble Klicker: Segle über die Seekarte, handle in Häfen und finde den Dieb der Goldenen Dublone. Nur Spielgeld.">
   <meta name="author" content="Rafaelo28">
   <!-- ?v=… ist die Spielversion: bei jedem Update erhöhen, damit Browser keine alten Dateien mischen -->
-  <link rel="stylesheet" href="css/style.css?v=2026110808">
+  <link rel="stylesheet" href="css/style.css?v=2026110811">
 </head>
 <body data-screen="">
 
@@ -37,7 +37,7 @@
         </div>
         <div id="title-info" class="title-info"></div>
       </div>
-      <button type="button" id="title-sound" class="icon-btn title-sound sound-toggle" aria-label="Ton an/aus">🔊</button>
+      <button type="button" id="title-sound" class="icon-btn title-sound sound-toggle" aria-label="Ton an/aus"></button>
       <div class="title-sea" aria-hidden="true">
         <div class="title-ship"></div>
         <div class="title-wave w1"></div>
@@ -121,48 +121,49 @@
   <section id="screen-sea" class="screen" hidden>
     <canvas id="sea-canvas" class="sea-canvas"></canvas>
     <div class="hud-top">
-      <button type="button" id="sea-cabin" class="hud-btn" aria-label="Kajüte">☰ <span class="hud-btn-text">Kajüte</span></button>
+      <button type="button" id="sea-cabin" class="hud-btn" aria-label="Kajüte"><i class="ic-slot" data-ic="menu"></i><span class="hud-btn-text">Kajüte</span></button>
       <div class="hud-stats">
         <span id="hud-amber"></span>
-        <span id="hud-food" class="hud-food" title="Proviant">🛢️ <span class="food-bar"><i id="hud-food-fill"></i></span> <span id="hud-food-text"></span></span>
+        <span id="hud-food" class="hud-food" title="Proviant"><i class="ic-slot" data-ic="barrel"></i><span class="food-bar"><i id="hud-food-fill"></i></span> <span id="hud-food-text"></span></span>
         <span id="hud-cargo"></span>
         <span id="hud-pearls" hidden></span>
         <span id="hud-day" class="hud-day"></span>
       </div>
-      <div class="hud-wind" title="Wind"><span id="hud-wind-arrow" class="hud-wind-arrow">➜</span><span id="hud-wind-text" class="hud-wind-text"></span></div>
+      <div class="hud-wind" title="Wind"><span id="hud-wind-arrow" class="hud-wind-arrow"><i class="ic-slot" data-ic="wind"></i></span><span id="hud-wind-text" class="hud-wind-text"></span></div>
     </div>
     <div id="sea-goal" class="sea-goal" hidden></div>
     <div class="hud-side">
       <button type="button" id="sea-zoom-in" class="hud-round" aria-label="Näher heran">+</button>
       <button type="button" id="sea-zoom-out" class="hud-round" aria-label="Weiter weg">−</button>
-      <button type="button" id="sea-center" class="hud-round" aria-label="Zum Schiff">⛵</button>
+      <button type="button" id="sea-center" class="hud-round" aria-label="Zum Schiff"><i class="ic-slot" data-ic="ship"></i></button>
     </div>
     <div class="hud-bottom">
-      <button type="button" id="sea-stop" class="btn" hidden>✋ Anhalten</button>
-      <button type="button" id="sea-dock" class="btn btn-primary btn-big" hidden>⚓ Anlaufen</button>
-      <button type="button" id="sea-land" class="btn btn-primary btn-big" hidden>🏝️ An Land gehen</button>
-      <button type="button" id="sea-dive" class="btn btn-primary btn-big" hidden>🤿 Tauchen</button>
+      <button type="button" id="sea-stop" class="btn" hidden><i class="ic-slot" data-ic="pause"></i> Anhalten</button>
+      <button type="button" id="sea-dock" class="btn btn-primary btn-big" hidden><i class="ic-slot" data-ic="anchor"></i> Anlaufen</button>
+      <button type="button" id="sea-land" class="btn btn-primary btn-big" hidden>An Land gehen</button>
+      <button type="button" id="sea-dive" class="btn btn-primary btn-big" hidden><i class="ic-slot" data-ic="diver"></i> Tauchen</button>
     </div>
   </section>
 
   <!-- Hafen -->
   <section id="screen-harbor" class="screen page" hidden>
     <div class="card harbor-head">
+      <div id="harbor-banner" class="harbor-banner"></div>
       <div class="harbor-title"><span id="harbor-icon" class="harbor-icon"></span><h2 id="harbor-name"></h2></div>
       <p id="harbor-text" class="muted small"></p>
       <div id="harbor-stats" class="harbor-stats"></div>
     </div>
     <nav class="harbor-tabs">
-      <button type="button" class="harbor-tab" data-tab="market">🏪 Markt</button>
-      <button type="button" class="harbor-tab" data-tab="food">🛢️ Proviant</button>
-      <button type="button" class="harbor-tab" data-tab="yard">🔨 Werft</button>
-      <button type="button" class="harbor-tab" data-tab="tavern" id="harbor-tab-tavern">🍺 Kneipe</button>
-      <button type="button" class="harbor-tab" data-tab="shop">🎨 Laden</button>
+      <button type="button" class="harbor-tab" data-tab="market"><i class="ic-slot" data-ic="market"></i><span>Markt</span></button>
+      <button type="button" class="harbor-tab" data-tab="food"><i class="ic-slot" data-ic="barrel"></i><span>Proviant</span></button>
+      <button type="button" class="harbor-tab" data-tab="yard"><i class="ic-slot" data-ic="hammer"></i><span>Werft</span></button>
+      <button type="button" class="harbor-tab" data-tab="tavern" id="harbor-tab-tavern"><i class="ic-slot" data-ic="mug"></i><span>Kneipe</span></button>
+      <button type="button" class="harbor-tab" data-tab="shop"><i class="ic-slot" data-ic="palette"></i><span>Laden</span></button>
     </nav>
     <div id="harbor-panel" class="card harbor-panel"></div>
     <div class="btn-row harbor-foot">
-      <button type="button" id="harbor-cabin" class="btn">☰ Kajüte</button>
-      <button type="button" id="harbor-leave" class="btn btn-primary btn-big">⛵ Ablegen</button>
+      <button type="button" id="harbor-cabin" class="btn"><i class="ic-slot" data-ic="menu"></i> Kajüte</button>
+      <button type="button" id="harbor-leave" class="btn btn-primary btn-big"><i class="ic-slot" data-ic="ship"></i> Ablegen</button>
     </div>
   </section>
 
@@ -183,11 +184,11 @@
       <div id="bt-info" class="bt-info"></div>
       <div class="hp-box enemy"><span id="bt-enemy-name" class="hp-name"></span><div class="hp-bar"><i id="bt-hp-enemy"></i><span id="bt-hp-enemy-text"></span></div></div>
     </div>
-    <button type="button" id="bt-port" class="fire-btn port">◀ Backbord<span class="reload"><i id="bt-port-load"></i></span></button>
-    <button type="button" id="bt-star" class="fire-btn star">Steuerbord ▶<span class="reload"><i id="bt-star-load"></i></span></button>
-    <button type="button" id="bt-board" class="btn btn-primary btn-big board-btn" hidden>🪝 Entern!</button>
+    <button type="button" id="bt-port" class="fire-btn port"><i class="ic-slot" data-ic="cannon"></i><span class="fire-label">Backbord</span><span class="reload"><i id="bt-port-load"></i></span></button>
+    <button type="button" id="bt-star" class="fire-btn star"><i class="ic-slot" data-ic="cannon"></i><span class="fire-label">Steuerbord</span><span class="reload"><i id="bt-star-load"></i></span></button>
+    <button type="button" id="bt-board" class="btn btn-primary btn-big board-btn" hidden><i class="ic-slot" data-ic="hook"></i> Entern!</button>
     <div id="bt-rotate" class="overlay" hidden>
-      <div class="dialog"><h2>📱 Dreh dein iPad quer</h2><p>Quer siehst du mehr vom Meer und hast beide Kanonen-Knöpfe gut im Griff.</p>
+      <div class="dialog"><h2><i class="ic-slot" data-ic="tablet"></i> Dreh dein iPad quer</h2><p>Quer siehst du mehr vom Meer und hast beide Kanonen-Knöpfe gut im Griff.</p>
         <div class="dialog-buttons"><button type="button" id="bt-rotate-ok" class="btn">Hochkant weiterspielen</button></div></div>
     </div>
   </section>
@@ -195,27 +196,27 @@
   <!-- Entern (Jump'n'Run) -->
   <section id="screen-boarding" class="screen" hidden>
     <canvas id="boarding-canvas" class="sea-canvas"></canvas>
-    <div id="bd-time-box" class="bd-time">⏳ <span id="bd-time">45</span> s</div>
+    <div id="bd-time-box" class="bd-time"><i class="ic-slot" data-ic="hourglass"></i> <span id="bd-time">45</span> s</div>
     <div class="bd-controls">
-      <button type="button" id="bd-left" class="bd-btn" aria-label="Nach links">◀</button>
-      <button type="button" id="bd-right" class="bd-btn" aria-label="Nach rechts">▶</button>
+      <button type="button" id="bd-left" class="bd-btn" aria-label="Nach links"><i class="ic-slot" data-ic="left"></i></button>
+      <button type="button" id="bd-right" class="bd-btn" aria-label="Nach rechts"><i class="ic-slot" data-ic="right"></i></button>
     </div>
-    <button type="button" id="bd-jump" class="bd-btn bd-jump" aria-label="Springen">⤒ Springen</button>
+    <button type="button" id="bd-jump" class="bd-btn bd-jump" aria-label="Springen"><i class="ic-slot" data-ic="jump"></i><span>Springen</span></button>
   </section>
 
   <!-- Insel (Jump'n'Run mit Enterhaken) -->
   <section id="screen-island" class="screen" hidden>
     <canvas id="island-canvas" class="sea-canvas"></canvas>
     <div class="is-top">
-      <button type="button" id="is-quit" class="hud-btn">⛵ Zurück</button>
+      <button type="button" id="is-quit" class="hud-btn"><i class="ic-slot" data-ic="back"></i> Zurück</button>
       <div class="is-info"><b id="is-name"></b> <span id="is-best" class="muted small"></span></div>
-      <div class="bd-time-inline">⏳ <span id="is-time"></span> s · <i class="amber"></i> <span id="is-amber">0</span></div>
+      <div class="bd-time-inline"><i class="ic-slot" data-ic="hourglass"></i> <span id="is-time"></span> s · <i class="amber"></i> <span id="is-amber">0</span></div>
     </div>
     <div class="bd-controls">
-      <button type="button" id="is-left" class="bd-btn" aria-label="Nach links">◀</button>
-      <button type="button" id="is-right" class="bd-btn" aria-label="Nach rechts">▶</button>
+      <button type="button" id="is-left" class="bd-btn" aria-label="Nach links"><i class="ic-slot" data-ic="left"></i></button>
+      <button type="button" id="is-right" class="bd-btn" aria-label="Nach rechts"><i class="ic-slot" data-ic="right"></i></button>
     </div>
-    <button type="button" id="is-jump" class="bd-btn bd-jump" aria-label="Springen">⤒ Springen</button>
+    <button type="button" id="is-jump" class="bd-btn bd-jump" aria-label="Springen"><i class="ic-slot" data-ic="jump"></i><span>Springen</span></button>
   </section>
 
   <!-- Tauchen -->
@@ -223,7 +224,7 @@
     <canvas id="dive-canvas" class="sea-canvas"></canvas>
     <div class="is-top">
       <div id="dv-air" class="dv-air"><span>Luft</span><div class="hp-bar"><i id="dv-air-fill"></i></div></div>
-      <div class="bd-time-inline">🦪 <span id="dv-pearls">0</span></div>
+      <div class="bd-time-inline"><i class="ic-slot" data-ic="pearl"></i> <span id="dv-pearls">0</span></div>
     </div>
   </section>
 
@@ -242,32 +243,33 @@
   <div id="dialog-layer" class="overlay" hidden></div>
   <noscript><p class="card">Der Seefahrer braucht JavaScript.</p></noscript>
 
-  <script src="js/format.js?v=2026110808"></script>
-  <script src="js/state.js?v=2026110808"></script>
-  <script src="js/rank.js?v=2026110808"></script>
-  <script src="js/figure.js?v=2026110808"></script>
-  <script src="js/gk-import.js?v=2026110808"></script>
-  <script src="js/sound.js?v=2026110808"></script>
-  <script src="js/ui.js?v=2026110808"></script>
-  <script src="js/analytics.js?v=2026110808"></script>
-  <script src="js/ships.js?v=2026110808"></script>
-  <script src="js/cosmetics.js?v=2026110808"></script>
-  <script src="js/story.js?v=2026110808"></script>
-  <script src="js/lastday.js?v=2026110808"></script>
-  <script src="js/world.js?v=2026110808"></script>
-  <script src="js/trade.js?v=2026110808"></script>
-  <script src="js/voyage.js?v=2026110808"></script>
-  <script src="js/chapter.js?v=2026110808"></script>
-  <script src="js/sea.js?v=2026110808"></script>
-  <script src="js/harbor.js?v=2026110808"></script>
-  <script src="js/cabin.js?v=2026110808"></script>
-  <script src="js/battle.js?v=2026110808"></script>
-  <script src="js/pirates.js?v=2026110808"></script>
-  <script src="js/battle-view.js?v=2026110808"></script>
-  <script src="js/boarding.js?v=2026110808"></script>
-  <script src="js/island.js?v=2026110808"></script>
-  <script src="js/dive.js?v=2026110808"></script>
-  <script src="js/newgame.js?v=2026110808"></script>
-  <script src="js/main.js?v=2026110808"></script>
+  <script src="js/format.js?v=2026110811"></script>
+  <script src="js/icons.js?v=2026110811"></script>
+  <script src="js/state.js?v=2026110811"></script>
+  <script src="js/rank.js?v=2026110811"></script>
+  <script src="js/figure.js?v=2026110811"></script>
+  <script src="js/gk-import.js?v=2026110811"></script>
+  <script src="js/sound.js?v=2026110811"></script>
+  <script src="js/ui.js?v=2026110811"></script>
+  <script src="js/analytics.js?v=2026110811"></script>
+  <script src="js/ships.js?v=2026110811"></script>
+  <script src="js/cosmetics.js?v=2026110811"></script>
+  <script src="js/story.js?v=2026110811"></script>
+  <script src="js/lastday.js?v=2026110811"></script>
+  <script src="js/world.js?v=2026110811"></script>
+  <script src="js/trade.js?v=2026110811"></script>
+  <script src="js/voyage.js?v=2026110811"></script>
+  <script src="js/chapter.js?v=2026110811"></script>
+  <script src="js/sea.js?v=2026110811"></script>
+  <script src="js/harbor.js?v=2026110811"></script>
+  <script src="js/cabin.js?v=2026110811"></script>
+  <script src="js/battle.js?v=2026110811"></script>
+  <script src="js/pirates.js?v=2026110811"></script>
+  <script src="js/battle-view.js?v=2026110811"></script>
+  <script src="js/boarding.js?v=2026110811"></script>
+  <script src="js/island.js?v=2026110811"></script>
+  <script src="js/dive.js?v=2026110811"></script>
+  <script src="js/newgame.js?v=2026110811"></script>
+  <script src="js/main.js?v=2026110811"></script>
 </body>
 </html>

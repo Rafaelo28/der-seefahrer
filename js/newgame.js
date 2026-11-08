@@ -36,17 +36,17 @@ window.SF = window.SF || {};
 
   function gkCard(g) {
     const t = SF.gk.trophies(g.bossLevel);
-    const trophies = [t.kraken ? `🐙 Kraken-König ×${t.kraken}` : '', t.dragon ? `🐉 Seedrache ×${t.dragon}` : ''].filter(Boolean).join(' · ');
+    const trophies = [t.kraken ? `Kraken-König ×${t.kraken}` : '', t.dragon ? `Seedrache ×${t.dragon}` : ''].filter(Boolean).join(' · ');
     return `<div class="gk-card">
       <div class="gk-fig">${SF.figure.svg(g.fig || SF.figure.DEFAULT)}</div>
       <div class="gk-facts">
         <div class="gk-name">${SF.escape(g.name || 'Namenlos')}</div>
-        <div class="gk-title">${SF.rank.icon(g.rank)} ${SF.rank.name(g.rank)}</div>
+        <div class="gk-title">${SF.rank.name(g.rank)}</div>
         <ul>
-          <li>${SF.dublonenHTML(g.money)} <span class="muted">(${SF.formatLong(g.money)})</span></li>
-          ${g.ships.length ? `<li>⛵ Flotte: ${g.ships.map(SF.gk.shipName).join(', ')}</li>` : ''}
-          ${g.bossLevel ? `<li>⚔️ Boss-Stufe ${SF.formatInt(g.bossLevel)}${trophies ? ` · ${trophies}` : ''}</li>` : ''}
-          ${g.maps ? `<li>🗺️ ${SF.formatNumber(g.maps)} Schatzkarten</li>` : ''}
+          <li>${SF.icon('coin')} ${SF.dublonenHTML(g.money)} <span class="muted">(${SF.formatLong(g.money)})</span></li>
+          ${g.ships.length ? `<li>${SF.icon('ship')} Flotte: ${g.ships.map(SF.gk.shipName).join(', ')}</li>` : ''}
+          ${g.bossLevel ? `<li>${SF.icon('trophy')} Boss-Stufe ${SF.formatInt(g.bossLevel)}${trophies ? ` · ${trophies}` : ''}</li>` : ''}
+          ${g.maps ? `<li>${SF.icon('map')} ${SF.formatNumber(g.maps)} Schatzkarten</li>` : ''}
         </ul>
       </div>
     </div>`;
@@ -186,7 +186,7 @@ window.SF = window.SF || {};
       renderFigure();
     });
     $('ng-presets').innerHTML = SF.figure.PRESETS.map((p, i) => `<button type="button" class="btn btn-small" data-preset="${i}">${p.name}</button>`).join('') +
-      '<button type="button" class="btn btn-small" data-preset="gk">Aus Gamble Klicker</button><button type="button" class="btn btn-small" data-preset="rnd">🎲 Zufall</button>';
+      `<button type="button" class="btn btn-small" data-preset="gk">Aus Gamble Klicker</button><button type="button" class="btn btn-small" data-preset="rnd">${SF.icon('dice')} Zufall</button>`;
     $('ng-presets').addEventListener('click', e => {
       const b = e.target.closest('[data-preset]');
       if (!b) return;

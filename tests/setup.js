@@ -22,6 +22,8 @@ global.localStorage = {
 const path = require('path');
 const R = path.join(__dirname, '..', 'js') + '/';
 const load = (...names) => names.forEach(n => require(R + n + '.js'));
+// Symbole braucht fast jede Anzeige: immer mitladen
+require(R + 'icons.js');
 
 let failed = 0;
 let passed = 0;

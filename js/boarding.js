@@ -336,9 +336,7 @@ window.SF = window.SF || {};
     ctx.beginPath();
     ctx.arc(d.x + d.w - 12, d.y + d.h / 2, 5, 0, Math.PI * 2);
     ctx.fill();
-    ctx.font = 'bold 28px system-ui, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('💰', d.x + d.w / 2, d.y - 8);
+    SF.icons.draw(ctx, 'chest', d.x + d.w / 2, d.y - 22, 34);
     // Piraten
     L.enemies.forEach(e => {
       if (!e.alive) return;

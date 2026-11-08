@@ -155,7 +155,7 @@ window.SF = window.SF || {};
         break;
       case 'grumble':
         SF.sound.play('grumble');
-        SF.ui.toast('🍽️ Die Crew murrt: „Wir haben Hunger, Käpt’n!“');
+        SF.ui.toast('Die Crew murrt: „Wir haben Hunger, Käpt’n!“');
         break;
       default:
         break;
@@ -179,7 +179,7 @@ window.SF = window.SF || {};
     SF.sound.play('discover');
     SF.story.log(`Entdeckt: ${p.name}`);
     if (!p.harbor) {
-      SF.ui.toast(`${p.icon} Entdeckt: <b>${p.name}</b>${reward ? ` · +${reward} Bernstein` : ''}`, 3500);
+      SF.ui.toast(`${SF.icon(p.icon)} Entdeckt: <b>${p.name}</b>${reward ? ` · +${reward} Bernstein` : ''}`, 3500);
       if (DISCOVER_TEXT[id]) {
         const gk = SF.state.gk && p.gk ? ' (ein Ziel deiner alten Flotte aus Gamble Klicker)' : '';
         setTimeout(() => SF.ui.tip(`<b>${p.name}</b>${gk}: ${DISCOVER_TEXT[id]}`, 8000), 400);
@@ -425,10 +425,11 @@ window.SF = window.SF || {};
       if (sp.x < -80 || sp.x > vw + 80 || sp.y < -60 || sp.y > vh + 60) return;
       if (isGoal) drawGoalRing(sp.x, sp.y, placeKnown(p));
       if (placeKnown(p)) {
-        ctx.font = '22px system-ui, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(p.icon, sp.x, sp.y - 2);
+        ctx.fillStyle = 'rgba(243, 230, 196, .85)';
+        ctx.beginPath();
+        ctx.arc(sp.x, sp.y - 2, 15, 0, Math.PI * 2);
+        ctx.fill();
+        SF.icons.draw(ctx, p.icon, sp.x, sp.y - 2, 22, '#2a1d10');
         label(p.name, sp.x, sp.y + 24, p.harbor);
       } else {
         label('? ' + p.name, sp.x, sp.y + 30, false);
@@ -441,10 +442,7 @@ window.SF = window.SF || {};
         if (!Wo.knownAt(pr.x, pr.y)) return;
         const sp = toScreen(pr.x, pr.y);
         if (sp.x < -40 || sp.x > vw + 40 || sp.y < -40 || sp.y > vh + 40) return;
-        ctx.font = '18px system-ui, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText('☠️', sp.x, sp.y - 30);
+        SF.icons.draw(ctx, 'skull', sp.x, sp.y - 30, 22);
       });
     }
   }
@@ -643,7 +641,7 @@ window.SF = window.SF || {};
     $('hud-food').classList.toggle('empty', s.food <= 0);
     $('hud-food').classList.toggle('low', s.food > 0 && s.food < 1.5);
     SF.setText($('hud-food-text'), `${SF.formatDecimal(s.food, 1, 1)} / ${st.food}`);
-    SF.setText($('hud-cargo'), `📦 ${SF.ships.cargoCount()} / ${st.hold}`);
+    SF.setHTML($('hud-cargo'), `${SF.icon('crate')}${SF.ships.cargoCount()} / ${st.hold}`);
     SF.setText($('hud-day'), `Tag ${SF.story.day()}`);
     // Wind: Pfeil zeigt, wohin der Wind weht
     const w = s.wind;
@@ -653,11 +651,11 @@ window.SF = window.SF || {};
       const rel = s.pos.dx * w.x + s.pos.dy * w.y;
       SF.setText($('hud-wind-text'), rel > 0.35 ? 'Rückenwind' : rel < -0.35 ? 'Gegenwind' : 'Seitenwind');
     }
-    SF.setHTML($('sea-goal'), SF.story.goalText() ? `🧭 ${SF.story.goalText()}` : '');
+    SF.setHTML($('sea-goal'), SF.story.goalText() ? `${SF.icon('compass')} ${SF.story.goalText()}` : '');
     $('sea-goal').hidden = !SF.story.goalText();
     const near = SF.world.placeNear(s.pos.x, s.pos.y, 130, p => p.harbor);
     $('sea-dock').hidden = !near;
-    if (near) SF.setHTML($('sea-dock'), `⚓ ${near.name} anlaufen`);
+    if (near) SF.setHTML($('sea-dock'), `${SF.icon('anchor')} ${near.name} anlaufen`);
     $('sea-stop').hidden = !SF.voyage.moving();
     // Insel mit Jump'n'Run in der Nähe? (nur wenn das Schiff steht)
     const isle = SF.island && !SF.voyage.moving() ? SF.world.placeNear(s.pos.x, s.pos.y, 170, p => !!SF.island.LEVELS[p.id]) : null;
@@ -665,8 +663,8 @@ window.SF = window.SF || {};
     const reef = SF.dive && !SF.voyage.moving() ? SF.world.placeNear(s.pos.x, s.pos.y, 170, p => p.id === 'reef') : null;
     $('sea-dive').hidden = !reef;
     $('hud-pearls').hidden = !s.pearls;
-    if (s.pearls) SF.setText($('hud-pearls'), `🦪 ${s.pearls}`);
-    if (isle) SF.setHTML($('sea-land'), `🏝️ ${isle.name}: an Land gehen`);
+    if (s.pearls) SF.setHTML($('hud-pearls'), `${SF.icon('pearl')}${s.pearls}`);
+    if (isle) SF.setHTML($('sea-land'), `${SF.icon('palm')} ${isle.name}: an Land gehen`);
   }
 
   // ---------- Bedienung ----------

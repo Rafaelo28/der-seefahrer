@@ -8,9 +8,9 @@ window.SF = window.SF || {};
   let tab = 'market';
 
   const HARBOR_ART = {
-    dublone: { icon: '🏛️', text: 'Der Hafen von Gamble Klicker. Seit dem Raub ist die Dublone nichts mehr wert – hier zahlt man jetzt mit Bernstein.' },
-    amberbay: { icon: '🐟', text: 'Ein Fischerdorf an der Bernsteinküste. Nach Stürmen glänzt der Strand golden vom angespülten Bernstein.' },
-    smuggler: { icon: '🏴‍☠️', text: 'Ein Nest aus Holzhütten und Spelunken. Wer hier fragt, woher die Ware kommt, bekommt keine Antwort.' },
+    dublone: { icon: 'anchor', scene: 'hafen', text: 'Der Hafen von Gamble Klicker. Seit dem Raub ist die Dublone nichts mehr wert – hier zahlt man jetzt mit Bernstein.' },
+    amberbay: { icon: 'fish', scene: 'fischer', text: 'Ein Fischerdorf an der Bernsteinküste. Nach Stürmen glänzt der Strand golden vom angespülten Bernstein.' },
+    smuggler: { icon: 'skull', scene: 'schmuggler', text: 'Ein Nest aus Holzhütten und Spelunken. Wer hier fragt, woher die Ware kommt, bekommt keine Antwort.' },
   };
 
   function open(id) {
@@ -50,13 +50,14 @@ window.SF = window.SF || {};
     const p = SF.world.placeById[harbor];
     const art = HARBOR_ART[harbor] || {};
     const st = SF.ships.stats();
-    SF.setText($('harbor-icon'), art.icon || '⚓');
+    SF.setHTML($('harbor-icon'), SF.icon(art.icon || 'anchor'));
+    SF.setHTML($('harbor-banner'), SF.story.ART[art.scene || 'hafen']());
     SF.setText($('harbor-name'), p.name);
     SF.setHTML($('harbor-text'), art.text || '');
     SF.setHTML($('harbor-stats'), `<span>${SF.amberHTML(s.amber)}</span>
-      <span>🛢️ ${SF.formatDecimal(s.food, 1, 1)} / ${st.food}</span>
-      <span>📦 ${SF.ships.cargoCount()} / ${st.hold}</span>
-      <span>🛡️ ${SF.ships.hullNow()} / ${SF.ships.hullMax()}</span>
+      <span>${SF.icon('barrel')}${SF.formatDecimal(s.food, 1, 1)} / ${st.food}</span>
+      <span>${SF.icon('crate')}${SF.ships.cargoCount()} / ${st.hold}</span>
+      <span>${SF.icon('shield')}${SF.ships.hullNow()} / ${SF.ships.hullMax()}</span>
       <span class="muted">Tag ${SF.story.day()}</span>`);
     document.querySelectorAll('.harbor-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
     const goal = SF.story.goal() === harbor;
@@ -76,7 +77,7 @@ window.SF = window.SF || {};
       const have = s.cargo[g.id] || 0;
       const why = T.whyNotBuy(harbor, g.id);
       return `<div class="good">
-        <div class="good-name"><span class="good-icon">${g.icon}</span><b>${g.name}</b><span class="muted small">an Bord: ${have}</span></div>
+        <div class="good-name"><span class="good-icon">${SF.icon(g.icon)}</span><b>${g.name}</b><span class="muted small">an Bord: ${have}</span></div>
         <button type="button" class="btn good-buy" data-buy="${g.id}" ${why ? 'disabled' : ''} title="${why}">Kaufen<br>${SF.amberHTML(T.buyPrice(harbor, g.id))}</button>
         <button type="button" class="btn good-sell" data-sell="${g.id}" ${have ? '' : 'disabled'}>Verkaufen<br>${SF.amberHTML(T.sellPrice(harbor, g.id))}</button>
       </div>`;
@@ -112,7 +113,7 @@ window.SF = window.SF || {};
       const lvl = s.ship[u.id] || 0;
       const cost = SF.ships.upgradeCost(u.id);
       return `<div class="yard-row">
-        <span class="yard-icon">${u.icon}</span>
+        <span class="yard-icon">${SF.icon(u.icon)}</span>
         <div class="yard-info"><b>${u.name}</b> <span class="muted small">Stufe ${lvl} / ${u.max}</span><br><span class="small">${u.text}</span></div>
         <button type="button" class="btn btn-small" data-up="${u.id}" ${cost != null && SF.amber.can(cost) ? '' : 'disabled'}>${cost == null ? 'Voll' : SF.amberHTML(cost)}</button>
       </div>`;
@@ -121,14 +122,14 @@ window.SF = window.SF || {};
     const hullMax = SF.ships.hullMax();
     const rc = SF.ships.repairCost();
     const repair = `<div class="yard-row">
-        <span class="yard-icon">🔧</span>
+        <span class="yard-icon">${SF.icon('hammer')}</span>
         <div class="yard-info"><b>Rumpf reparieren</b> <span class="muted small">${hullNow} / ${hullMax}</span>
           <div class="hp-bar small-bar"><i style="transform:scaleX(${(hullNow / hullMax).toFixed(3)})"></i></div></div>
         <button type="button" class="btn btn-small" data-repair="1" ${rc > 0 && SF.amber.can(rc) ? '' : 'disabled'}>${rc > 0 ? SF.amberHTML(rc) : 'Heil'}</button>
       </div>`;
     const cannonFull = s.ship.cannons >= st.cannonSlots;
     const cannons = `<div class="yard-row">
-        <span class="yard-icon">💣</span>
+        <span class="yard-icon">${SF.icon('cannon')}</span>
         <div class="yard-info"><b>Kanone</b> <span class="muted small">${st.cannons} / ${st.cannonSlots}</span><br><span class="small">Jede Kanone feuert bei jeder Breitseite mit</span></div>
         <button type="button" class="btn btn-small" data-cannon="1" ${!cannonFull && SF.amber.can(SF.ships.CANNON_PRICE) ? '' : 'disabled'}>${cannonFull ? 'Voll' : SF.amberHTML(SF.ships.CANNON_PRICE)}</button>
       </div>`;
@@ -142,7 +143,7 @@ window.SF = window.SF || {};
       else btn = `<button type="button" class="btn btn-small" data-ship="${x.id}" ${why ? 'disabled' : ''} title="${why}">${SF.amberHTML(SF.ships.tradeInPrice(x.id))}</button>`;
       return `<div class="ship-card ${mine ? 'mine' : ''}">
         ${SF.ships.sideSVG(x.id)}
-        <div><b>${x.name}</b><br><span class="small">📦 ${x.hold} · 🛢️ ${x.food} · 💣 ${x.cannons} · ⛵ ${x.speed}</span></div>
+        <div><b>${x.name}</b><br><span class="small stat-line">${SF.icon('crate')}${x.hold} ${SF.icon('barrel')}${x.food} ${SF.icon('cannon')}${x.cannons} ${SF.icon('wind')}${x.speed}</span></div>
         ${btn}
       </div>`;
     }).join('');
@@ -161,7 +162,7 @@ window.SF = window.SF || {};
     const pearls = SF.state.pearls || 0;
     const on = C.data().on;
     const swatch = x => {
-      if (x.slot === 'head') return `<span class="cos-swatch">${x.value || '–'}</span>`;
+      if (x.slot === 'head') return `<span class="cos-swatch">${x.value ? SF.icon(x.value) : '–'}</span>`;
       if (x.slot === 'wake' || x.slot === 'smoke') return `<span class="cos-swatch" style="background:rgb(${x.value})"></span>`;
       const def = x.slot === 'sail' ? SF.ships.type().sail : x.slot === 'hull' ? SF.ships.type().hull : '#16181d';
       return `<span class="cos-swatch" style="background:${x.value || def}"></span>`;
@@ -170,13 +171,13 @@ window.SF = window.SF || {};
       C.ITEMS.filter(x => x.slot === sl.id).map(x => {
         const owned = C.owns(x.id);
         const active = on[sl.id] === x.id;
-        const label = active ? '✔ an' : owned ? 'Anlegen' : `🦪 ${x.price}`;
+        const label = active ? `${SF.icon('check')} an` : owned ? 'Anlegen' : `${SF.icon('pearl')} ${x.price}`;
         return `<button type="button" class="cos-item ${active ? 'active' : ''}" data-cos="${x.id}" ${!owned && pearls < x.price ? 'disabled' : ''}>
           ${swatch(x)}<span class="cos-name">${x.name}</span><span class="cos-price">${label}</span></button>`;
       }).join('')}</div></div>`).join('');
     return `<h3>Laden</h3>
       <div class="yard-ship">${SF.ships.sideSVG(SF.ships.type().id, C.shipColors())}<div><b>Dein Schiff</b><br>
-        <span class="small">Du hast <b>🦪 ${pearls} Perlen</b>. Perlen findest du beim Tauchen am Korallenriff.</span></div></div>
+        <span class="small">Du hast <b>${SF.icon('pearl')} ${pearls} Perlen</b>. Perlen findest du beim Tauchen am Korallenriff.</span></div></div>
       ${rows}`;
   }
 

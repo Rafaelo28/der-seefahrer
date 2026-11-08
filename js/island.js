@@ -285,7 +285,7 @@ window.SF = window.SF || {};
     const rec = (SF.state.islands || {})[id];
     SF.setText($('is-best'), rec && rec.best ? `Bestzeit ${SF.formatDecimal(rec.best, 1, 1)} s` : '');
     SF.track('seefahrer-insel-' + id);
-    SF.ui.tipOnce('island', 'Tipp auf einen <b>Hakenring</b> ⭕ – dein Enterhaken fliegt hin und du schwingst! Mit <b>Springen</b> lässt du los. Lauf bis zur <b>Schatzkiste</b>.', 9000);
+    SF.ui.tipOnce('island', 'Tipp auf einen goldenen <b>Hakenring</b> – dein Enterhaken fliegt hin und du schwingst! Mit <b>Springen</b> lässt du los. Lauf bis zur <b>Schatzkiste</b>.', 9000);
   }
 
   // Maßstab: ganze Höhe (600) und mindestens 900 in der Breite sichtbar; der Boden sitzt unten am Rand
@@ -317,7 +317,7 @@ window.SF = window.SF || {};
       SF.save();
       setTimeout(async () => {
         await SF.ui.dialog(won ? {
-          title: '💰 Schatz gefunden!',
+          title: `${SF.icon('chest')} Schatz gefunden!`,
           html: `<p>In der Kiste: ${SF.amberHTML(r.amber)}${r.first ? '' : ' <span class="muted small">(beim ersten Mal war mehr drin)</span>'}.</p>
             <p>Zeit: <b>${SF.formatDecimal(r.secs, 1, 1)} s</b>${r.best ? ' – <b>neue Bestzeit!</b>' : ''}</p>`,
           buttons: [{ label: 'Zurück aufs Schiff', value: true, kind: 'primary' }],

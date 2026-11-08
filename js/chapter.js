@@ -21,7 +21,7 @@ window.SF = window.SF || {};
     const b = SF.trade.best(g.id);
     if (b.cheap.h === b.dear.h) return '';
     const P = SF.world.placeById;
-    return `Man erzählt sich: ${g.icon} <b>${g.name}</b> gibt es gerade in <b>${P[b.cheap.h].name}</b> für ${SF.amberHTML(b.cheap.buy)} –
+    return `Man erzählt sich: ${SF.icon(g.icon)} <b>${g.name}</b> gibt es gerade in <b>${P[b.cheap.h].name}</b> für ${SF.amberHTML(b.cheap.buy)} –
       in <b>${P[b.dear.h].name}</b> zahlen sie ${SF.amberHTML(b.dear.sell)} dafür.`;
   }
 
@@ -56,7 +56,7 @@ window.SF = window.SF || {};
         out.push({ who: 'ede', text: have >= 3
           ? 'Ist das … Salz? Drei Kisten? Her damit!'
           : `Na, ${name()}? Wo bleibt mein Salz? <b>3 Kisten</b> will ich sehen. Du hast ${have}. In Port Dublone ist Salz billig.`,
-          action: { id: 'ede-salt', label: '🧂 3 Kisten Salz geben', disabled: have < 3 } });
+          action: { id: 'ede-salt', label: `${SF.icon('salt')} 3 Kisten Salz geben`, disabled: have < 3 } });
       } else {
         out.push({ who: 'ede', text: 'Rum und Gewürze, billig wie nirgends. Frag nicht, woher. Und erzähl keinem, dass du mich kennst.' });
       }
