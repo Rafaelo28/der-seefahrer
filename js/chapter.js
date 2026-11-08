@@ -13,7 +13,7 @@ window.SF = window.SF || {};
     ede: { name: 'Einauge Ede', fig: '0.2.1.4.2.4.3' },
     bruno: { name: 'Bootsmann Bruno', role: 'Bootsmann', fig: '2.9.0.2.0.0.0' },
     jan: { name: 'Schiffsjunge Jan', role: 'Schiffsjunge', fig: '0.6.6.5.4.6.0' },
-    longjohn: { name: 'Long John', fig: '0.1.1.2.2.4.1' },
+    longjohn: { name: 'Long John', fig: '1.1.3.3.2.4.1' }, // Dreispitz, Monokel, Schnurrbart, Papagei
   };
 
   // Crew-Mitglieder sprechen auch in den Kneipen (js/crew.js)

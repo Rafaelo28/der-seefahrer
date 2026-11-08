@@ -162,6 +162,9 @@ window.SF = window.SF || {};
     Object.assign({ id: 'volcano', name: 'Vulkaninsel', icon: 'volcano', gk: true, reward: 30 }, coast('volcano', -0.85, 0.5)),
     { id: 'ice', name: 'Eismeer', icon: 'ice', gk: true, reward: 40, x: 1500, y: 330 },
     Object.assign({ id: 'dragon', name: 'Drachenküste', icon: 'dragon', gk: true, reward: 50 }, coast('dragon', -0.75, -0.65)),
+    // Finale und Geheimnis: auf offener See (open), das Bermuda-Dreieck ist versteckt (erst nach dem Besuch auf der Karte)
+    { id: 'mist', name: 'Nebelmeer', icon: 'skull', open: true, x: 3050, y: 1250 },
+    { id: 'bermuda', name: 'Bermuda-Dreieck', icon: 'compass', open: true, hidden: true, x: 450, y: 2300 },
   ];
   const placeById = Object.fromEntries(PLACES.map(p => [p.id, p]));
   const START = placeById.dublone;

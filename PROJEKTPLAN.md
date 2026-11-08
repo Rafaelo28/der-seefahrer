@@ -279,7 +279,14 @@ grünen Tests, einem Pull Request nach `main` und dem Merge.
 - [x] **4.4 Cosmetics-Laden** (vorgezogen, damit Perlen gleich etwas wert sind): Segel, Rumpf, Flagge, Galionsfigur
       (Meerjungfrau, John Pork, Drache, Krake), Kielwasser, Kanonenrauch – für Perlen, im Laden jedes Hafens.
       Zu sehen auf der Seekarte, in der Schlacht, in Werft und Kajüte. *Später: Muster für Segel.*
-- [ ] **4.5 Endkampf und Abspann**, danach Schwer-Modus und Geheimnisse für 100 %.
+- [x] **4.5 Finale:** Im **Nebelmeer** im Osten (Nebelbänke auf der Karte) taucht der **Fliegende Holländer** auf – Long
+      Johns Geisterschiff. Er sinkt nicht, man muss ihn entern; auf dem nächtlichen Deck kämpft eine Skelett-Crew, vor der
+      Kajüte steht **Long John** (drei Treffer), erst dann geht die Tür auf. Ende als Bildergeschichte (Long John gibt
+      auf, die Goldene Dublone kommt zurück in den Tresor, Fest in Port Dublone), danach **Abspann** mit der eigenen
+      Statistik. Das Geisterschiff gehört dir.
+- [x] **4.6 Nach dem Ende:** **Schwer-Modus** (stärkere Piraten, Proviant reicht kürzer, weniger Zeit an Land und beim
+      Entern) – wählbar beim nächsten neuen Abenteuer (gemerkt in `der-seefahrer-meta`). **10 Geheimnisse für 100 %**
+      in der Kajüte, darunter das versteckte **Bermuda-Dreieck** im Südwesten (der Kompass dreht sich, 10 Perlen).
 
 ### Stufe 5 – Online mit Freunden
 

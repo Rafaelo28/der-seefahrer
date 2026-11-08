@@ -64,6 +64,7 @@ window.SF = window.SF || {};
       </div>
       <div class="card"><h3>${SF.icon('compass')} Auftrag</h3><p>${SF.story.goalText() || 'Folge der Spur des Diebes!'}</p></div>
       ${traitorHTML()}
+      ${secretsHTML()}
       <div class="cabin-grid">
         <div class="card"><h3>${SF.icon('trophy')} Trophäen</h3>${trophies}</div>
         <div class="card"><h3>${SF.icon('ship')} Alte Flotte</h3>${fleet}</div>
@@ -100,6 +101,18 @@ window.SF = window.SF || {};
     $('cabin-body').querySelectorAll('[data-accuse]').forEach(b => b.addEventListener('click', () => accuse(b.dataset.accuse)));
     $('cabin-import').addEventListener('click', importCode);
     $('cabin-title').addEventListener('click', () => { SF.save(); SF.newgame.showTitle(); });
+  }
+
+  // Geheimnisse für 100 % (nach dem Ende besonders wichtig, vorher schon sichtbar)
+  function secretsHTML() {
+    if (!SF.finale) return '';
+    SF.finale.check(true);
+    const F = SF.finale;
+    const rows = F.SECRETS.map(x => `<li class="${F.has(x.id) ? 'found' : ''}">${SF.icon(F.has(x.id) ? 'star' : 'lock')}
+      <span>${F.has(x.id) ? x.name : `??? <span class="muted small">${x.hint || ''}</span>`}</span></li>`).join('');
+    return `<div class="card"><h3>${SF.icon('star')} Geheimnisse – ${F.percent()} %${SF.state.hard ? ' <span class="tag tag-hard">Schwer-Modus</span>' : ''}</h3>
+      <div class="secret-bar"><i style="transform:scaleX(${(F.count() / F.SECRETS.length).toFixed(3)})"></i></div>
+      <ul class="clue-list secret-list">${rows}</ul></div>`;
   }
 
   // Kapitel 3: Hinweise und Anklage

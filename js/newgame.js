@@ -124,7 +124,7 @@ window.SF = window.SF || {};
     </div>`).join('');
   }
 
-  function start() {
+  async function start() {
     const name = $('ng-name').value.replace(/\s+/g, ' ').trim().slice(0, 16);
     if (!name) {
       SF.sound.play('denied');
@@ -132,11 +132,21 @@ window.SF = window.SF || {};
       $('ng-name').focus();
       return;
     }
+    // Nach dem ersten Durchspielen: normal oder schwer?
+    let hard = false;
+    if (SF.meta && SF.meta.hardUnlocked()) {
+      hard = await SF.ui.dialog({
+        title: 'Wie schwer soll es werden?',
+        html: `<p><b>Schwer-Modus:</b> stärkere Piraten (mehr Rumpf, zielen besser), Proviant reicht kürzer, weniger Zeit an Land und beim Entern.</p>`,
+        buttons: [{ label: 'Normal', value: false }, { label: `${SF.icon('skull')} Schwer`, value: true, kind: 'danger' }],
+      });
+    }
     const keep = { settings: SF.state.settings };
     SF.state = SF.createDefaultState();
     SF.state.settings = keep.settings;
     SF.state.gk = pending;
     SF.state.started = true;
+    SF.state.hard = !!hard;
     SF.state.captain = { name, fig: SF.figure.allowed(figCode, pending) };
     SF.story.setStep('prolog', pending
       ? `Kapitän ${name} (${SF.rank.title(pending.rank)}) kommt aus Gamble Klicker nach Port Dublone.`

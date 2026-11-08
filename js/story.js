@@ -21,7 +21,8 @@ window.SF = window.SF || {};
     'find-ice': { goal: 'ice', text: 'Folge der Karte mit dem Kreuz ins Eismeer im Norden und geh dort an Land.' },
     traitor: { text: () => `Jemand an Bord verrät deinen Kurs an Long John! Hinweise: ${SF.chapter ? SF.chapter.clueCount() : 0} von 3 – frag in den Kneipen herum. Anklagen kannst du in der Kajüte.` },
     'find-dragon': { goal: 'dragon', text: 'Fiete hat geredet: Long Johns Versteck liegt an der Drachenküste im Südosten. Geh dort an Land!' },
-    finale: { text: 'Long John ist mit dem Fliegenden Holländer ins Nebelmeer geflohen … (das Finale folgt)' },
+    finale: { goal: 'mist', text: 'Long John ist mit dem Fliegenden Holländer ins Nebelmeer im Osten geflohen. Segle hinterher!' },
+    done: { text: '' }, // durchgespielt: freies Segeln, Geheimnisse für 100 %
   };
 
   const step = () => SF.state.story.step;
@@ -226,6 +227,34 @@ window.SF = window.SF || {};
       <path d="M30 150 H250" stroke="#4a3520" stroke-width="5"/>
       <g class="sc-bob">${ship('brig', 290, 110, 90, { '#f4efe0': '#4a4a4a' })}</g>
       ${[[90, 146], [170, 146]].map(([x, y]) => `<path d="M${x} ${y - 14} v14" stroke="#4a3520" stroke-width="2"/><circle cx="${x}" cy="${y - 16}" r="5" fill="#ffd25e" class="flicker"/>`).join('')}
+    </svg>`,
+
+    // Finale: Long John besiegt auf dem Deck des Holländers, die Goldene Dublone leuchtet
+    sieg: () => `${svgOpen}
+      <defs><radialGradient id="sc-v-glow"><stop offset="0" stop-color="#ffe58a" stop-opacity=".9"/><stop offset="1" stop-color="#ffe58a" stop-opacity="0"/></radialGradient></defs>
+      <rect width="400" height="240" fill="#1a2430"/>
+      <g class="sc-drift"><ellipse cx="100" cy="60" rx="160" ry="20" fill="#cfd8e8" opacity=".12"/><ellipse cx="320" cy="90" rx="140" ry="16" fill="#cfd8e8" opacity=".1"/></g>
+      ${[0, 1, 2, 3, 4, 5, 6].map(i => `<rect x="0" y="${150 + i * 13}" width="400" height="12" fill="${i % 2 ? '#3a4450' : '#44505c'}"/>`).join('')}
+      <rect x="320" y="0" width="14" height="160" fill="#2a3440"/>
+      <path d="M250 10 Q320 30 390 14 L384 120 Q320 104 256 126 Z" fill="#9ab8d8" opacity=".55"/>
+      ${fig('1.1.3.3.2.4.1', 70, 120, 90)}
+      ${fig(SF.figure.mine(), 210, 108, 100)}
+      <circle cx="150" cy="120" r="44" fill="url(#sc-v-glow)" class="sc-glow"/>
+      <g class="sc-bob">${coin(150, 118, 18)}</g>
+    </svg>`,
+
+    // Fest in Port Dublone mit Feuerwerk
+    fest: () => `${svgOpen}
+      <rect width="400" height="240" fill="#141c34"/>
+      ${[[80, 50, '#f5c542'], [200, 34, '#e86a7a'], [320, 56, '#6ad0e8'], [140, 80, '#9ae86a'], [270, 90, '#f0a030']].map(([x, y, c], i) => `<g class="sc-twinkle" style="animation-delay:${i * 0.35}s">
+        ${[0, 1, 2, 3, 4, 5, 6, 7].map(k => `<path d="M${x} ${y} l${Math.round(Math.cos(k * 0.785) * 22)} ${Math.round(Math.sin(k * 0.785) * 22)}" stroke="${c}" stroke-width="3" stroke-linecap="round"/>`).join('')}</g>`).join('')}
+      ${houses(176, true)}
+      <rect x="140" y="110" width="120" height="66" fill="#e6d3a8"/>
+      <path d="M132 110 L200 80 L268 110 Z" fill="#d4a017" stroke="#8a6508" stroke-width="2"/>
+      ${coin(200, 98, 12)}
+      <rect x="0" y="176" width="400" height="64" fill="#1d4e6e"/>
+      ${[['0.3.7.3.7.0.5', 20], ['2.10.0.0.4.7.0', 90], ['1.6.0.1.0.7.0', 250], ['1.2.0.0.0.8.0', 320]].map(([c, x]) => fig(c, x, 172, 66)).join('')}
+      ${fig(SF.figure.mine(), 160, 160, 80)}
     </svg>`,
 
     // Ablegen: das eigene Schiff auf See, der Klabautermann am Bug

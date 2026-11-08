@@ -69,7 +69,7 @@ window.SF = window.SF || {};
   function create(id) {
     const d = LEVELS[id];
     return {
-      id, d, t: 0, time: d.time, over: '',
+      id, d, t: 0, time: d.time * (SF.state && SF.state.hard ? 0.8 : 1), over: '',
       p: { x: d.start[0], y: d.start[1], vx: 0, vy: 0, ground: false, face: 1, hurt: 0, safe: { x: d.start[0], y: d.start[1] } },
       hook: null,      // { x, y, len } – Seil hängt an einem Ring
       throwFx: null,   // Wurf ins Leere (nur Anzeige)
@@ -351,6 +351,7 @@ window.SF = window.SF || {};
           buttons: [{ label: 'Zurück aufs Schiff', value: true, kind: 'primary' }],
         });
         if (won) SF.story.log(`${L.d.name}: Schatz gefunden (${SF.formatDecimal(r.secs, 1, 1)} s).`);
+        if (SF.finale) setTimeout(() => SF.finale.check(), 600);
         L = null;
         SF.sea.open();
       }, 600);

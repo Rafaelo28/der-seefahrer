@@ -32,6 +32,7 @@ window.SF = window.SF || {};
     render();
     SF.save();
     SF.track('seefahrer-hafen-' + id);
+    if (SF.finale) SF.finale.check();
     // Kapitel 3: Aus der Schiffskasse fehlt etwas
     const theft = SF.chapter ? SF.chapter.onDock(id) : '';
     if (theft) {

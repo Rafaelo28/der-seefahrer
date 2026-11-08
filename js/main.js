@@ -95,6 +95,7 @@ window.SF = window.SF || {};
     if (SF.island) SF.island.bind();
     if (SF.dive) SF.dive.bind();
     $('soon-title').addEventListener('click', () => SF.newgame.showTitle());
+    $('credits-done').addEventListener('click', () => { SF.sound.play('horn'); SF.sea.open(); });
     syncSoundButtons();
     // Speichern beim Verlassen (Tab wechseln, App schließen, Neuladen)
     const saveNow = () => { if (SF.state.started) SF.save(); };
