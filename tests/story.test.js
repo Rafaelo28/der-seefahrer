@@ -105,3 +105,42 @@ SF.state.captain.name = 'Testkapitän';
   assert(SF.crew.fleet().some(f => f.type === 'galleon') && SF.story.step() === 'traitor', 'Galeone gefunden, Kapitel 3 beginnt');
   assert(SF.chapter.onIsland('ice') === '', 'Nur einmal');
 }
+
+// ---------- Kapitel 3: Der Verräter ----------
+{
+  const C = SF.chapter;
+  assert(SF.story.step() === 'traitor' && SF.crew.has('fiete'), 'Kapitel 3 beginnt mit Fiete an Bord');
+  assert(SF.story.goalText().includes('0 von 3'), 'Ziel zeigt die Hinweise');
+  SF.state.amber = 200;
+  SF.state.seaTime = 1000;
+  const t1 = C.onDock('dublone');
+  assert(t1.includes('weißer Staub') && SF.state.amber === 180 && C.clue('flour'), 'Beim Anlegen fehlt Bernstein, erster Hinweis: Mehl');
+  assert(C.onDock('dublone') === '' && SF.state.amber === 180, 'Höchstens einmal am Tag');
+  SF.state.seaTime += SF.trade.DAY;
+  assert(C.onDock('amberbay') !== '' && SF.state.amber === 162 && SF.state.story.flags.stolen === 38, 'Am nächsten Tag wieder (gestohlen gesamt: 38)');
+  // Frieda und die Flaschenpost
+  const frieda = C.tavern('amberbay').find(t => t.who === 'frieda');
+  assert(frieda.action && frieda.action.id === 'clue-bottle', 'Frieda hat etwas gesehen');
+  C.act('amberbay', 'clue-bottle');
+  assert(C.clue('bottle') && C.clueCount() === 2, 'Zweiter Hinweis: Flaschenpost');
+  // Ede will Fisch
+  SF.state.cargo = { fish: 1 };
+  assert(C.tavern('smuggler').find(t => t.who === 'ede').action.disabled, 'Ede: zu wenig Fisch');
+  SF.state.cargo = { fish: 3 };
+  C.act('smuggler', 'clue-cook');
+  assert(C.clue('cook') && SF.state.cargo.fish === 1 && C.clueCount() === 3, 'Dritter Hinweis gegen 2 Fisch');
+  // Anklage
+  assert(C.suspects().includes('bruno') && C.suspects().includes('fiete') && C.suspects().includes('karla'), 'Verdächtige: Crew und Matrosen');
+  const wrong = C.accuse('bruno');
+  assert(!wrong.ok && SF.crew.has('fiete') && SF.story.step() === 'traitor', 'Falscher Verdacht ändert nichts');
+  const amber = SF.state.amber;
+  const right = C.accuse('fiete');
+  assert(right.ok && right.html.includes('Drachenküste') && !SF.crew.has('fiete'), 'Fiete war es – er muss von Bord');
+  assert(SF.state.amber === amber + 38, 'Das Gestohlene kommt zurück');
+  assert(SF.story.step() === 'find-dragon' && SF.story.goal() === 'dragon', 'Weiter zur Drachenküste');
+  assert(C.onDock('dublone') === '', 'Ohne Verräter fehlt nichts mehr');
+  // Drachenküste
+  SF.state.gk = { ships: ['sloop', 'frigate'] };
+  const d = C.onIsland('dragon');
+  assert(d.includes('Nebelmeer') && SF.crew.fleet().some(f => f.type === 'frigate') && SF.story.step() === 'finale', 'Long Johns Versteck: alte Fregatte zurück, weiter ins Nebelmeer');
+}

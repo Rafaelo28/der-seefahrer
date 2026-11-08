@@ -267,9 +267,12 @@ grünen Tests, einem Pull Request nach `main` und dem Merge.
       verrät uns jeden Kurs“. Ein Bot im Test schafft die Eisinsel.
 - [x] **4.1b Crew:** Kanonierin Karla (Schmugglerinsel, schneller nachladen) und Navigator Nils (Bernsteinbucht,
       schneller segeln) lassen sich ab Kapitel 2 anheuern. Crew in der Kajüte.
-- [ ] **4.2 Kapitel 3 „Der Verräter“:** Aus der Schiffskasse verschwindet Bernstein; drei Hinweise sammeln
-      (Mehlspuren an der Kasse, Frieda sah den Koch eine Flaschenpost werfen, Ede kennt Fiete als Long Johns Koch);
-      in der Kajüte den Verräter anklagen. Danach zur Drachenküste (Insel mit Feuer): Long Johns Versteck.
+- [x] **4.2 Kapitel 3 „Der Verräter“:** Nach dem Eismeer fehlt beim Anlegen Bernstein in der Schiffskasse (höchstens
+      einmal am Tag). Drei Hinweise: Mehlspuren an der Kasse, Frieda sah jemanden mit Schürze eine Flaschenpost werfen,
+      Ede kennt (gegen 2 Kisten Fisch) Long Johns alten Koch. In der Kajüte den Verräter anklagen (Crew plus Bootsmann
+      Bruno und Schiffsjunge Jan). Fiete gesteht, der gestohlene Bernstein kommt zurück. Danach an der **Drachenküste**
+      an Land (Insel mit vier Lava-Schluchten): Long Johns Versteck ist leer, ein Schiff der alten Flotte wartet, und
+      der Zettel verrät: Long John ist mit dem Fliegenden Holländer ins **Nebelmeer** geflohen.
 - [x] **4.3a Die alte Flotte:** Wiedergefundene Schiffe liegen in der Werft, Umsteigen kostet nichts (jedes Schiff
       behält Ausbau und Kanonen). Die Galeone aus dem Eis ist das erste. *Weitere Schiffe in Kapitel 3 und im Finale
       (das Geisterschiff ist der Fliegende Holländer).*

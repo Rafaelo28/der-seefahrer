@@ -63,6 +63,7 @@ window.SF = window.SF || {};
         </div>
       </div>
       <div class="card"><h3>${SF.icon('compass')} Auftrag</h3><p>${SF.story.goalText() || 'Folge der Spur des Diebes!'}</p></div>
+      ${traitorHTML()}
       <div class="cabin-grid">
         <div class="card"><h3>${SF.icon('trophy')} Trophäen</h3>${trophies}</div>
         <div class="card"><h3>${SF.icon('ship')} Alte Flotte</h3>${fleet}</div>
@@ -96,8 +97,38 @@ window.SF = window.SF || {};
       </div>`;
     $('cabin-sound').addEventListener('change', e => SF.sound.setEnabled(e.target.checked));
     $('cabin-export').addEventListener('click', exportCode);
+    $('cabin-body').querySelectorAll('[data-accuse]').forEach(b => b.addEventListener('click', () => accuse(b.dataset.accuse)));
     $('cabin-import').addEventListener('click', importCode);
     $('cabin-title').addEventListener('click', () => { SF.save(); SF.newgame.showTitle(); });
+  }
+
+  // Kapitel 3: Hinweise und Anklage
+  function traitorHTML() {
+    if (SF.story.step() !== 'traitor') return '';
+    const C = SF.chapter;
+    const list = Object.entries(C.CLUES).map(([id, text]) => `<li class="${C.clue(id) ? 'found' : ''}">${SF.icon(C.clue(id) ? 'check' : 'lock')}
+      <span>${C.clue(id) ? text : 'Noch nicht gefunden'}</span></li>`).join('');
+    const sus = C.suspects().map(id => { const p = C.who(id); return `<div class="suspect"><div class="crew-fig">${SF.figure.svg(p.fig)}</div>
+      <div><b>${p.name}</b><br><span class="muted small">${p.role || ''}</span></div>
+      <button type="button" class="btn btn-small" data-accuse="${id}">Anklagen</button></div>`; }).join('');
+    return `<div class="card traitor-card"><h3>${SF.icon('skull')} Der Verräter</h3>
+      <p>Jemand an Bord verrät deinen Kurs an Long John – und plündert die Schiffskasse. Hinweise: <b>${C.clueCount()} von 3</b></p>
+      <ul class="clue-list">${list}</ul>
+      <div class="crew-list">${sus}</div></div>`;
+  }
+
+  async function accuse(id) {
+    const C = SF.chapter;
+    const p = C.who(id);
+    if (C.clueCount() < 3) {
+      const ok = await SF.ui.confirm(`${p.name} anklagen?`, `<p>Du hast erst <b>${C.clueCount()} von 3</b> Hinweisen. Bist du dir sicher?</p>`, 'Anklagen', 'Lieber noch suchen');
+      if (!ok) return;
+    }
+    const r = C.accuse(id);
+    SF.sound.play(r.ok ? 'fanfare' : 'denied');
+    SF.save();
+    await SF.ui.dialog({ title: r.ok ? `${SF.icon('check')} Erwischt!` : 'Falscher Verdacht', html: r.html, buttons: [{ label: 'Weiter', value: true, kind: 'primary' }] });
+    render();
   }
 
   async function exportCode() {

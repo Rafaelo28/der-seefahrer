@@ -219,7 +219,8 @@ module.exports = async function (page, label, assert, shot) {
   await page.click('#dialog-layer .btn-primary');
   await page.waitForSelector('#screen-sea:not([hidden])');
   // Umsteigen auf die Galeone in der Werft
-  await page.evaluate(() => { SF.state.cargo = {}; SF.harbor.open('dublone'); });
+  // (heute schon bestohlen: kein Fenster „Schiffskasse“ beim Umsteigen)
+  await page.evaluate(() => { SF.state.cargo = {}; SF.state.story.flags.theftDay = SF.trade.day(); SF.state.story.flags.thefts = 1; SF.harbor.open('dublone'); });
   await page.click('.harbor-tab[data-tab="yard"]');
   await page.click('[data-swap="0"]');
   assert(await page.evaluate(() => SF.state.ship.type === 'galleon'), `${label}: auf die Galeone umgestiegen`);
@@ -229,4 +230,20 @@ module.exports = async function (page, label, assert, shot) {
   assert((await page.textContent('#cabin-body')).includes('Smutje Fiete'), `${label}: Fiete in der Kajüte`);
   await shot(page, `crew-${label}`);
   await noScroll('Kajüte mit Crew');
+
+  // Kapitel 3: Die Schiffskasse wird geplündert, Anklage in der Kajüte
+  await page.evaluate(() => { SF.state.story.step = 'traitor'; SF.state.amber = 300; SF.state.seaTime += 999; SF.harbor.open('amberbay'); });
+  await page.waitForSelector('#dialog-layer h2', { timeout: 3000 });
+  assert((await page.textContent('#dialog-layer')).includes('Schiffskasse'), `${label}: Bernstein fehlt`);
+  await page.click('#dialog-layer .btn-primary');
+  await page.click('#harbor-cabin');
+  await page.waitForSelector('[data-accuse="fiete"]');
+  await shot(page, `verraeter-${label}`);
+  await noScroll('Verräter');
+  await page.click('[data-accuse="fiete"]');
+  await page.click('#dialog-layer .btn-primary'); // „Anklagen“ trotz weniger Hinweise
+  await page.waitForSelector('#dialog-layer h2');
+  assert((await page.textContent('#dialog-layer h2')).includes('Erwischt'), `${label}: Fiete erwischt`);
+  await page.click('#dialog-layer .btn-primary');
+  assert(await page.evaluate(() => SF.state.story.step === 'find-dragon' && !SF.crew.has('fiete')), `${label}: weiter zur Drachenküste`);
 };

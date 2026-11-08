@@ -50,6 +50,17 @@ window.SF = window.SF || {};
       amber: [[730, 300], [1150, 320], [1510, 300], [2300, 370], [2700, 370]],
       chest: [2880, 430],
     },
+    dragon: {
+      name: 'Drachenküste', theme: 'dragon', w: 3800, time: 115, reward: 80,
+      start: [80, 380],
+      solids: [[0, 480, 520, 120], [860, 480, 380, 120], [1050, 360, 120, 20], [1620, 480, 300, 120], [2280, 480, 320, 120],
+        [2960, 480, 840, 120], [3200, 380, 140, 20]],
+      anchors: [[690, 185], [1430, 190], [2100, 190], [2780, 190]],
+      hazards: [[520, 520, 340, 80, 'lava'], [1240, 520, 380, 80, 'lava'], [1920, 520, 360, 80, 'lava'], [2600, 520, 360, 80, 'lava']],
+      crabs: [[950, 880, 1220], [1750, 1630, 1900], [2400, 2290, 2590], [3300, 2980, 3700]],
+      amber: [[690, 300], [1110, 320], [1430, 300], [2100, 300], [2780, 300], [3270, 340]],
+      chest: [3680, 480],
+    },
   };
 
   const overlap = (a, b) => a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
@@ -351,19 +362,19 @@ window.SF = window.SF || {};
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     const sky = ctx.createLinearGradient(0, 0, 0, vh);
     const theme = L.d.theme;
-    if (theme === 'volcano') { sky.addColorStop(0, '#4a2a3a'); sky.addColorStop(1, '#e8794a'); } else if (theme === 'ice') { sky.addColorStop(0, '#8ab4d8'); sky.addColorStop(1, '#e8f2fa'); } else { sky.addColorStop(0, '#6ab0e0'); sky.addColorStop(1, '#f4e6c0'); }
+    if (theme === 'volcano') { sky.addColorStop(0, '#4a2a3a'); sky.addColorStop(1, '#e8794a'); } else if (theme === 'dragon') { sky.addColorStop(0, '#2a1018'); sky.addColorStop(1, '#c84a2a'); } else if (theme === 'ice') { sky.addColorStop(0, '#8ab4d8'); sky.addColorStop(1, '#e8f2fa'); } else { sky.addColorStop(0, '#6ab0e0'); sky.addColorStop(1, '#f4e6c0'); }
     ctx.fillStyle = sky;
     ctx.fillRect(0, 0, vw, vh);
     // Hintergrund (langsamer verschoben): Berge bzw. Vulkan
     ctx.setTransform(dpr * sc, 0, 0, dpr * sc, -camX * 0.3 * sc * dpr, dpr * offY());
-    ctx.fillStyle = theme === 'volcano' ? '#3a2a2a' : theme === 'ice' ? '#f4faff' : '#8ac07a';
+    ctx.fillStyle = theme === 'volcano' ? '#3a2a2a' : theme === 'dragon' ? '#1e1418' : theme === 'ice' ? '#f4faff' : '#8ac07a';
     ctx.beginPath();
     ctx.moveTo(0, 480);
     for (let x = 0; x <= L.d.w; x += 400) ctx.lineTo(x + 200, L.d.theme === 'volcano' ? 160 + (x % 800 ? 60 : 0) : 300 + (x % 800 ? 40 : 0)), ctx.lineTo(x + 400, 480);
     ctx.closePath();
     ctx.fill();
     ctx.setTransform(dpr * sc, 0, 0, dpr * sc, -camX * sc * dpr, dpr * offY());
-    const lava = L.d.theme === 'volcano';
+    const lava = L.d.theme === 'volcano' || L.d.theme === 'dragon';
     // Gefahren
     L.hazards.forEach(h => {
       ctx.fillStyle = h.kind === 'lava' ? `rgb(${220 + Math.sin(time * 4) * 30},90,30)` : h.kind === 'ice' ? '#1e4a6e' : '#2a7ab0';
