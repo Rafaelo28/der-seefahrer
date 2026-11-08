@@ -19,12 +19,17 @@ window.SF = window.SF || {};
     end1: { text: 'Die Spur führt ins Eismeer …' }, // alte Spielstände: wird zu 'hire-cook' (SF.chapter.migrate)
     'hire-cook': { goal: 'dublone', text: 'Im Eismeer erfriert man ohne warmes Essen. In der Kneipe von Port Dublone sucht ein Schiffskoch Arbeit.' },
     'find-ice': { goal: 'ice', text: 'Folge der Karte mit dem Kreuz ins Eismeer im Norden und geh dort an Land.' },
-    traitor: { text: 'Jemand an Bord verrät deinen Kurs an Long John! Halte die Augen offen … (Kapitel 3 folgt)' },
+    traitor: { text: () => `Jemand an Bord verrät deinen Kurs an Long John! Hinweise: ${SF.chapter ? SF.chapter.clueCount() : 0} von 3 – frag in den Kneipen herum. Anklagen kannst du in der Kajüte.` },
+    'find-dragon': { goal: 'dragon', text: 'Fiete hat geredet: Long Johns Versteck liegt an der Drachenküste im Südosten. Geh dort an Land!' },
+    finale: { text: 'Long John ist mit dem Fliegenden Holländer ins Nebelmeer geflohen … (das Finale folgt)' },
   };
 
   const step = () => SF.state.story.step;
   const goal = () => (STEPS[step()] || {}).goal || '';
-  const goalText = () => (STEPS[step()] || {}).text || '';
+  const goalText = () => {
+    const t = (STEPS[step()] || {}).text || '';
+    return typeof t === 'function' ? t() : t;
+  };
 
   function setStep(id, logText) {
     SF.state.story.step = id;

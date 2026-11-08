@@ -32,6 +32,12 @@ window.SF = window.SF || {};
     render();
     SF.save();
     SF.track('seefahrer-hafen-' + id);
+    // Kapitel 3: Aus der Schiffskasse fehlt etwas
+    const theft = SF.chapter ? SF.chapter.onDock(id) : '';
+    if (theft) {
+      SF.save();
+      setTimeout(() => SF.ui.dialog({ title: `${SF.icon('chest')} Die Schiffskasse!`, html: theft, buttons: [{ label: 'Ich finde den Dieb!', value: true, kind: 'primary' }] }), 300);
+    }
     if (s.food < 1.5) setTimeout(() => SF.ui.tip('Dein Proviant ist knapp – kauf unter <b>Proviant</b> neue Fässer, bevor du ablegst.', 6000), 300);
     else SF.ui.tipOnce('harbor-first', 'Im <b>Markt</b> kaufst du Waren billig ein und verkaufst sie in einem anderen Hafen teurer. In der <b>Kneipe</b> hört man Neuigkeiten!', 8000);
   }

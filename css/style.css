@@ -718,6 +718,13 @@ body[data-screen="island"] .klabauter-tip { bottom: auto; top: calc(70px + var(-
 .crew-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
 .crew-member { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 12px; background: rgba(255, 255, 255, .45); }
 .crew-fig { flex: 0 0 64px; }
+.suspect { display: grid; grid-template-columns: 64px 1fr; grid-template-rows: auto auto; align-items: center; gap: 4px 10px; padding: 8px; border-radius: 12px; background: rgba(255, 255, 255, .45); }
+.suspect .crew-fig { grid-row: span 2; }
+.suspect .btn { justify-self: start; }
+.clue-list { list-style: none; padding: 0; margin: 8px 0 12px; }
+.clue-list li { display: flex; align-items: center; gap: 8px; padding: 4px 0; opacity: .6; }
+.clue-list li.found { opacity: 1; font-weight: 600; }
+.traitor-card { border-color: #8a1c1c; }
 .crew-fig svg { width: 64px; height: auto; display: block; }
 .fleet-list .ship-svg { width: 64px; height: auto; }
 .logbook { list-style: none; padding: 0; max-height: 260px; overflow-y: auto; margin: 0; }

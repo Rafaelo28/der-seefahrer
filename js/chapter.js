@@ -11,6 +11,9 @@ window.SF = window.SF || {};
     berta: { name: 'Bäckerin Berta', fig: '2.10.0.0.4.7.0' },
     frieda: { name: 'Fischerin Frieda', fig: '1.2.0.0.0.8.0' },
     ede: { name: 'Einauge Ede', fig: '0.2.1.4.2.4.3' },
+    bruno: { name: 'Bootsmann Bruno', role: 'Bootsmann', fig: '2.9.0.2.0.0.0' },
+    jan: { name: 'Schiffsjunge Jan', role: 'Schiffsjunge', fig: '0.6.6.5.4.6.0' },
+    longjohn: { name: 'Long John', fig: '0.1.1.2.2.4.1' },
   };
 
   // Crew-Mitglieder sprechen auch in den Kneipen (js/crew.js)
@@ -59,6 +62,10 @@ window.SF = window.SF || {};
         out.push({ who: 'frieda', text: `Ein Schiff mit <b>schwarzen Segeln</b>? Ja! Das lag vor drei Tagen hier und hat Proviant geholt.
           Bezahlt hat der Kapitän mit einer <b>goldenen Münze, so groß wie ein Teller</b>! Dann ist es nach <b>Südosten</b> gesegelt – zur Schmugglerinsel.`,
           action: { id: 'frieda-thanks', label: 'Danke, Frieda!' } });
+      } else if (step() === 'traitor' && !clue('bottle')) {
+        out.push({ who: 'frieda', text: `Du suchst jemanden, der heimlich Nachrichten verschickt? Neulich nachts hat einer von <b>deinem Schiff</b>
+          eine <b>Flaschenpost</b> ins Meer geworfen. Wer? Ich hab nur gesehen, dass er eine <b>Schürze</b> trug – und nach Zwiebeln roch.`,
+          action: { id: 'clue-bottle', label: 'Das merke ich mir!' } });
       } else {
         out.push({ who: 'frieda', text: 'Bei uns gibt es Fisch, so viel du willst. Nur Salz fehlt immer, um ihn haltbar zu machen. Und nach Stürmen findet man Bernstein am Strand!' });
       }
@@ -73,6 +80,11 @@ window.SF = window.SF || {};
           ? 'Ist das … Salz? Drei Kisten? Her damit!'
           : `Na, ${name()}? Wo bleibt mein Salz? <b>3 Kisten</b> will ich sehen. Du hast ${have}. In Port Dublone ist Salz billig.`,
           action: { id: 'ede-salt', label: `${SF.icon('salt')} 3 Kisten Salz geben`, disabled: have < 3 } });
+      } else if (step() === 'traitor' && !clue('cook')) {
+        const fish = s.cargo.fish || 0;
+        out.push({ who: 'ede', text: `Ein Verräter auf deinem Schiff? Ich kenne jeden, der je für Long John gearbeitet hat …
+          Aber umsonst rede ich nicht. Bring mir <b>2 Kisten Fisch</b> – du hast ${fish}. Die Bernsteinbucht hat Fisch genug.`,
+          action: { id: 'clue-cook', label: `${SF.icon('fish')} 2 Kisten Fisch geben`, disabled: fish < 2 } });
       } else {
         out.push({ who: 'ede', text: 'Rum und Gewürze, billig wie nirgends. Frag nicht, woher. Und erzähl keinem, dass du mich kennst.' });
       }
@@ -91,7 +103,7 @@ window.SF = window.SF || {};
     });
   }
 
-  const LATER = ['hire-cook', 'find-ice', 'traitor'];
+  const LATER = ['hire-cook', 'find-ice', 'traitor', 'find-dragon', 'finale'];
   const chapter2 = () => LATER.includes(step()) || !!SF.state.story.flags.chapter2;
 
   // Aktion in der Kneipe; gibt einen Text für die Meldung zurück (oder '')
@@ -102,6 +114,22 @@ window.SF = window.SF || {};
       SF.story.setStep('find-ice', 'Smutje Fiete ist an Bord. Mit warmer Suppe geht es ins Eismeer!');
       SF.sound.play('fanfare');
       return 'Fiete ist an Bord! Neues Ziel: das Eismeer im Norden.';
+    }
+    if (id === 'clue-bottle' && h === 'amberbay' && step() === 'traitor') {
+      addClue('bottle');
+      return 'Hinweis: Jemand mit Schürze wirft Flaschenpost ins Meer.';
+    }
+    if (id === 'clue-cook' && h === 'smuggler' && step() === 'traitor' && (s.cargo.fish || 0) >= 2) {
+      s.cargo.fish -= 2;
+      if (!s.cargo.fish) delete s.cargo.fish;
+      addClue('cook');
+      setTimeout(() => SF.ui.dialog({
+        title: 'Einauge Ede packt aus',
+        html: `<p>„Long Johns alter Schiffskoch? Na klar kenn ich den! Ein freundlicher Kerl, kocht die beste Fischsuppe der sieben Meere …
+          heißt <b>Fiete</b>. Hat jahrelang auf Long Johns Schiff gekocht. Wieso fragst du?“</p>`,
+        buttons: [{ label: 'Fiete …?!', value: true, kind: 'primary' }],
+      }), 200);
+      return '';
     }
     if (id.startsWith('hire-')) {
       const c = id.slice(5);
@@ -176,10 +204,89 @@ window.SF = window.SF || {};
         <p>L. J.? Das kann nur <b>Long John</b> sein – ${s.gk ? 'der Computer-Gegner, der in Gamble Klicker immer gegen dich verloren hat' : 'der Pirat, der in Port Dublone beim Würfeln immer verloren hat'}!
         Und „unser Mann an Bord“ … <b>Jemand aus deiner Crew ist ein Verräter!</b></p>`;
     }
+    if (id === 'dragon' && step() === 'find-dragon') {
+      // Zweites Schiff der alten Flotte: das beste aus Gamble Klicker, das man noch nicht hat (sonst Bernstein)
+      const order = ['frigate', 'brig', 'sloop'];
+      const want = s.gk ? order.find(t => s.gk.ships.includes(t) && s.ship.type !== t && !SF.crew.fleet().some(f => f.type === t)) : null;
+      const ship = want && SF.crew.addShip(want) ? want : '';
+      const amber = ship ? 0 : SF.amber.add(120);
+      SF.story.setStep('finale', 'An der Drachenküste: Long Johns Versteck ist leer – er ist mit dem Fliegenden Holländer ins Nebelmeer geflohen.');
+      SF.track('seefahrer-kapitel3-geschafft');
+      return `<p>Hinter dem Lavastrom liegt <b>Long Johns Höhle</b>. Kisten voller Beute aus Port Dublone –
+        ${ship ? `und im Wasser davor schaukelt <b>deine alte ${SF.ships.byId[ship].name} aus Gamble Klicker</b>! Sie liegt jetzt in deiner Werft.` : `und ${SF.amberHTML(amber)} gehören jetzt dir.`}</p>
+        <p>Aber Long John ist weg. An der Wand hängt ein Zettel: <i>„Zu spät, Landratte! Der Holländer bringt mich und die Goldene Dublone ins
+        <b>Nebelmeer</b>. Dort findet mich niemand. – L. J.“</i></p>`;
+    }
     if (id === 'ice' && step() === 'hire-cook') {
       return '<p class="muted small">Im Eis steckt irgendetwas Großes fest – aber ohne warmes Essen hält es deine Crew hier nicht lange aus. Hol erst den Schiffskoch aus Port Dublone.</p>';
     }
     return '';
+  }
+
+  // ---------- Kapitel 3: Der Verräter ----------
+
+  const CLUES = {
+    flour: 'Weißer Staub an der Schiffskasse – Mehl?',
+    bottle: 'Frieda sah jemanden mit Schürze nachts eine Flaschenpost werfen.',
+    cook: 'Einauge Ede: Long Johns alter Schiffskoch heißt Fiete.',
+  };
+  const clues = () => {
+    const f = SF.state.story.flags;
+    if (!f.clues || typeof f.clues !== 'object') f.clues = {};
+    return f.clues;
+  };
+  const clue = id => !!clues()[id];
+  const clueCount = () => Object.keys(CLUES).filter(clue).length;
+  function addClue(id) {
+    if (clue(id)) return false;
+    clues()[id] = true;
+    SF.story.log(`Hinweis: ${CLUES[id]}`);
+    SF.sound.play('discover');
+    return true;
+  }
+
+  // Wer steht unter Verdacht? Die Crew an Bord und zwei Matrosen
+  const suspects = () => ['fiete', 'bruno', 'jan'].concat(SF.crew.members().filter(id => id !== 'fiete'));
+
+  // Beim Anlegen: Aus der Schiffskasse fehlt Bernstein (höchstens einmal am Tag); gibt Text fürs Fenster zurück
+  function onDock() {
+    const s = SF.state;
+    const f = s.story.flags;
+    if (step() !== 'traitor' || !SF.crew.has('fiete')) return '';
+    const day = SF.trade.day();
+    if (f.theftDay === day && f.thefts) return '';
+    const n = Math.min(30, Math.floor(s.amber * 0.1));
+    if (n < 3) return '';
+    SF.amber.spend(n);
+    f.theftDay = day;
+    f.thefts = (f.thefts || 0) + 1;
+    f.stolen = (f.stolen || 0) + n;
+    const first = addClue('flour');
+    return `<p>Die Schiffskasse ist leichter als gestern: Es fehlen ${SF.amberHTML(n)}!</p>${first
+      ? '<p>Auf dem Deckel liegt feiner <b>weißer Staub</b>. Mehl? Wer an Bord hat mit Mehl zu tun …?</p>' : ''}
+      <p class="muted small">Sammle Hinweise in den Kneipen. In der Kajüte kannst du den Verräter anklagen.</p>`;
+  }
+
+  // Anklage in der Kajüte: { ok, html }
+  function accuse(id) {
+    const s = SF.state;
+    if (step() !== 'traitor' || !suspects().includes(id)) return { ok: false, html: '' };
+    const p = who(id);
+    if (id !== 'fiete') {
+      s.story.flags.wrong = (s.story.flags.wrong || 0) + 1;
+      return { ok: false, html: `<p><b>${p.name}</b> ist empört: „Ich? Niemals, Käpt’n!“ Und tatsächlich – in der Koje findest du nichts.</p>
+        <p class="muted small">Der Verräter ist noch an Bord. Sammle weitere Hinweise.</p>` };
+    }
+    const back = s.story.flags.stolen || 0;
+    if (back) SF.amber.add(back);
+    SF.crew.leave('fiete');
+    SF.story.setStep('find-dragon', 'Fiete war der Verräter! Er hat gestanden: Long Johns Versteck ist an der Drachenküste.');
+    SF.track('seefahrer-verraeter-gefunden');
+    return { ok: true, html: `<p>In Fietes Kombüse, unter einem Sack Mehl: <b>der gestohlene Bernstein</b>${back ? ` – ${SF.amberHTML(back)}` : ''} und ein Stapel
+      Flaschenpost-Zettel an „L. J.“. Fiete wird kreidebleich.</p>
+      <p>„Es tut mir leid, Käpt’n! Long John hat mir versprochen, ich bekomme ein eigenes Gasthaus, wenn ich ihm jeden Kurs verrate …
+      Sein Versteck ist an der <b>Drachenküste</b>, in einer Höhle hinter dem Lavastrom. Dort wartet er auf den <b>Fliegenden Holländer</b>!“</p>
+      <p>Fiete muss im nächsten Hafen von Bord. Der Proviant hält jetzt wieder normal – aber die Schiffskasse ist sicher.</p>` };
   }
 
   // Alte Spielstände: „Ende von Stufe 1“ wird zum Anfang von Kapitel 2
@@ -190,5 +297,5 @@ window.SF = window.SF || {};
     }
   }
 
-  SF.chapter = { PEOPLE, tavern, act, onDiscover, onIsland, migrate, rumor, who, hireable };
+  SF.chapter = { PEOPLE, CLUES, tavern, act, onDiscover, onIsland, onDock, accuse, suspects, clue, clueCount, addClue, migrate, rumor, who, hireable };
 })();
