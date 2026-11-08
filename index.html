@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Der Seefahrer</title>
+  <!-- Als App auf dem Home-Bildschirm (iPad/iPhone): Vollbild, eigenes Symbol -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Seefahrer">
+  <meta name="theme-color" content="#0b2233">
+  <meta name="format-detection" content="telephone=no">
+  <link rel="apple-touch-icon" href="icons/icon-180.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&display=swap">
+  <meta name="description" content="Der Seefahrer – ein Seefahrer-Abenteuer nach Gamble Klicker: Segle über die Seekarte, handle in Häfen und finde den Dieb der Goldenen Dublone. Nur Spielgeld.">
+  <meta name="author" content="Rafaelo28">
+  <!-- ?v=… ist die Spielversion: bei jedem Update erhöhen, damit Browser keine alten Dateien mischen -->
+  <link rel="stylesheet" href="css/style.css?v=2026110801">
+</head>
+<body data-screen="">
+
+  <!-- Titelbild -->
+  <section id="screen-title" class="screen" hidden>
+    <div class="title-sky">
+      <div class="title-box">
+        <div class="title-small">Ein Abenteuer nach Gamble Klicker</div>
+        <h1 class="title-logo">Der Seefahrer</h1>
+        <div class="title-buttons">
+          <button type="button" id="title-continue" class="btn btn-big" hidden>Weiterspielen</button>
+          <button type="button" id="title-new" class="btn btn-big btn-primary">Neues Abenteuer</button>
+          <button type="button" id="title-load" class="btn">Spielstand laden</button>
+        </div>
+        <div id="title-info" class="title-info"></div>
+      </div>
+      <button type="button" id="title-sound" class="icon-btn title-sound sound-toggle" aria-label="Ton an/aus">🔊</button>
+      <div class="title-sea" aria-hidden="true">
+        <div class="title-ship"></div>
+        <div class="title-wave w1"></div>
+        <div class="title-wave w2"></div>
+        <div class="title-wave w3"></div>
+      </div>
+    </div>
+    <p class="title-foot">Ein Spiel von Rafaelo28 · nur Spielgeld</p>
+  </section>
+
+  <!-- Neues Spiel: Übernahme aus Gamble Klicker und Kapitän -->
+  <section id="screen-newgame" class="screen page" hidden>
+    <div class="card" id="ng-import"></div>
+    <div class="card" id="ng-captain" hidden>
+      <h2>Dein Kapitän</h2>
+      <div class="ng-layout">
+        <div class="ng-preview">
+          <div id="ng-fig" class="ng-fig"></div>
+          <div id="ng-title" class="ng-title-tag"></div>
+        </div>
+        <div class="ng-form">
+          <label class="field">Name
+            <input id="ng-name" type="text" maxlength="16" autocomplete="off" autocapitalize="words" spellcheck="false" enterkeyhint="done" placeholder="Wie heißt du?">
+          </label>
+          <div id="ng-presets" class="ng-presets"></div>
+          <div id="ng-slots" class="ng-slots"></div>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button type="button" id="ng-back" class="btn">‹ Zurück</button>
+        <button type="button" id="ng-start" class="btn btn-primary btn-big">In See stechen!</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Bildergeschichte -->
+  <section id="screen-story" class="screen" hidden>
+    <div id="story-card" class="story-card">
+      <div id="story-picture" class="story-picture"></div>
+      <div class="story-panel">
+        <div id="story-text" class="story-text"></div>
+        <div class="story-buttons">
+          <button type="button" id="story-skip" class="btn btn-small">Überspringen</button>
+          <span id="story-count" class="muted small"></span>
+          <button type="button" id="story-next" class="btn btn-primary">Weiter ›</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Der letzte Tag der Dublone -->
+  <section id="screen-lastday" class="screen" hidden>
+    <div class="ld-head">
+      <div class="ld-title">Der letzte Tag der Dublone</div>
+      <div class="ld-clock"><span id="ld-time">60</span><small>s</small></div>
+    </div>
+    <div class="ld-bar"><div id="ld-bar-fill" class="ld-bar-fill"></div><span id="ld-bar-text" class="ld-bar-text"></span></div>
+    <div class="ld-wallet">Deine Dublonen: <b id="ld-money"></b></div>
+    <div id="ld-bread" class="ld-bread"></div>
+    <div id="ld-grid" class="ld-grid"></div>
+    <div class="ld-foot">
+      <div id="ld-myship" class="ld-myship"></div>
+      <button type="button" id="ld-done" class="btn">Fertig – ablegen</button>
+    </div>
+    <div id="ld-intro" class="overlay" hidden>
+      <div class="dialog">
+        <h2>Der letzte Tag der Dublone</h2>
+        <p>Du hast <span id="ld-intro-money"></span>. Morgen sind sie nichts mehr wert!</p>
+        <ul>
+          <li>Du hast <b>60 Sekunden</b>.</li>
+          <li>Alle <b>5 Sekunden</b> verdoppeln sich die Preise.</li>
+          <li>Kauf ein <b>Schiff</b>, <b>Kanonen</b>, <b>Proviant</b> und <b>Tuch</b> zum Handeln. Schnell sein lohnt sich!</li>
+        </ul>
+        <button type="button" id="ld-go" class="btn btn-primary btn-big">Los!</button>
+      </div>
+    </div>
+    <div id="ld-result" class="overlay" hidden></div>
+  </section>
+
+  <!-- Platzhalter für Teile, die noch kommen -->
+  <section id="screen-soon" class="screen page" hidden>
+    <div class="card">
+      <h2>Fortsetzung folgt …</h2>
+      <div id="soon-text"></div>
+      <div class="btn-row"><button type="button" id="soon-title" class="btn">Zum Titelbild</button></div>
+    </div>
+  </section>
+
+  <!-- Überall: Meldung, Fenster, Klabautermann -->
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <div id="klabauter-tip" class="klabauter-tip" hidden></div>
+  <div id="dialog-layer" class="overlay" hidden></div>
+  <noscript><p class="card">Der Seefahrer braucht JavaScript.</p></noscript>
+
+  <script src="js/format.js?v=2026110801"></script>
+  <script src="js/state.js?v=2026110801"></script>
+  <script src="js/rank.js?v=2026110801"></script>
+  <script src="js/figure.js?v=2026110801"></script>
+  <script src="js/gk-import.js?v=2026110801"></script>
+  <script src="js/sound.js?v=2026110801"></script>
+  <script src="js/ui.js?v=2026110801"></script>
+  <script src="js/analytics.js?v=2026110801"></script>
+  <script src="js/ships.js?v=2026110801"></script>
+  <script src="js/story.js?v=2026110801"></script>
+  <script src="js/lastday.js?v=2026110801"></script>
+  <script src="js/newgame.js?v=2026110801"></script>
+  <script src="js/main.js?v=2026110801"></script>
+</body>
+</html>
