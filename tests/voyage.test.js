@@ -125,3 +125,24 @@ const run = (secs, dt = 0.05) => { const ev = []; for (let t = 0; t < secs; t +=
   const ev2 = run(3);
   assert(ev2.some(e => e.type === 'arrive' && e.place === 'amberbay'), 'Am Hafen angekommen');
 }
+
+// ---------- Jede Route lässt sich wirklich absegeln (kein Hängenbleiben an Küsten) ----------
+{
+  const P = Wo.PLACES;
+  P.forEach(from => P.forEach(to => {
+    if (from === to) return;
+    const s = fresh();
+    s.pos.x = from.x;
+    s.pos.y = from.y;
+    s.food = 99;
+    const r = Wo.route(from.x, from.y, to.x, to.y);
+    if (!r) { assert(false, `Route ${from.id} → ${to.id}`); return; }
+    V.setCourse(r);
+    let land = false;
+    for (let t = 0; t < 400 && V.moving(); t += 0.1) {
+      if (V.step(0.1).some(e => e.type === 'land')) land = true;
+    }
+    const d = Math.hypot(s.pos.x - to.x, s.pos.y - to.y);
+    assert(!land && d < 8, `${from.id} → ${to.id}: angekommen ohne Küste (${Math.round(d)})`);
+  }));
+}

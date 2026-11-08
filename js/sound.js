@@ -11,7 +11,7 @@ window.SF = window.SF || {};
   const lastPlayed = {};
 
   // Mindestabstand (ms) zwischen zwei gleichen Sounds, damit es nicht knattert
-  const THROTTLE = { tap: 40, coin: 50, tick: 25, page: 120, splash: 120, amber: 60 };
+  const THROTTLE = { tap: 40, coin: 50, tick: 25, page: 120, splash: 120, amber: 60, cannon: 60, hit: 50, hurt: 80, jump: 80 };
 
   const settings = () => SF.state.settings;
 
@@ -169,6 +169,30 @@ window.SF = window.SF || {};
     grumble(t) {
       noise(t, 0.5, { freq: 300, q: 2, gain: 0.25, attack: 0.1 });
       tone(95, t, 0.5, { type: 'sawtooth', gain: 0.03, slideTo: 80 });
+    },
+    // Kanone feuert
+    cannon(t) {
+      tone(90, t, 0.35, { type: 'sine', gain: 0.4, slideTo: 40 });
+      noise(t, 0.3, { filter: 'lowpass', freq: 900, sweepTo: 200, gain: 0.5 });
+    },
+    // Treffer beim Gegner: Holz splittert
+    hit(t) {
+      noise(t, 0.12, { freq: 1800, q: 0.8, gain: 0.35 });
+      tone(160, t, 0.18, { type: 'square', gain: 0.06, slideTo: 90 });
+    },
+    // Treffer am eigenen Schiff: dumpfer Schlag
+    hurt(t) {
+      tone(70, t, 0.4, { type: 'sine', gain: 0.45, slideTo: 35 });
+      noise(t, 0.2, { filter: 'lowpass', freq: 600, gain: 0.4 });
+    },
+    // Verloren
+    lose(t) {
+      tone(330, t, 0.25, { type: 'sawtooth', gain: 0.05, slideTo: 220 });
+      tone(220, t + 0.22, 0.4, { type: 'sawtooth', gain: 0.05, slideTo: 130 });
+    },
+    // Springen (Entern)
+    jump(t) {
+      tone(300, t, 0.15, { type: 'square', gain: 0.05, slideTo: 600 });
     },
     // Fanfare
     fanfare(t) {

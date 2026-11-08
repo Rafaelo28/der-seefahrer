@@ -20,7 +20,9 @@ window.SF = window.SF || {};
     { id: 'sails',  icon: '⛵', name: 'Bessere Segel',  max: 3, costs: [60, 140, 260], text: '+8 % Tempo je Stufe' },
     { id: 'hold',   icon: '📦', name: 'Größerer Laderaum', max: 3, costs: [80, 170, 300], text: '+3 Kisten je Stufe' },
     { id: 'pantry', icon: '🛢️', name: 'Vorratskammer',  max: 2, costs: [50, 120], text: '+2 Fässer Proviant je Stufe' },
+    { id: 'hull',   icon: '🛡️', name: 'Rumpf verstärken', max: 3, costs: [90, 190, 320], text: '+25 Rumpf für Seeschlachten' },
   ];
+  const REPAIR = 0.8; // Bernstein je Rumpfpunkt
   const upgradeById = Object.fromEntries(UPGRADES.map(u => [u.id, u]));
   const CANNON_PRICE = 40;
   const SELL_BACK = 0.5; // altes Schiff in Zahlung geben: Hälfte des Werftpreises
@@ -56,6 +58,19 @@ window.SF = window.SF || {};
     const cost = upgradeCost(id);
     if (cost == null || !SF.amber.spend(cost)) return false;
     SF.state.ship[id] = (SF.state.ship[id] || 0) + 1;
+    if (id === 'hull' && SF.state.ship.hp != null) SF.state.ship.hp += SF.battle ? SF.battle.HULL_UP : 25;
+    return true;
+  }
+
+  // Rumpf: jetzt und höchstens (Lebenspunkte für Seeschlachten)
+  const hullMax = () => (SF.battle ? SF.battle.maxHull() : 60);
+  const hullNow = () => (SF.state.ship.hp == null ? hullMax() : Math.min(hullMax(), SF.state.ship.hp));
+  const repairCost = () => Math.ceil((hullMax() - hullNow()) * REPAIR);
+
+  function repair() {
+    const cost = repairCost();
+    if (cost <= 0 || !SF.amber.spend(cost)) return false;
+    SF.state.ship.hp = null;
     return true;
   }
 
@@ -87,7 +102,7 @@ window.SF = window.SF || {};
     if (whyNot(id)) return false;
     if (!SF.amber.spend(tradeInPrice(id))) return false;
     const keep = Math.min(SF.state.ship.cannons || 0, byId[id].cannons);
-    SF.state.ship = { type: id, sails: 0, hold: 0, pantry: 0, cannons: keep };
+    SF.state.ship = { type: id, sails: 0, hold: 0, pantry: 0, hull: 0, hp: null, cannons: keep };
     SF.state.food = Math.min(SF.state.food, stats().food);
     return true;
   }
@@ -128,8 +143,8 @@ window.SF = window.SF || {};
 
   // Von oben auf dem Canvas: Bug zeigt in Richtung (dx, dy) – gedreht über den Richtungsvektor, ohne Winkel.
   // sway: leichtes Schaukeln (0 … 1)
-  function drawTop(ctx, id, x, y, dx, dy, scale = 1, sway = 0) {
-    const s = type(id);
+  function drawTop(ctx, id, x, y, dx, dy, scale = 1, sway = 0, colors = null) {
+    const s = colors ? Object.assign({}, type(id), colors) : type(id);
     const L = s.len * scale;
     const B = L * 0.36;
     ctx.save();
@@ -189,5 +204,5 @@ window.SF = window.SF || {};
     ctx.restore();
   }
 
-  SF.ships = { TYPES, byId, UPGRADES, CANNON_PRICE, SELL_BACK, type, stats, cargoCount, freeHold, upgradeCost, buyUpgrade, buyCannon, tradeInPrice, whyNot, buyShip, sideSVG, drawTop };
+  SF.ships = { TYPES, byId, UPGRADES, CANNON_PRICE, REPAIR, hullMax, hullNow, repairCost, repair, SELL_BACK, type, stats, cargoCount, freeHold, upgradeCost, buyUpgrade, buyCannon, tradeInPrice, whyNot, buyShip, sideSVG, drawTop };
 })();

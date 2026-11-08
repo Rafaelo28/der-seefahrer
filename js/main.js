@@ -71,6 +71,8 @@ window.SF = window.SF || {};
       }
     }
     if (SF.sea && SF.ui.current() === 'sea') SF.sea.frame(dt, now);
+    if (SF.battleView && SF.ui.current() === 'battle') SF.battleView.frame(dt);
+    if (SF.boarding && SF.ui.current() === 'boarding') SF.boarding.frame(dt);
     requestAnimationFrame(frame);
   }
 
@@ -82,6 +84,8 @@ window.SF = window.SF || {};
     if (SF.sea) SF.sea.bind();
     if (SF.harbor) SF.harbor.bind();
     if (SF.cabin) SF.cabin.bind();
+    if (SF.battleView) SF.battleView.bind();
+    if (SF.boarding) SF.boarding.bind();
     $('soon-title').addEventListener('click', () => SF.newgame.showTitle());
     syncSoundButtons();
     // Speichern beim Verlassen (Tab wechseln, App schließen, Neuladen)

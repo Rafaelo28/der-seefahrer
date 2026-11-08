@@ -20,7 +20,7 @@
   <meta name="description" content="Der Seefahrer – ein Seefahrer-Abenteuer nach Gamble Klicker: Segle über die Seekarte, handle in Häfen und finde den Dieb der Goldenen Dublone. Nur Spielgeld.">
   <meta name="author" content="Rafaelo28">
   <!-- ?v=… ist die Spielversion: bei jedem Update erhöhen, damit Browser keine alten Dateien mischen -->
-  <link rel="stylesheet" href="css/style.css?v=2026110802">
+  <link rel="stylesheet" href="css/style.css?v=2026110804">
 </head>
 <body data-screen="">
 
@@ -171,6 +171,34 @@
     <div id="cabin-body"></div>
   </section>
 
+  <!-- Seeschlacht -->
+  <section id="screen-battle" class="screen" hidden>
+    <canvas id="battle-canvas" class="sea-canvas"></canvas>
+    <div class="battle-top">
+      <div class="hp-box"><span class="hp-name">Du</span><div class="hp-bar"><i id="bt-hp-me"></i><span id="bt-hp-me-text"></span></div></div>
+      <div id="bt-info" class="bt-info"></div>
+      <div class="hp-box enemy"><span id="bt-enemy-name" class="hp-name"></span><div class="hp-bar"><i id="bt-hp-enemy"></i><span id="bt-hp-enemy-text"></span></div></div>
+    </div>
+    <button type="button" id="bt-port" class="fire-btn port">◀ Backbord<span class="reload"><i id="bt-port-load"></i></span></button>
+    <button type="button" id="bt-star" class="fire-btn star">Steuerbord ▶<span class="reload"><i id="bt-star-load"></i></span></button>
+    <button type="button" id="bt-board" class="btn btn-primary btn-big board-btn" hidden>🪝 Entern!</button>
+    <div id="bt-rotate" class="overlay" hidden>
+      <div class="dialog"><h2>📱 Dreh dein iPad quer</h2><p>Quer siehst du mehr vom Meer und hast beide Kanonen-Knöpfe gut im Griff.</p>
+        <div class="dialog-buttons"><button type="button" id="bt-rotate-ok" class="btn">Hochkant weiterspielen</button></div></div>
+    </div>
+  </section>
+
+  <!-- Entern (Jump'n'Run) -->
+  <section id="screen-boarding" class="screen" hidden>
+    <canvas id="boarding-canvas" class="sea-canvas"></canvas>
+    <div id="bd-time-box" class="bd-time">⏳ <span id="bd-time">45</span> s</div>
+    <div class="bd-controls">
+      <button type="button" id="bd-left" class="bd-btn" aria-label="Nach links">◀</button>
+      <button type="button" id="bd-right" class="bd-btn" aria-label="Nach rechts">▶</button>
+    </div>
+    <button type="button" id="bd-jump" class="bd-btn bd-jump" aria-label="Springen">⤒ Springen</button>
+  </section>
+
   <!-- Platzhalter für Teile, die noch kommen -->
   <section id="screen-soon" class="screen page" hidden>
     <div class="card">
@@ -186,25 +214,29 @@
   <div id="dialog-layer" class="overlay" hidden></div>
   <noscript><p class="card">Der Seefahrer braucht JavaScript.</p></noscript>
 
-  <script src="js/format.js?v=2026110802"></script>
-  <script src="js/state.js?v=2026110802"></script>
-  <script src="js/rank.js?v=2026110802"></script>
-  <script src="js/figure.js?v=2026110802"></script>
-  <script src="js/gk-import.js?v=2026110802"></script>
-  <script src="js/sound.js?v=2026110802"></script>
-  <script src="js/ui.js?v=2026110802"></script>
-  <script src="js/analytics.js?v=2026110802"></script>
-  <script src="js/ships.js?v=2026110802"></script>
-  <script src="js/story.js?v=2026110802"></script>
-  <script src="js/lastday.js?v=2026110802"></script>
-  <script src="js/world.js?v=2026110802"></script>
-  <script src="js/trade.js?v=2026110802"></script>
-  <script src="js/voyage.js?v=2026110802"></script>
-  <script src="js/chapter.js?v=2026110802"></script>
-  <script src="js/sea.js?v=2026110802"></script>
-  <script src="js/harbor.js?v=2026110802"></script>
-  <script src="js/cabin.js?v=2026110802"></script>
-  <script src="js/newgame.js?v=2026110802"></script>
-  <script src="js/main.js?v=2026110802"></script>
+  <script src="js/format.js?v=2026110804"></script>
+  <script src="js/state.js?v=2026110804"></script>
+  <script src="js/rank.js?v=2026110804"></script>
+  <script src="js/figure.js?v=2026110804"></script>
+  <script src="js/gk-import.js?v=2026110804"></script>
+  <script src="js/sound.js?v=2026110804"></script>
+  <script src="js/ui.js?v=2026110804"></script>
+  <script src="js/analytics.js?v=2026110804"></script>
+  <script src="js/ships.js?v=2026110804"></script>
+  <script src="js/story.js?v=2026110804"></script>
+  <script src="js/lastday.js?v=2026110804"></script>
+  <script src="js/world.js?v=2026110804"></script>
+  <script src="js/trade.js?v=2026110804"></script>
+  <script src="js/voyage.js?v=2026110804"></script>
+  <script src="js/chapter.js?v=2026110804"></script>
+  <script src="js/sea.js?v=2026110804"></script>
+  <script src="js/harbor.js?v=2026110804"></script>
+  <script src="js/cabin.js?v=2026110804"></script>
+  <script src="js/battle.js?v=2026110804"></script>
+  <script src="js/pirates.js?v=2026110804"></script>
+  <script src="js/battle-view.js?v=2026110804"></script>
+  <script src="js/boarding.js?v=2026110804"></script>
+  <script src="js/newgame.js?v=2026110804"></script>
+  <script src="js/main.js?v=2026110804"></script>
 </body>
 </html>

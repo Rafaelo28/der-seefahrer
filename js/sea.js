@@ -85,6 +85,13 @@ window.SF = window.SF || {};
     const events = SF.voyage.step(dt);
     events.forEach(handle);
     if (SF.ui.current() !== 'sea') return; // z. B. im Hafen angekommen
+    if (SF.pirates && SF.battleView && !SF.battleView.busy()) {
+      const attacker = SF.pirates.step(dt);
+      if (attacker) {
+        SF.battleView.start(attacker);
+        return;
+      }
+    }
     // Kielwasser
     wakeClock += dt;
     if (wakeClock > 0.12) {
@@ -350,6 +357,15 @@ window.SF = window.SF || {};
       drawFlotsam(f);
     });
 
+    // Piraten (nur in aufgedeckten Gebieten zu sehen)
+    if (SF.pirates) {
+      SF.pirates.list().forEach(pr => {
+        if (pr.x < x0 - 60 || pr.x > x1 + 60 || pr.y < y0 - 60 || pr.y > y1 + 60 || !Wo.knownAt(pr.x, pr.y)) return;
+        const k = SF.pirates.KINDS[pr.kind];
+        SF.ships.drawTop(ctx, k.ship, pr.x, pr.y, pr.dx, pr.dy, Math.max(1, 26 / (SF.ships.byId[k.ship].len * z)), (Math.sin(time * 2 + pr.x) + 1) / 2, { sail: k.sail });
+      });
+    }
+
     // Kielwasser
     if (wake.length > 1) {
       ctx.lineCap = 'round';
@@ -418,6 +434,18 @@ window.SF = window.SF || {};
       }
     });
     if (goal) drawGoalArrow(Wo.placeById[goal]);
+    // Totenkopf über sichtbaren Piraten
+    if (SF.pirates) {
+      SF.pirates.list().forEach(pr => {
+        if (!Wo.knownAt(pr.x, pr.y)) return;
+        const sp = toScreen(pr.x, pr.y);
+        if (sp.x < -40 || sp.x > vw + 40 || sp.y < -40 || sp.y > vh + 40) return;
+        ctx.font = '18px system-ui, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('☠️', sp.x, sp.y - 30);
+      });
+    }
   }
 
   function label(text, x, y, strong) {
@@ -660,7 +688,7 @@ window.SF = window.SF || {};
 
   function onDown(e) {
     e.preventDefault();
-    canvas.setPointerCapture(e.pointerId);
+    try { canvas.setPointerCapture(e.pointerId); } catch (err) { /* kein echter Finger (z. B. im Test) */ }
     const p = local(e);
     pointers.set(e.pointerId, p);
     if (pointers.size === 2) {

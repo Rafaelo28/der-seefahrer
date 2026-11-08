@@ -13,8 +13,9 @@ window.SF = window.SF || {};
   }
 
   // Schiff: Typ und Ausbau in der Werft (Stufen), Anzahl Kanonen
-  const createDefaultShip = () => ({ type: 'sloop', sails: 0, hold: 0, pantry: 0, cannons: 0 });
-  const createDefaultStats = () => ({ distance: 0, trades: 0, profit: 0, flotsam: 0, amberEarned: 0, places: 0 });
+  // hp: Rumpf jetzt (null = heil), hull: Stufe „Rumpf verstärken“
+  const createDefaultShip = () => ({ type: 'sloop', sails: 0, hold: 0, pantry: 0, hull: 0, hp: null, cannons: 0 });
+  const createDefaultStats = () => ({ distance: 0, trades: 0, profit: 0, flotsam: 0, amberEarned: 0, places: 0, battles: 0, wins: 0, bounty: 0 });
   const createDefaultStory = () => ({ step: 'new', flags: {}, log: [] });
 
   function createDefaultState() {
@@ -40,6 +41,8 @@ window.SF = window.SF || {};
       wind: null,          // { x, y, s, next } (js/voyage.js)
       seaTime: 0,          // Sekunden auf See (für Tage und Preise)
       flotsam: [],         // Treibgut auf der Karte: [{ x, y, kind }]
+      pirates: [],         // Piraten auf der Karte (js/pirates.js)
+      pirateClock: {},     // ab wann ein Gebiet wieder einen Piraten bekommt (Sekunden auf See)
       stats: createDefaultStats(),
       settings: createDefaultSettings(),
       ui: { zoom: 1, tips: {} },
@@ -125,8 +128,9 @@ window.SF = window.SF || {};
     s.settings = Object.assign(createDefaultSettings(), isObj(data.settings) ? data.settings : {});
     s.ui = Object.assign({ zoom: 1, tips: {} }, isObj(data.ui) ? data.ui : {});
     if (!isObj(s.ui.tips)) s.ui.tips = {};
-    ['cargo', 'visited', 'market'].forEach(k => { if (!isObj(s[k])) s[k] = {}; });
-    ['course', 'flotsam'].forEach(k => { if (!Array.isArray(s[k])) s[k] = []; });
+    ['cargo', 'visited', 'market', 'pirateClock'].forEach(k => { if (!isObj(s[k])) s[k] = {}; });
+    ['course', 'flotsam', 'pirates'].forEach(k => { if (!Array.isArray(s[k])) s[k] = []; });
+    if (s.ship.hp != null && !(typeof s.ship.hp === 'number' && s.ship.hp > 0)) s.ship.hp = null;
     if (!isObj(s.pos) || !isFinite(s.pos.x) || !isFinite(s.pos.y)) s.pos = null;
     if (!isObj(s.wind)) s.wind = null;
     if (!isObj(s.gk)) s.gk = null;

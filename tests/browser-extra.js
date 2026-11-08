@@ -96,4 +96,65 @@ module.exports = async function (page, label, assert, shot) {
   await page.waitForSelector('#screen-sea:not([hidden])');
   await page.waitForTimeout(300);
   assert(await page.evaluate(() => SF.state.docked === ''), `${label}: abgelegt`);
+
+  // Seeschlacht: ein Pirat taucht direkt neben dem Schiff auf
+  await page.evaluate(() => {
+    const p = SF.pirates.spawn(SF.pirates.ZONES[0]);
+    p.kind = 'shark';
+    p.x = SF.state.pos.x + 30;
+    p.y = SF.state.pos.y;
+  });
+  await page.waitForSelector('#dialog-layer .btn-primary', { timeout: 4000 });
+  await shot(page, `pirat-${label}`);
+  await page.click('#dialog-layer .btn-primary');
+  await page.waitForSelector('#screen-battle:not([hidden])');
+  await page.waitForTimeout(300);
+  const portrait = await page.evaluate(() => innerHeight > innerWidth);
+  if (portrait) {
+    assert(await page.isVisible('#bt-rotate-ok'), `${label}: Hinweis „Bitte quer drehen“`);
+    await page.click('#bt-rotate-ok');
+  }
+  // steuern und feuern
+  await page.mouse.move(300, 200);
+  await page.mouse.down();
+  await page.waitForTimeout(600);
+  await page.mouse.up();
+  await page.dispatchEvent('#bt-port', 'pointerdown');
+  await page.dispatchEvent('#bt-star', 'pointerdown');
+  await page.waitForTimeout(700);
+  await shot(page, `schlacht-${label}`);
+  await noScroll('Schlacht');
+  assert(await page.evaluate(() => SF.battleView.current() && SF.battleView.current().t > 0.5), `${label}: Schlacht läuft`);
+  // Gegner schwer beschädigt und nah: entern
+  await page.evaluate(() => {
+    const b = SF.battleView.current();
+    b.enemy.hp = 10;
+    b.enemy.x = b.player.x + 100;
+    b.enemy.y = b.player.y;
+    b.enemy.speed = 0;
+    b.player.speed = 0;
+    b.enemy.delay = 999; // nicht mehr schießen
+    b.balls = [];        // fliegende Kugeln weg (sonst versinkt der Gegner vor dem Entern)
+  });
+  await page.waitForSelector('#bt-board:not([hidden])', { timeout: 3000 });
+  await page.click('#bt-board', { force: true }); // der Knopf pulsiert (Animation)
+  await page.waitForSelector('#screen-boarding:not([hidden])');
+  await page.dispatchEvent('#bd-right', 'pointerdown');
+  await page.waitForTimeout(700);
+  await page.dispatchEvent('#bd-right', 'pointerup');
+  await shot(page, `entern-${label}`);
+  await noScroll('Entern');
+  const amberB = await page.evaluate(() => SF.state.amber);
+  // direkt vor die Tür der Kajüte
+  await page.evaluate(() => {
+    const L = SF.boarding._level();
+    L.p.x = L.door.x - 10;
+    L.p.y = L.door.y + 30;
+  });
+  await page.waitForSelector('#dialog-layer h2', { timeout: 4000 });
+  assert((await page.textContent('#dialog-layer h2')).includes('Geentert'), `${label}: geentert`);
+  await shot(page, `beute-${label}`);
+  await page.click('#dialog-layer .btn-primary');
+  await page.waitForSelector('#screen-sea:not([hidden])');
+  assert(await page.evaluate(a => SF.state.amber >= a + 70 && SF.state.stats.wins === 1, amberB), `${label}: Kopfgeld bekommen`);
 };

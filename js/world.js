@@ -12,7 +12,8 @@ window.SF = window.SF || {};
   const FOG_H = H / FOG_CELL;
   const SIGHT = 260;       // so weit sieht man vom Schiff aus
   const NAV_CELL = 40;     // Raster der Wegsuche
-  const SHIP_PAD = 12;     // Abstand des Schiffs zur Küste
+  const SHIP_PAD = 12;     // Abstand des Schiffs zur Küste beim Segeln
+  const PLAN_PAD = 17;     // etwas mehr Abstand beim Planen von Kursen (Sicherheitsabstand)
 
   // Fester Zufall (immer dieselbe Welt): einfacher Zahlengenerator mit Startwert
   function seeded(seed) {
@@ -100,8 +101,11 @@ window.SF = window.SF || {};
   const inWorld = (x, y) => x >= EDGE && y >= EDGE && x <= W - EDGE && y <= H - EDGE;
   const isWater = (x, y, pad = SHIP_PAD) => inWorld(x, y) && !isLand(x, y, pad);
 
+  // Planungsabstand; liegt der Start schon näher an der Küste (z. B. nach dem Anhalten), gilt der Segelabstand
+  const planPad = (x, y) => (isWater(x, y, PLAN_PAD) ? PLAN_PAD : SHIP_PAD);
+
   // Ist die Strecke frei? (Proben alle step Einheiten)
-  function segmentClear(x0, y0, x1, y1, pad = SHIP_PAD, step = 10) {
+  function segmentClear(x0, y0, x1, y1, pad = planPad(x0, y0), step = 5) {
     const dx = x1 - x0;
     const dy = y1 - y0;
     const len = Math.sqrt(dx * dx + dy * dy);
@@ -114,7 +118,7 @@ window.SF = window.SF || {};
   }
 
   // Letzter freier Punkt auf einer Strecke (für Kurse, die auf Land zeigen)
-  function lastFree(x0, y0, x1, y1, pad = SHIP_PAD, step = 8) {
+  function lastFree(x0, y0, x1, y1, pad = planPad(x0, y0), step = 5) {
     const dx = x1 - x0;
     const dy = y1 - y0;
     const len = Math.sqrt(dx * dx + dy * dy);
@@ -243,7 +247,7 @@ window.SF = window.SF || {};
     nav = new Uint8Array(NAV_W * NAV_H);
     for (let cy = 0; cy < NAV_H; cy++) {
       for (let cx = 0; cx < NAV_W; cx++) {
-        nav[cy * NAV_W + cx] = isWater((cx + 0.5) * NAV_CELL, (cy + 0.5) * NAV_CELL, SHIP_PAD + 6) ? 1 : 0;
+        nav[cy * NAV_W + cx] = isWater((cx + 0.5) * NAV_CELL, (cy + 0.5) * NAV_CELL, PLAN_PAD + 2) ? 1 : 0;
       }
     }
   }
@@ -331,7 +335,7 @@ window.SF = window.SF || {};
     let a = 0;
     while (a < pts.length - 1) {
       let b = pts.length - 1;
-      while (b > a + 1 && !segmentClear(pts[a][0], pts[a][1], pts[b][0], pts[b][1], SHIP_PAD)) b--;
+      while (b > a + 1 && !segmentClear(pts[a][0], pts[a][1], pts[b][0], pts[b][1])) b--;
       out.push(pts[b][0], pts[b][1]);
       a = b;
     }
@@ -339,7 +343,7 @@ window.SF = window.SF || {};
   }
 
   SF.world = {
-    W, H, EDGE, FOG_CELL, FOG_W, FOG_H, SIGHT, SHIP_PAD, ISLANDS, PLACES, placeById, START,
+    W, H, EDGE, FOG_CELL, FOG_W, FOG_H, SIGHT, SHIP_PAD, PLAN_PAD, ISLANDS, PLACES, placeById, START,
     isLand, isWater, inWorld, segmentClear, lastFree, placeNear, route,
     reveal, known, knownAt, explored, fogToString, fogFromString,
     fogVersion: () => fogVersion,
