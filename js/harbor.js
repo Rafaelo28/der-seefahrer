@@ -136,9 +136,11 @@ window.SF = window.SF || {};
     const ships = SF.ships.TYPES.map(x => {
       const mine = x.id === t.id;
       const stolen = x.story && s.gk && s.gk.ships.includes(x.id);
+      const inFleet = SF.crew.fleet().some(f => f.type === x.id);
       const why = SF.ships.whyNot(x.id);
       let btn;
       if (mine) btn = '<span class="tag">Dein Schiff</span>';
+      else if (inFleet) btn = '<span class="tag">In deiner Flotte</span>';
       else if (x.story) btn = `<span class="muted small">${stolen ? 'Gestohlen – vielleicht findest du es wieder!' : 'Gibt es in keiner Werft'}</span>`;
       else btn = `<button type="button" class="btn btn-small" data-ship="${x.id}" ${why ? 'disabled' : ''} title="${why}">${SF.amberHTML(SF.ships.tradeInPrice(x.id))}</button>`;
       return `<div class="ship-card ${mine ? 'mine' : ''}">
@@ -151,9 +153,26 @@ window.SF = window.SF || {};
       <div class="yard-ship">${SF.ships.sideSVG(t.id, SF.cosmetics.shipColors())}<div><b>${t.name}</b><br>
         <span class="small">Tempo ${Math.round(st.speed)} · Laderaum ${st.hold} · Proviant ${st.food} · Kanonen ${st.cannons}/${st.cannonSlots}</span></div></div>
       ${repair}${ups}${cannons}
+      ${fleetHTML()}
       <h3>Neues Schiff</h3>
       <p class="muted small">Dein altes Schiff nimmt die Werft für die Hälfte in Zahlung. Der Ausbau bleibt beim alten Schiff.</p>
       <div class="ship-list">${ships}</div>`;
+  }
+
+  // Deine Flotte: wiedergefundene Schiffe liegen hier, Umsteigen kostet nichts
+  function fleetHTML() {
+    const list = SF.crew.fleet();
+    if (!list.length) return '';
+    return `<h3>${SF.icon('anchor')} Deine Flotte</h3>
+      <p class="muted small">Diese Schiffe liegen hier in der Werft. Umsteigen kostet nichts – jedes Schiff behält seinen Ausbau und seine Kanonen.</p>
+      <div class="ship-list">${list.map((f, i) => {
+        const t = SF.ships.byId[f.type];
+        const st = SF.ships.stats(f);
+        const why = SF.crew.whyNotSwap(i);
+        return `<div class="ship-card">${SF.ships.sideSVG(f.type)}
+          <div><b>${t.name}</b><br><span class="small stat-line">${SF.icon('crate')}${st.hold} ${SF.icon('barrel')}${st.food} ${SF.icon('cannon')}${st.cannons}/${st.cannonSlots} ${SF.icon('wind')}${Math.round(st.speed)}</span></div>
+          <button type="button" class="btn btn-small" data-swap="${i}" ${why ? 'disabled' : ''} title="${why}">Umsteigen</button></div>`;
+      }).join('')}</div>`;
   }
 
   // Laden: Cosmetics für Perlen
@@ -183,7 +202,7 @@ window.SF = window.SF || {};
 
   function person(who) {
     if (who === 'klabauter') return { name: 'Klabautermann', svg: SF.ui.KLABAUTER };
-    const p = SF.chapter.PEOPLE[who];
+    const p = SF.chapter.who(who);
     return { name: p.name, svg: SF.figure.svg(p.fig) };
   }
 
@@ -225,6 +244,10 @@ window.SF = window.SF || {};
     } else if (d.up) {
       ok = SF.ships.buyUpgrade(d.up);
       if (ok) { SF.sound.play('upgrade'); SF.story.log(`Werft: ${SF.ships.UPGRADES.find(u => u.id === d.up).name} ausgebaut.`); }
+    } else if (d.swap != null) {
+      const before = SF.ships.type().name;
+      ok = SF.crew.swap(Number(d.swap));
+      if (ok) { SF.sound.play('horn'); SF.ui.toast(`Umgestiegen: Deine ${SF.ships.type().name} ist bereit, die ${before} wartet in der Werft.`); }
     } else if (d.repair) {
       ok = SF.ships.repair();
       if (ok) SF.sound.play('upgrade');

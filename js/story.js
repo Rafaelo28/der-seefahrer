@@ -16,7 +16,10 @@ window.SF = window.SF || {};
     'find-smuggler': { goal: 'smuggler', text: 'Segle zur Schmugglerinsel im Südosten. Dort hat jemand das schwarze Schiff gesehen.' },
     'salt-quest': { goal: 'smuggler', text: 'Einauge Ede will 3 Kisten Salz, dann erzählt er mehr. Bring sie ihm in die Kneipe der Schmugglerinsel.' },
     'find-volcano': { goal: 'volcano', text: 'Das schwarze Schiff ist zur Vulkaninsel gesegelt. Folge ihm!' },
-    end1: { text: 'Die Spur führt ins Eismeer … Fortsetzung folgt!' },
+    end1: { text: 'Die Spur führt ins Eismeer …' }, // alte Spielstände: wird zu 'hire-cook' (SF.chapter.migrate)
+    'hire-cook': { goal: 'dublone', text: 'Im Eismeer erfriert man ohne warmes Essen. In der Kneipe von Port Dublone sucht ein Schiffskoch Arbeit.' },
+    'find-ice': { goal: 'ice', text: 'Folge der Karte mit dem Kreuz ins Eismeer im Norden und geh dort an Land.' },
+    traitor: { text: 'Jemand an Bord verrät deinen Kurs an Long John! Halte die Augen offen … (Kapitel 3 folgt)' },
   };
 
   const step = () => SF.state.story.step;

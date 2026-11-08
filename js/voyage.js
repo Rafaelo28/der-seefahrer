@@ -79,7 +79,9 @@ window.SF = window.SF || {};
   }
 
   // Wie weit reicht der Proviant noch? (Karteneinheiten)
-  const range = () => st().food * FOOD_DIST;
+  // Wie weit ein Fass reicht (Smutje Fiete kocht sparsamer)
+  const foodDist = () => FOOD_DIST * (SF.crew ? SF.crew.foodMul() : 1);
+  const range = () => st().food * foodDist();
 
   // ---------- Kurs ----------
 
@@ -185,7 +187,7 @@ window.SF = window.SF || {};
         s.seaTime += dt;
         s.stats.distance += moved;
         const before = s.food;
-        s.food = Math.max(0, s.food - moved / FOOD_DIST);
+        s.food = Math.max(0, s.food - moved / foodDist());
         if (before > 0 && s.food <= 0) events.push({ type: 'nofood' });
         if (s.food <= 0) {
           grumbleClock += dt;

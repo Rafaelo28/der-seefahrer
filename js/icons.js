@@ -88,6 +88,8 @@ window.SF = window.SF || {};
     dice: [f('M6 4h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z', WHITE), f(circle(8.5, 8.5, 1.4) + circle(15.5, 15.5, 1.4) + circle(12, 12, 1.4) + circle(15.5, 8.5, 1.4) + circle(8.5, 15.5, 1.4), INK, null)],
     tablet: [f('M7 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z', DARK), f('M7 5.5h10v12H7z', '#a8d8f0', null)],
     warning: [f('M12 3l9.5 17h-19z', AMBER), s('M12 9v5.5', INK, 2.2), f(circle(12, 17.2, 1.1), INK, null)],
+    crew: [f('M2.5 19.5c0-4 2.5-6.6 5.5-6.6s5.5 2.6 5.5 6.6z', BLUE), f(circle(8, 8.2, 3.1), '#f2c9a0'), s('M4.9 6.6h6.2', RED, 1.8),
+      f('M11.6 19.5c.3-3.7 2.3-5.8 4.9-5.8s4.6 2.1 4.9 5.8z', RED), f(circle(16.5, 9.4, 2.7), '#c68a5a')],
     wrench: [s('M14.5 9.5L5 19', GREY, 3.2), f('M14 4.5a4.5 4.5 0 0 0 5.5 5.5l-2-2v-2.5h-2.5z', GREY)],
   };
 

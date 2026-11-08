@@ -40,6 +40,16 @@ window.SF = window.SF || {};
       amber: [[650, 300], [1080, 320], [1360, 300], [1980, 300], [2600, 300], [3070, 340]],
       chest: [3480, 420],
     },
+    ice: {
+      name: 'Eismeer', theme: 'ice', slippery: true, w: 3000, time: 95, reward: 50,
+      start: [80, 380],
+      solids: [[0, 480, 560, 120], [900, 480, 420, 120], [1090, 370, 120, 20], [1700, 480, 360, 120], [2060, 430, 940, 170]],
+      anchors: [[730, 190], [1510, 195]],
+      hazards: [[560, 520, 340, 80, 'ice'], [1320, 520, 380, 80, 'ice']],
+      crabs: [[1000, 920, 1300], [1850, 1720, 2050], [2400, 2080, 2900]],
+      amber: [[730, 300], [1150, 320], [1510, 300], [2300, 370], [2700, 370]],
+      chest: [2880, 430],
+    },
   };
 
   const overlap = (a, b) => a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
@@ -130,7 +140,9 @@ window.SF = window.SF || {};
     } else {
       // am Boden sofort, in der Luft etwas träger lenken
       const target = dir * RUN;
-      p.vx += (target - p.vx) * Math.min(1, dt * (p.ground ? 14 : 4));
+      // auf Eis rutscht man: langsam anlaufen und bremsen
+      const grip = p.ground ? (L.d.slippery ? 2.6 : 14) : 4;
+      p.vx += (target - p.vx) * Math.min(1, dt * grip);
       if (input.jump && p.ground) {
         p.vy = -JUMP;
         p.ground = false;
@@ -302,7 +314,7 @@ window.SF = window.SF || {};
       else if (e.type === 'amber') SF.sound.play('amber');
       else if (e.type === 'stomp') SF.sound.play('hit');
       else if (e.type === 'pinch') { SF.sound.play('hurt'); SF.ui.toast('Zwick! −4 Sekunden', 1200); }
-      else if (e.type === 'penalty') { SF.sound.play('splash'); SF.ui.toast(e.kind === 'lava' ? 'Heiß! −4 Sekunden' : 'Platsch! −4 Sekunden', 1200); }
+      else if (e.type === 'penalty') { SF.sound.play('splash'); SF.ui.toast(e.kind === 'lava' ? 'Heiß! −4 Sekunden' : e.kind === 'ice' ? 'Brrr, eiskalt! −4 Sekunden' : 'Platsch! −4 Sekunden', 1200); }
     });
     const viewW = vw / scale();
     camX += (Math.max(0, Math.min(L.d.w - viewW, L.p.x - viewW * 0.4)) - camX) * Math.min(1, dt * 5);
@@ -314,12 +326,13 @@ window.SF = window.SF || {};
       const won = L.over === 'won';
       SF.sound.play(won ? 'fanfare' : 'lose');
       const r = won ? reward(L) : null;
+      const story = won && SF.chapter ? SF.chapter.onIsland(L.id) : '';
       SF.save();
       setTimeout(async () => {
         await SF.ui.dialog(won ? {
           title: `${SF.icon('chest')} Schatz gefunden!`,
           html: `<p>In der Kiste: ${SF.amberHTML(r.amber)}${r.first ? '' : ' <span class="muted small">(beim ersten Mal war mehr drin)</span>'}.</p>
-            <p>Zeit: <b>${SF.formatDecimal(r.secs, 1, 1)} s</b>${r.best ? ' – <b>neue Bestzeit!</b>' : ''}</p>`,
+            <p>Zeit: <b>${SF.formatDecimal(r.secs, 1, 1)} s</b>${r.best ? ' – <b>neue Bestzeit!</b>' : ''}</p>${story}`,
           buttons: [{ label: 'Zurück aufs Schiff', value: true, kind: 'primary' }],
         } : {
           title: 'Die Zeit ist um',
@@ -337,12 +350,13 @@ window.SF = window.SF || {};
     const sc = scale();
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     const sky = ctx.createLinearGradient(0, 0, 0, vh);
-    if (L.d.theme === 'volcano') { sky.addColorStop(0, '#4a2a3a'); sky.addColorStop(1, '#e8794a'); } else { sky.addColorStop(0, '#6ab0e0'); sky.addColorStop(1, '#f4e6c0'); }
+    const theme = L.d.theme;
+    if (theme === 'volcano') { sky.addColorStop(0, '#4a2a3a'); sky.addColorStop(1, '#e8794a'); } else if (theme === 'ice') { sky.addColorStop(0, '#8ab4d8'); sky.addColorStop(1, '#e8f2fa'); } else { sky.addColorStop(0, '#6ab0e0'); sky.addColorStop(1, '#f4e6c0'); }
     ctx.fillStyle = sky;
     ctx.fillRect(0, 0, vw, vh);
     // Hintergrund (langsamer verschoben): Berge bzw. Vulkan
     ctx.setTransform(dpr * sc, 0, 0, dpr * sc, -camX * 0.3 * sc * dpr, dpr * offY());
-    ctx.fillStyle = L.d.theme === 'volcano' ? '#3a2a2a' : '#8ac07a';
+    ctx.fillStyle = theme === 'volcano' ? '#3a2a2a' : theme === 'ice' ? '#f4faff' : '#8ac07a';
     ctx.beginPath();
     ctx.moveTo(0, 480);
     for (let x = 0; x <= L.d.w; x += 400) ctx.lineTo(x + 200, L.d.theme === 'volcano' ? 160 + (x % 800 ? 60 : 0) : 300 + (x % 800 ? 40 : 0)), ctx.lineTo(x + 400, 480);
@@ -352,14 +366,14 @@ window.SF = window.SF || {};
     const lava = L.d.theme === 'volcano';
     // Gefahren
     L.hazards.forEach(h => {
-      ctx.fillStyle = h.kind === 'lava' ? `rgb(${220 + Math.sin(time * 4) * 30},90,30)` : '#2a7ab0';
+      ctx.fillStyle = h.kind === 'lava' ? `rgb(${220 + Math.sin(time * 4) * 30},90,30)` : h.kind === 'ice' ? '#1e4a6e' : '#2a7ab0';
       ctx.fillRect(h.x, h.y + Math.sin(time * 3 + h.x) * 4, h.w, h.h + 400);
     });
     // Boden und Plattformen
     L.solids.forEach(s => {
-      ctx.fillStyle = lava ? '#4a3a32' : '#e8d39a';
+      ctx.fillStyle = lava ? '#4a3a32' : theme === 'ice' ? '#cfe4f2' : '#e8d39a';
       ctx.fillRect(s.x, s.y, s.w, s.h + (s.y + s.h >= 600 ? 400 : 0));
-      ctx.fillStyle = lava ? '#2e2420' : '#6fa35a';
+      ctx.fillStyle = lava ? '#2e2420' : theme === 'ice' ? '#ffffff' : '#6fa35a';
       ctx.fillRect(s.x, s.y, s.w, Math.min(12, s.h));
     });
     // Hakenringe
@@ -390,7 +404,7 @@ window.SF = window.SF || {};
     // Krabben
     L.crabs.forEach(c => {
       if (!c.alive) return;
-      ctx.fillStyle = '#d0402a';
+      ctx.fillStyle = theme === 'ice' ? '#4a8ac8' : '#d0402a'; // im Eis: Eiskrabben
       ctx.beginPath();
       ctx.ellipse(c.x + c.w / 2, c.y + c.h * 0.6, c.w / 2, c.h / 2, 0, 0, Math.PI * 2);
       ctx.fill();

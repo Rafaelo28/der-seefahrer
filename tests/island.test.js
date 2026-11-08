@@ -82,9 +82,23 @@ function bot(L) {
   const crab = L.crabs.some(c => c.alive && c.x > p.x && c.x < p.x + 90);
   return { right: true, jump: p.ground && (wall || crab) };
 }
-['bay', 'volcano'].forEach(id => {
+['bay', 'volcano', 'ice'].forEach(id => {
   const L = I.create(id);
   const ev = run(L, L.d.time, bot);
   const pen = ev.filter(e => e.type === 'penalty' || e.type === 'pinch').length;
   assert(L.over === 'won', `${L.d.name}: vom Bot geschafft (${L.over || 'läuft noch'}, x=${Math.round(L.p.x)}, Zeit übrig ${Math.round(L.time)} s, Strafen ${pen})`);
 });
+
+// ---------- Eis ist rutschig ----------
+{
+  const L = I.create('ice');
+  run(L, 1, {});
+  run(L, 0.15, { right: true });
+  const iceSpeed = L.p.vx;
+  const M = I.create('bay');
+  run(M, 1, {});
+  run(M, 0.15, { right: true });
+  assert(iceSpeed < M.p.vx * 0.7, `Auf Eis läuft man langsamer an (${Math.round(iceSpeed)} < ${Math.round(M.p.vx)})`);
+  run(L, 0.5, {});
+  assert(Math.abs(L.p.vx) > 5, 'Auf Eis rutscht man nach');
+}

@@ -50,6 +50,7 @@ window.SF = window.SF || {};
       hp: o.hp, maxHp: o.maxHp,
       cannons: Math.max(1, o.cannons || 0), // ein Drehbassen-Geschütz hat jedes Schiff
       reload: { port: 0, star: 0 },
+      reloadTime: RELOAD * (o.reloadMul || 1), // Kanonierin an Bord: schneller
       aim: o.aim || 0, delay: o.delay || 0, aimClock: 0,
       colors: o.colors || null,
     };
@@ -93,7 +94,7 @@ window.SF = window.SF || {};
 
   function fire(b, s, side, events) {
     if (s.reload[side] > 0 || b.over) return false;
-    s.reload[side] = RELOAD;
+    s.reload[side] = s.reloadTime;
     const n = sideNormal(s, side);
     const spread = s.side === 'enemy' ? s.aim : 0.04;
     const v = s.speed * windFactor(b, s);
