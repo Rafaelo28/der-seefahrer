@@ -721,6 +721,18 @@ body[data-screen="island"] .klabauter-tip { bottom: auto; top: calc(70px + var(-
   background: #fffaf0; border: 3px dashed var(--parchment-line); border-radius: 14px; padding: 6px 0 6px .25em; margin: 6px 0 12px; user-select: text; -webkit-user-select: text; }
 .duel-wait { text-align: center; font-weight: 700; animation: twinkle 1.6s ease-in-out infinite; }
 
+.board-wrap { overflow-x: auto; margin-top: 10px; }
+.board { width: 100%; border-collapse: collapse; font-size: .92rem; }
+.board th, .board td { padding: 6px 6px; text-align: left; border-bottom: 1px dashed var(--parchment-line); white-space: nowrap; }
+.board th { font-size: .78rem; color: var(--ink-soft); }
+.board tr.me { background: rgba(240, 160, 48, .18); font-weight: 700; }
+.board-name { display: flex; align-items: center; gap: 6px; white-space: normal; }
+.board-fig svg { width: 34px; height: 34px; display: block; }
+.bottle-form { display: flex; gap: 12px; flex-wrap: wrap; }
+.bottle-form label { display: flex; flex-direction: column; font-weight: 700; gap: 4px; }
+.bottle-form input { width: 120px; min-height: 46px; padding: 6px 10px; border: 2px solid var(--parchment-line); border-radius: 10px; background: #fffaf0; font-size: 1.1rem; }
+.bottle-text { font-family: Georgia, serif; font-style: italic; font-size: 1.15rem; }
+
 /* ---------- Kajüte ---------- */
 .cabin-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
 .cabin-h1 { margin: 0; color: var(--gold); font-size: 2rem; }

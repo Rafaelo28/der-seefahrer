@@ -211,6 +211,29 @@ async function duel(browser, base) {
   await host.click('#dialog-layer .btn-primary');
   await guest.click('#dialog-layer .btn-primary');
   assert(await host.evaluate(() => SF.state.stats.duelWins === 1) && await guest.evaluate(() => SF.state.stats.duels === 1), 'Duell: Siege gezählt');
+  // Rangliste: Anna sieht Ben
+  await host.waitForSelector('#screen-sea:not([hidden])');
+  await host.evaluate(() => SF.cabin.open());
+  await host.waitForSelector('.board');
+  assert((await host.textContent('.board')).includes('Ben'), 'Rangliste: Freund nach dem Duell');
+  if (SHOTS) await shot(host, 'rangliste');
+  // Flaschenpost: Anna schickt Ben 50 Bernstein
+  await host.evaluate(() => { SF.state.amber = 100; SF.cabin.render(); });
+  await host.click('#bottle-write');
+  await host.fill('#bottle-amber', '50');
+  await host.fill('#dialog-layer textarea', 'Ahoi Ben!');
+  await host.click('#dialog-layer .btn-primary');
+  await host.waitForSelector('#dialog-layer textarea[readonly]');
+  const bottle = await host.inputValue('#dialog-layer textarea');
+  await host.click('#dialog-layer .btn-primary');
+  await guest.waitForSelector('#screen-sea:not([hidden])');
+  await guest.evaluate(() => { SF.state.amber = 0; SF.cabin.open(); });
+  await guest.click('#bottle-open');
+  await guest.fill('#dialog-layer textarea', bottle);
+  await guest.click('#dialog-layer .btn-primary');
+  await guest.waitForSelector('.bottle-text');
+  if (SHOTS) await shot(guest, 'flaschenpost');
+  assert(await host.evaluate(() => SF.state.amber === 50) && await guest.evaluate(() => SF.state.amber === 50), 'Flaschenpost: 50 Bernstein von Anna zu Ben');
   assert(errors.length === 0, `Duell: keine Konsolenfehler ${errors.join(' | ')}`);
   await context.close();
 }

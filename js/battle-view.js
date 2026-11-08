@@ -447,7 +447,7 @@ window.SF = window.SF || {};
     const st = d.start;
     // Gastgeber: player = er selbst. Freund: gespiegelt, player = er selbst (bekommt Schnappschüsse vom Gastgeber)
     b = d.role === 'host' ? SF.duel.createBattle(st) : SF.duel.createBattle({ seed: st.seed, wind: st.wind, host: st.guest, guest: st.host });
-    duel = { role: d.role, chan: d.chan, me: d.me, other: d.other, remote: {}, snap: null, clock: 0, sentAt: 0, lastIn: '', events: [], ended: false };
+    duel = { role: d.role, chan: d.chan, me: d.me, other: d.other, rec: d.rec, remote: {}, snap: null, clock: 0, sentAt: 0, lastIn: '', events: [], ended: false };
     d.chan.onMessage(msg => {
       if (!msg || !duel) return;
       if (msg.t === 'in' && duel.role === 'host') {
@@ -516,6 +516,8 @@ window.SF = window.SF || {};
       s.duels++;
       if (result === 'sunk') s.duelWins++;
     }
+    // Rekorde des Freundes für die Rangliste merken
+    if (SF.friends && d.rec) SF.friends.remember(Object.assign({}, d.rec, { name: d.other.name }), result === 'sunk' ? 'won' : result === 'lost' ? 'lost' : '');
     if (result === 'sunk') SF.sound.play('fanfare');
     else if (result === 'lost') SF.sound.play('lose');
     SF.save();
