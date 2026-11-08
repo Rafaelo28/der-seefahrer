@@ -21,6 +21,8 @@ Der ganze Plan mit allen Ausbaustufen steht in `PROJEKTPLAN.md` (Häkchen nach j
   neuen Wert setzen (Format `JJJJMMTTNN`), sonst mischen Browser alte und neue Dateien aus dem Zwischenspeicher.
 - **Spielstände bleiben kompatibel**: Neue Felder bekommen Standardwerte in `js/state.js`
   (`createDefaultState` / `applyData`), damit alte Spielstände weiter laden.
+- **Speicher**: `der-seefahrer-save` (Spielstand) und `der-seefahrer-meta` (bleibt über Spielstände hinweg, z. B.
+  „durchgespielt“ → Schwer-Modus; `js/meta.js`).
 - **Gamble-Klicker-Spielstand niemals ändern oder löschen** (`gamble-klicker-save` nur lesen, siehe
   `js/gk-import.js`). Das alte Geld ist nur in der Story weg.
 - **Kleine Zahlen**: Bernstein-Preise bleiben im Bereich von ein paar bis ein paar tausend. Fortschritt über
@@ -60,6 +62,7 @@ Der ganze Plan mit allen Ausbaustufen steht in `PROJEKTPLAN.md` (Häkchen nach j
   - `dive.test.js` – Tauchen: Luft, Muscheln nur offen, Quallen, Auftauchen, Perlen, Nachwachsen.
   - `cosmetics.test.js` – Cosmetics: nur mit Perlen, Kaufen legt an, kaputte Werte, Farben beim Zeichnen.
   - `crew.test.js` – Crew: anheuern, Vorteile (Proviant, Tempo, Nachladen), von Bord; alte Flotte und Umsteigen.
+  - `finale.test.js` – Finale: Holländer sinkt nicht, Long John bewacht die Kajüte, Ende, Geheimnisse, Bermuda, Schwer-Modus.
   - Neue Levels immer mit einem Bot im Test prüfen – so ist sicher, dass sie lösbar sind.
 - `node tests/browser.test.js` – im Browser mit Playwright (Chromium ist vorinstalliert), in der
   iPad-Emulation `devices['iPad (gen 7)']` hoch und quer: keine Konsolenfehler, kein seitliches Scrollen,

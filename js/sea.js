@@ -85,6 +85,11 @@ window.SF = window.SF || {};
     const events = SF.voyage.step(dt);
     events.forEach(handle);
     if (SF.ui.current() !== 'sea') return; // z. B. im Hafen angekommen
+    // Finale: der Fliegende Holländer im Nebelmeer
+    if (SF.finale && SF.battleView && !SF.battleView.busy() && SF.finale.ready()) {
+      SF.battleView.start(SF.finale.dutchman());
+      return;
+    }
     if (SF.pirates && SF.battleView && !SF.battleView.busy()) {
       const attacker = SF.pirates.step(dt);
       if (attacker) {
@@ -186,6 +191,11 @@ window.SF = window.SF || {};
       }
     }
     if (SF.chapter) SF.chapter.onDiscover(id);
+    if (id === 'bermuda' && SF.finale) {
+      const html = SF.finale.onBermuda();
+      setTimeout(() => SF.ui.dialog({ title: `${SF.icon('compass')} Das Bermuda-Dreieck`, html, buttons: [{ label: 'Unglaublich!', value: true, kind: 'primary' }] }), 300);
+    }
+    if (SF.finale) SF.finale.check();
     SF.save();
   }
 
@@ -274,6 +284,7 @@ window.SF = window.SF || {};
 
   // Ist ein Ort auf der Karte zu sehen?
   function placeKnown(p) {
+    if (p.hidden) return !!SF.state.visited[p.id]; // Geheimnis: erst nach dem Besuch auf der Karte
     return !!SF.state.visited[p.id] || SF.world.knownAt(p.x, p.y);
   }
 
@@ -377,6 +388,20 @@ window.SF = window.SF || {};
         ctx.moveTo(wake[i - 1].x, wake[i - 1].y);
         ctx.lineTo(wake[i].x, wake[i].y);
         ctx.stroke();
+      }
+    }
+
+    // Nebelbänke im Nebelmeer (ziehen langsam)
+    const mist = Wo.placeById.mist;
+    if (mist && mist.x > x0 - 600 && mist.x < x1 + 600 && mist.y > y0 - 600 && mist.y < y1 + 600) {
+      for (let i = 0; i < 9; i++) {
+        const mx = mist.x + Math.sin(i * 2.1) * 260 + Math.sin(time * 0.15 + i) * 40;
+        const my = mist.y + Math.cos(i * 1.7) * 230;
+        const g = ctx.createRadialGradient(mx, my, 20, mx, my, 190);
+        g.addColorStop(0, 'rgba(225, 232, 240, .55)');
+        g.addColorStop(1, 'rgba(225, 232, 240, 0)');
+        ctx.fillStyle = g;
+        ctx.fillRect(mx - 190, my - 190, 380, 380);
       }
     }
 
@@ -646,10 +671,11 @@ window.SF = window.SF || {};
     // Wind: Pfeil zeigt, wohin der Wind weht
     const w = s.wind;
     if (w) {
-      const deg = Math.atan2(w.y, w.x) * 180 / Math.PI;
+      const crazy = SF.finale && SF.finale.compassCrazy(); // Bermuda-Dreieck: der Kompass dreht sich
+      const deg = crazy ? (time * 400) % 360 : Math.atan2(w.y, w.x) * 180 / Math.PI;
       $('hud-wind-arrow').style.transform = `rotate(${deg.toFixed(1)}deg)`;
       const rel = s.pos.dx * w.x + s.pos.dy * w.y;
-      SF.setText($('hud-wind-text'), rel > 0.35 ? 'Rückenwind' : rel < -0.35 ? 'Gegenwind' : 'Seitenwind');
+      SF.setText($('hud-wind-text'), crazy ? 'Kompass spinnt!' : rel > 0.35 ? 'Rückenwind' : rel < -0.35 ? 'Gegenwind' : 'Seitenwind');
     }
     SF.setHTML($('sea-goal'), SF.story.goalText() ? `${SF.icon('compass')} ${SF.story.goalText()}` : '');
     $('sea-goal').hidden = !SF.story.goalText();

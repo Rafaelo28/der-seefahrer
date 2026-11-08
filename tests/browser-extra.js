@@ -246,4 +246,39 @@ module.exports = async function (page, label, assert, shot) {
   assert((await page.textContent('#dialog-layer h2')).includes('Erwischt'), `${label}: Fiete erwischt`);
   await page.click('#dialog-layer .btn-primary');
   assert(await page.evaluate(() => SF.state.story.step === 'find-dragon' && !SF.crew.has('fiete')), `${label}: weiter zur Drachenküste`);
+
+  // Finale: der Fliegende Holländer im Nebelmeer
+  await page.click('#cabin-back');
+  await page.waitForSelector('#screen-harbor:not([hidden])');
+  await page.click('#harbor-leave');
+  await page.waitForSelector('#screen-sea:not([hidden])');
+  await page.evaluate(() => { SF.state.story.step = 'finale'; SF.state.pirates = []; const m = SF.world.placeById.mist; SF.state.pos.x = m.x - 100; SF.state.pos.y = m.y; SF.state.course = []; });
+  await page.waitForSelector('#dialog-layer h2', { timeout: 4000 });
+  assert((await page.textContent('#dialog-layer h2')).includes('Holländer'), `${label}: der Holländer taucht auf`);
+  await shot(page, `hollaender-${label}`);
+  await page.click('#dialog-layer .btn-primary');
+  await page.waitForSelector('#screen-battle:not([hidden])');
+  await page.waitForTimeout(300);
+  if (await page.isVisible('#bt-rotate-ok')) await page.click('#bt-rotate-ok');
+  await page.evaluate(() => { const b = SF.battleView.current(); b.enemy.hp = 20; b.enemy.x = b.player.x + 100; b.enemy.y = b.player.y; b.enemy.speed = 0; b.player.speed = 0; b.enemy.delay = 999; b.balls = []; });
+  await page.waitForTimeout(400);
+  await shot(page, `hollaender-schlacht-${label}`);
+  await page.waitForSelector('#bt-board:not([hidden])', { timeout: 3000 });
+  await page.click('#bt-board', { force: true });
+  await page.waitForSelector('#screen-boarding:not([hidden])');
+  await page.waitForTimeout(500);
+  await shot(page, `long-john-${label}`);
+  await page.evaluate(() => { const L = SF.boarding._level(); L.enemies.forEach(e => { e.alive = false; }); L.p.x = L.door.x - 10; L.p.y = L.door.y + 30; });
+  // Ende: Bildergeschichte, dann Abspann
+  await page.waitForSelector('#screen-story:not([hidden])', { timeout: 5000 });
+  await page.waitForTimeout(400);
+  await shot(page, `ende-${label}`);
+  assert(await page.evaluate(() => SF.state.story.step === 'done' && SF.crew.fleet().some(f => f.type === 'ghost')), `${label}: durchgespielt, Geisterschiff in der Flotte`);
+  await page.click('#story-skip');
+  await page.waitForSelector('#screen-credits:not([hidden])');
+  await page.waitForTimeout(3000);
+  await shot(page, `abspann-${label}`);
+  await noScroll('Abspann');
+  await page.click('#credits-done');
+  await page.waitForSelector('#screen-sea:not([hidden])');
 };

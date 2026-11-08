@@ -31,7 +31,7 @@ window.SF = window.SF || {};
     const rnd = seeded(seed + kind.length * 101);
     const solids = [];
     const hatches = [];
-    const crew = { raider: 2, shark: 3, bluebeard: 4 }[kind] || 2;
+    const crew = { raider: 2, shark: 3, bluebeard: 4, dutchman: 4 }[kind] || 2;
     // Deck mit Luken
     const holes = [];
     for (let i = 0; i < (kind === 'raider' ? 1 : 2); i++) holes.push(560 + i * 640 + Math.floor(rnd() * 120));
@@ -63,6 +63,8 @@ window.SF = window.SF || {};
       enemies.push({ x: ex, y: (onQuarter ? QUARTER : DECK) - 44, w: 30, h: 44, vx: (i % 2 ? 1 : -1) * (60 + rnd() * 40), x0: ex - 110, x1: ex + 110, alive: true, boss: false });
     }
     if (kind === 'bluebeard') enemies.push({ x: 2180, y: QUARTER - 56, w: 38, h: 56, vx: -70, x0: 2010, x1: 2250, alive: true, boss: true, lives: 2 });
+    // Finale: Long John bewacht die Kajüte des Fliegenden Holländers (drei Treffer), die Tür ist erst danach offen
+    if (kind === 'dutchman') enemies.push({ x: 2150, y: QUARTER - 60, w: 40, h: 60, vx: -90, x0: 1990, x1: 2240, alive: true, boss: true, lives: 3, longjohn: true });
     // Gegner nicht über Luken laufen lassen
     enemies.forEach(e => hatches.forEach(h => {
       if (e.x0 < h.x + h.w && e.x1 > h.x) {
@@ -72,7 +74,8 @@ window.SF = window.SF || {};
       e.x = Math.min(e.x1, Math.max(e.x0, e.x));
     }));
     return {
-      kind, t: 0, time: TIME, over: '',
+      kind, t: 0, time: (kind === 'dutchman' ? 60 : TIME) * (SF.state && SF.state.hard ? 0.8 : 1), over: '',
+      locked: kind === 'dutchman', // Tür zu, solange Long John steht
       p: { x: 60, y: 160, vx: 0, vy: 0, ground: false, face: 1, hurt: 0, safeX: 60 },
       solids, hatches, enemies,
       door: { x: W - 110, y: QUARTER - 90, w: 60, h: 90 },
@@ -164,8 +167,9 @@ window.SF = window.SF || {};
         ev.push({ type: 'hurt' });
       }
     }
-    // Tür der Kapitänskajüte
-    if (overlap({ x: p.x, y: p.y, w: PW, h: PH }, L.door)) {
+    // Tür der Kapitänskajüte (beim Holländer erst, wenn Long John besiegt ist)
+    const open = !L.locked || !L.enemies.some(e => e.boss && e.alive);
+    if (open && overlap({ x: p.x, y: p.y, w: PW, h: PH }, L.door)) {
       L.over = 'won';
       ev.push({ type: 'won' });
     } else if (L.time <= 0) {
@@ -252,15 +256,17 @@ window.SF = window.SF || {};
 
   function draw(scale) {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    // Der Fliegende Holländer: Nacht, Nebel, graues Holz
+    const ghost = L.kind === 'dutchman';
     const sky = ctx.createLinearGradient(0, 0, 0, vh);
-    sky.addColorStop(0, '#7ab8e0');
-    sky.addColorStop(1, '#f4e0b0');
+    sky.addColorStop(0, ghost ? '#10161f' : '#7ab8e0');
+    sky.addColorStop(1, ghost ? '#4a5a6a' : '#f4e0b0');
     ctx.fillStyle = sky;
     ctx.fillRect(0, 0, vw, vh);
     ctx.setTransform(dpr * scale, 0, 0, dpr * scale, -camX * scale * dpr, dpr * (vh - 600 * scale));
     const viewW = vw / scale;
     // Meer im Hintergrund
-    ctx.fillStyle = '#2a6a8e';
+    ctx.fillStyle = ghost ? '#1a2a38' : '#2a6a8e';
     ctx.fillRect(camX - 10, 300, viewW + 20, 800);
     // Masten mit Segeln
     [500, 1250, 1900].forEach((mx, i) => {
@@ -288,20 +294,20 @@ window.SF = window.SF || {};
     // Deck, Kisten, Fässer
     L.solids.forEach(s => {
       if (s.k === 'deck') {
-        ctx.fillStyle = '#8a5a2b';
+        ctx.fillStyle = ghost ? '#56606a' : '#8a5a2b';
         ctx.fillRect(s.x, s.y, s.w, s.h + 400);
         ctx.fillStyle = '#6b3f1d';
         for (let x = s.x; x < s.x + s.w; x += 48) ctx.fillRect(x, s.y, 2, 16);
-        ctx.fillStyle = '#5a3416';
+        ctx.fillStyle = ghost ? '#343c44' : '#5a3416';
         ctx.fillRect(s.x, s.y + 16, s.w, s.h + 384);
       } else if (s.k === 'barrel') {
-        ctx.fillStyle = '#9a6a35';
+        ctx.fillStyle = ghost ? '#6a7480' : '#9a6a35';
         ctx.fillRect(s.x, s.y, s.w, s.h);
         ctx.fillStyle = '#3a2410';
         ctx.fillRect(s.x, s.y + 10, s.w, 4);
         ctx.fillRect(s.x, s.y + s.h - 14, s.w, 4);
       } else {
-        ctx.fillStyle = '#b08040';
+        ctx.fillStyle = ghost ? '#7a848e' : '#b08040';
         ctx.fillRect(s.x, s.y, s.w, s.h);
         ctx.strokeStyle = '#5a3a10';
         ctx.lineWidth = 3;
@@ -336,24 +342,41 @@ window.SF = window.SF || {};
     ctx.beginPath();
     ctx.arc(d.x + d.w - 12, d.y + d.h / 2, 5, 0, Math.PI * 2);
     ctx.fill();
-    SF.icons.draw(ctx, 'chest', d.x + d.w / 2, d.y - 22, 34);
+    const locked = L.locked && L.enemies.some(e => e.boss && e.alive);
+    SF.icons.draw(ctx, locked ? 'lock' : 'chest', d.x + d.w / 2, d.y - 22, 34);
     // Piraten
     L.enemies.forEach(e => {
       if (!e.alive) return;
       const bob = Math.sin(time * 10 + e.x) * 2;
-      ctx.fillStyle = e.boss ? '#1f3a7a' : '#7a1f1f';
+      const ghost = L.kind === 'dutchman';
+      ctx.fillStyle = e.longjohn ? '#8a1c1c' : e.boss ? '#1f3a7a' : ghost ? '#3a4a5a' : '#7a1f1f';
       ctx.fillRect(e.x, e.y + e.h * 0.4 + bob, e.w, e.h * 0.6);
-      ctx.fillStyle = '#f2c9a0';
+      ctx.fillStyle = ghost && !e.longjohn ? '#eeeee6' : '#f2c9a0'; // Skelett-Crew auf dem Holländer
       ctx.beginPath();
       ctx.arc(e.x + e.w / 2, e.y + e.h * 0.25 + bob, e.w * 0.38, 0, Math.PI * 2);
       ctx.fill();
-      ctx.fillStyle = e.boss ? '#1a2a60' : '#c0392b';
+      ctx.fillStyle = e.longjohn ? '#16181d' : e.boss ? '#1a2a60' : ghost ? '#2a3a4a' : '#c0392b';
       ctx.fillRect(e.x + 2, e.y + bob, e.w - 4, e.h * 0.14);
       ctx.fillStyle = '#111';
       ctx.fillRect(e.x + e.w / 2 + (e.vx > 0 ? 2 : -8), e.y + e.h * 0.22 + bob, 6, 4);
-      if (e.boss) {
+      if (e.boss && !e.longjohn) {
         ctx.fillStyle = '#2c4a9a';
         ctx.fillRect(e.x + 4, e.y + e.h * 0.32 + bob, e.w - 8, 10); // blauer Bart
+      }
+      if (e.longjohn) {
+        // Long John: Dreispitz, Papagei auf der Schulter, Lebenspunkte als Herzen
+        ctx.fillStyle = '#16181d';
+        ctx.beginPath();
+        ctx.moveTo(e.x - 6, e.y + 2 + bob);
+        ctx.lineTo(e.x + e.w / 2, e.y - 12 + bob);
+        ctx.lineTo(e.x + e.w + 6, e.y + 2 + bob);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = '#2e8b57';
+        ctx.beginPath();
+        ctx.ellipse(e.x + e.w - 2, e.y + e.h * 0.36 + bob, 7, 10, 0, 0, Math.PI * 2);
+        ctx.fill();
+        for (let k = 0; k < e.lives; k++) SF.icons.draw(ctx, 'star', e.x + e.w / 2 + (k - (e.lives - 1) / 2) * 18, e.y - 26 + bob, 16);
       }
     });
     // Spielfigur (blinkt nach einem Treffer)

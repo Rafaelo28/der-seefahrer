@@ -41,7 +41,16 @@ window.SF = window.SF || {};
     const k = SF.pirates.KINDS[p.kind];
     SF.voyage.setCourse([]);
     SF.sound.play('alarm');
-    await SF.ui.dialog({
+    if (p.kind === 'dutchman') {
+      await SF.ui.dialog({
+        title: `${SF.icon('skull')} Der Fliegende Holländer!`,
+        html: `<p>Aus dem Nebel gleitet ein Schiff mit zerfetzten, bleichen Segeln. ${SF.state.gk && SF.state.gk.ships.includes('ghost')
+          ? 'Das ist <b>dein altes Geisterschiff aus Gamble Klicker</b>!' : 'Ein Geisterschiff!'} An Deck steht <b>Long John</b> und lacht.</p>
+          <p>„Den Holländer kann man nicht versenken, Landratte!“</p>
+          <p class="muted small">Das stimmt: Schieß ihn schwer an, dann <b>entere</b> ihn und besiege Long John.</p>`,
+        buttons: [{ label: `${SF.icon('swords')} Auf ihn!`, value: true, kind: 'primary' }],
+      });
+    } else await SF.ui.dialog({
       title: `${SF.icon('skull')} ${SF.escape(p.name)} greift an!`,
       html: `<p>${k.name === p.name ? '' : `Ein ${k.name} in einer ${SF.ships.byId[k.ship].name}. `}Kopfgeld: ${SF.amberHTML(k.bounty)}</p>
         <p class="muted small">Steuern: Finger aufs Wasser halten. Feuern: Backbord (links) und Steuerbord (rechts), wenn der Gegner neben dir ist.
@@ -145,6 +154,15 @@ window.SF = window.SF || {};
     if (ending) return;
     ending = true;
     const out = SF.pirates.resolve(pirate, result, b.player.hp);
+    if (pirate.kind === 'dutchman') {
+      SF.finale.afterBattle(result);
+      if (result === 'boarded') {
+        // Long John besiegt: weiter mit dem Ende (Bildergeschichte und Abspann)
+        SF.save();
+        setTimeout(() => { b = null; SF.finale.ending(); }, 700);
+        return;
+      }
+    }
     const k = SF.pirates.KINDS[pirate.kind];
     const goods = o => Object.entries(o).map(([g, n]) => `${n}× ${SF.icon(SF.trade.byId[g].icon)} ${SF.trade.byId[g].name}`).join(', ');
     let title = '';
@@ -182,6 +200,7 @@ window.SF = window.SF || {};
       b = null;
       if (out.harbor) SF.harbor.open(out.harbor);
       else SF.sea.open();
+      if (SF.finale) SF.finale.check();
     }, result === 'fled' || result === 'repelled' ? 200 : 900);
     void k;
   }

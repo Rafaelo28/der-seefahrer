@@ -12,6 +12,9 @@ window.SF = window.SF || {};
       sail: '#7a1f1f', names: ['Haifisch-Hein', 'Säbel-Svenja', 'Eisenhaken-Ole'] },
     bluebeard: { name: 'Käpt’n Blaubart', ship: 'frigate', hp: 150, cannons: 6, aim: 0.05, delay: 0.35, speed: 60, bounty: 160, cargo: 6,
       sail: '#1f3a7a', names: ['Käpt’n Blaubart'], boss: true },
+    // Finale: der Fliegende Holländer (Long Johns Geisterschiff) – sinkt nicht, man muss ihn entern
+    dutchman: { name: 'Der Fliegende Holländer', ship: 'ghost', hp: 240, cannons: 8, aim: 0.05, delay: 0.3, speed: 66, bounty: 300, cargo: 0,
+      sail: '#9ab8d8', names: ['Der Fliegende Holländer'], boss: true, noSink: true },
   };
 
   // Gebiete: Mittelpunkt, Radius, welche Piraten, wie viele gleichzeitig
@@ -125,7 +128,9 @@ window.SF = window.SF || {};
   // Gegner-Angaben für die Schlacht
   function enemyFor(p) {
     const k = KINDS[p.kind];
-    return { type: k.ship, hp: k.hp, maxHp: k.hp, cannons: k.cannons, aim: k.aim, delay: k.delay, speed: k.speed, colors: { sail: k.sail } };
+    const hard = SF.state.hard ? 1.5 : 1; // Schwer-Modus: stärkere Gegner
+    const hp = Math.round(k.hp * hard);
+    return { type: k.ship, hp, maxHp: hp, cannons: k.cannons, aim: k.aim / hard, delay: k.delay / hard, speed: k.speed, colors: { sail: k.sail }, noSink: !!k.noSink };
   }
 
   // Ergebnis der Schlacht anwenden; gibt eine Beschreibung zurück
@@ -136,9 +141,10 @@ window.SF = window.SF || {};
     s.ship.hp = Math.max(1, Math.round(playerHp));
     s.stats.battles = (s.stats.battles || 0) + 1;
     if (result === 'sunk' || result === 'boarded') {
-      list().splice(list().indexOf(p), 1);
+      const i = list().indexOf(p);
+      if (i >= 0) list().splice(i, 1);
       s.pirateClock = s.pirateClock || {};
-      s.pirateClock[p.zone] = s.seaTime + RESPAWN;
+      if (p.zone) s.pirateClock[p.zone] = s.seaTime + RESPAWN;
       s.stats.wins = (s.stats.wins || 0) + 1;
       if (result === 'boarded') {
         out.amber = SF.amber.add(k.bounty);

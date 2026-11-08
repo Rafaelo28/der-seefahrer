@@ -5,12 +5,12 @@ const Wo = SF.world;
 
 // ---------- Orte ----------
 {
-  assert(Wo.PLACES.length === 8, '8 Orte: 3 Häfen und die Ziele aus Gamble Klicker');
+  assert(Wo.PLACES.length === 10, '10 Orte: 3 Häfen, die Ziele aus Gamble Klicker, Nebelmeer und Bermuda-Dreieck');
   ['bay', 'reef', 'smuggler', 'volcano', 'ice', 'dragon'].forEach(id => assert(Wo.placeById[id] && Wo.placeById[id].gk, `Ziel aus Gamble Klicker: ${id}`));
   assert(Wo.PLACES.filter(p => p.harbor).length === 3, 'Drei Häfen');
   Wo.PLACES.forEach(p => {
     assert(Wo.isWater(p.x, p.y), `${p.name} liegt im Wasser (${p.x}, ${p.y})`);
-    assert(Wo.isLand(p.x, p.y, 90) || p.id === 'ice' || p.id === 'reef', `${p.name} liegt an einer Küste`);
+    assert(Wo.isLand(p.x, p.y, 90) || p.id === 'ice' || p.id === 'reef' || p.open, `${p.name} liegt an einer Küste`);
   });
   assert(Wo.placeNear(Wo.START.x + 20, Wo.START.y - 10).id === 'dublone', 'Ort in der Nähe finden');
   assert(Wo.placeNear(1600, 1500, 50) === null, 'Kein Ort in der Nähe');

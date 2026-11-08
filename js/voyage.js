@@ -80,7 +80,7 @@ window.SF = window.SF || {};
 
   // Wie weit reicht der Proviant noch? (Karteneinheiten)
   // Wie weit ein Fass reicht (Smutje Fiete kocht sparsamer)
-  const foodDist = () => FOOD_DIST * (SF.crew ? SF.crew.foodMul() : 1);
+  const foodDist = () => FOOD_DIST * (SF.crew ? SF.crew.foodMul() : 1) * (st().hard ? 0.8 : 1);
   const range = () => st().food * foodDist();
 
   // ---------- Kurs ----------

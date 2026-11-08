@@ -53,6 +53,7 @@ window.SF = window.SF || {};
       reloadTime: RELOAD * (o.reloadMul || 1), // Kanonierin an Bord: schneller
       aim: o.aim || 0, delay: o.delay || 0, aimClock: 0,
       colors: o.colors || null,
+      noSink: !!o.noSink, // Geisterschiff: sinkt nicht, man muss entern
     };
   }
 
@@ -211,7 +212,7 @@ window.SF = window.SF || {};
       ball.life -= dt;
       const target = ball.from === 'player' ? e : p;
       if (inHull(target, ball.x, ball.y)) {
-        target.hp = Math.max(0, target.hp - BALL_DAMAGE);
+        target.hp = Math.max(target.noSink ? 1 : 0, target.hp - BALL_DAMAGE);
         b.hits[ball.from]++;
         events.push({ type: 'hit', on: target.side, x: ball.x, y: ball.y });
         b.balls.splice(i, 1);
