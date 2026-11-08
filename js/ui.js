@@ -56,16 +56,24 @@ window.SF = window.SF || {};
       const input = layer.querySelector('.dialog-input');
       if (input && opts.readonly) input.addEventListener('focus', () => input.select());
       const close = value => {
+        if (openClose === close) openClose = null;
         layer.hidden = true;
         layer.innerHTML = '';
         resolve(opts.input ? { value, text: input ? input.value : '' } : value);
       };
+      openClose = close;
       layer.querySelectorAll('[data-i]').forEach(btn => btn.addEventListener('click', () => {
         if (SF.sound) SF.sound.play('tap');
         close(buttons[Number(btn.dataset.i)].value);
       }));
       if (opts.onOpen) opts.onOpen(layer);
     });
+  }
+
+  // Offenes Fenster von außen schließen (z. B. „Warte auf deinen Freund …“, sobald er da ist)
+  let openClose = null;
+  function closeDialog(value) {
+    if (openClose) openClose(value);
   }
 
   const confirm = (title, html, yes = 'Ja', no = 'Abbrechen', kind = 'primary') =>
@@ -139,6 +147,6 @@ window.SF = window.SF || {};
     });
   }
 
-  SF.ui = { $, show, register, current: () => current, toast, dialog, confirm, copy, KLABAUTER, tip, tipOnce, hideTip };
+  SF.ui = { $, show, register, current: () => current, toast, dialog, closeDialog, confirm, copy, KLABAUTER, tip, tipOnce, hideTip };
   SF.toast = toast;
 })();

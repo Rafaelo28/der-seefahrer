@@ -37,6 +37,8 @@ Der ganze Plan mit allen Ausbaustufen steht in `PROJEKTPLAN.md` (Häkchen nach j
 - **Physik in Online-Spielen** nur mit + − × ÷ und `Math.sqrt` rechnen, keine Winkelfunktionen in der
   Simulation – sonst kommen auf verschiedenen Geräten andere Ergebnisse heraus. (Fürs Zeichnen sind
   Winkelfunktionen erlaubt; Schiffe werden mit Richtungsvektoren gedreht.)
+- **Online mit Freunden** (`js/net.js`, `js/duel.js`): PeerJS 1.5.4 von cdnjs (erst beim Online-Spielen geladen),
+  Kennung `der-seefahrer-duell-<CODE>`. Alles, was vom Freund kommt, mit `SF.duel.cleanShip` prüfen.
 - **Besucherzählung** (`js/analytics.js`, GoatCounter): nur Seitenaufrufe und Ereignisse wie
   `SF.track('seefahrer-…')` – niemals Namen, Raum-Codes, Spieler-IDs oder Spielstände mitsenden.
 - **Keine Emojis** (Wunsch von Rafaelo28): Symbole kommen aus `js/icons.js` – im HTML `SF.icon('name')` bzw.
@@ -63,8 +65,11 @@ Der ganze Plan mit allen Ausbaustufen steht in `PROJEKTPLAN.md` (Häkchen nach j
   - `cosmetics.test.js` – Cosmetics: nur mit Perlen, Kaufen legt an, kaputte Werte, Farben beim Zeichnen.
   - `crew.test.js` – Crew: anheuern, Vorteile (Proviant, Tempo, Nachladen), von Bord; alte Flotte und Umsteigen.
   - `finale.test.js` – Finale: Holländer sinkt nicht, Long John bewacht die Kajüte, Ende, Geheimnisse, Bermuda, Schwer-Modus.
+  - `duel.test.js` – Online-Seeschlacht: zweites Schiff vom Menschen gesteuert, Schnappschuss gespiegelt, Schutz vor
+    kaputten Angaben, Raum-Codes, lokale Verbindung.
   - Neue Levels immer mit einem Bot im Test prüfen – so ist sicher, dass sie lösbar sind.
 - `node tests/browser.test.js` – im Browser mit Playwright (Chromium ist vorinstalliert), in der
   iPad-Emulation `devices['iPad (gen 7)']` hoch und quer: keine Konsolenfehler, kein seitliches Scrollen,
   Prolog bis zur Seekarte durchspielen, Hafen, Kneipe, Markt, Werft, Kajüte, Seeschlacht und Entern.
   Mehrere `.dialog` liegen versteckt im HTML: Fenster im Test über `#dialog-layer …` ansprechen.
+  Am Ende ein echtes Duell zwischen zwei Seiten (lokale Verbindung über `?lokal=1`, kein Internet nötig).

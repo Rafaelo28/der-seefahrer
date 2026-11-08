@@ -290,8 +290,10 @@ grünen Tests, einem Pull Request nach `main` und dem Merge.
 
 ### Stufe 5 – Online mit Freunden
 
-- [ ] **5.1 Online-Seeschlacht** über Raum-Code (`js/mp/room.js` aus Gamble Klicker anpassen), gleiche Physik
-      auf allen Geräten, Cosmetics sichtbar.
+- [x] **5.1 Online-Seeschlacht** über Raum-Code (4 Zeichen, in der Kajüte): Der Gastgeber rechnet die Schlacht
+      (gleiche Physik wie gegen Computer-Piraten) und schickt 15-mal pro Sekunde einen Schnappschuss, der Freund schickt
+      Lenkung und Schüsse. Beide segeln ihr eigenes Schiff mit Crew und Cosmetics, mit heilem Rumpf. Kein Einsatz,
+      Siege werden gezählt. Verbindung über PeerJS (wie Gamble Klicker), zum Testen lokal zwischen zwei Tabs (`?lokal=1`).
 - [ ] **5.2 Flaschenpost:** Geschenke und Nachrichten als Code.
 - [ ] **5.3 Bestzeiten und Ranglisten** mit Freunden, Beute teilen wie die Likedeeler.
 
