@@ -230,7 +230,7 @@ window.SF = window.SF || {};
       else if (e.type === 'fall') { SF.sound.play('splash'); SF.ui.toast('In die Luke gefallen! −3 Sekunden', 1400); }
     });
     // Kamera folgt der Figur
-    const scale = vh / 600;
+    const scale = Math.min(vh / 600, vw / 900);
     const viewW = vw / scale;
     camX += (Math.max(0, Math.min(W - viewW, L.p.x - viewW * 0.35)) - camX) * Math.min(1, dt * 6);
     draw(scale);
@@ -257,11 +257,11 @@ window.SF = window.SF || {};
     sky.addColorStop(1, '#f4e0b0');
     ctx.fillStyle = sky;
     ctx.fillRect(0, 0, vw, vh);
-    ctx.setTransform(dpr * scale, 0, 0, dpr * scale, -camX * scale * dpr, 0);
+    ctx.setTransform(dpr * scale, 0, 0, dpr * scale, -camX * scale * dpr, dpr * (vh - 600 * scale));
     const viewW = vw / scale;
     // Meer im Hintergrund
     ctx.fillStyle = '#2a6a8e';
-    ctx.fillRect(camX - 10, 300, viewW + 20, 400);
+    ctx.fillRect(camX - 10, 300, viewW + 20, 800);
     // Masten mit Segeln
     [500, 1250, 1900].forEach((mx, i) => {
       ctx.fillStyle = '#5a3a1a';
@@ -289,11 +289,11 @@ window.SF = window.SF || {};
     L.solids.forEach(s => {
       if (s.k === 'deck') {
         ctx.fillStyle = '#8a5a2b';
-        ctx.fillRect(s.x, s.y, s.w, s.h);
+        ctx.fillRect(s.x, s.y, s.w, s.h + 400);
         ctx.fillStyle = '#6b3f1d';
         for (let x = s.x; x < s.x + s.w; x += 48) ctx.fillRect(x, s.y, 2, 16);
         ctx.fillStyle = '#5a3416';
-        ctx.fillRect(s.x, s.y + 16, s.w, s.h - 16);
+        ctx.fillRect(s.x, s.y + 16, s.w, s.h + 384);
       } else if (s.k === 'barrel') {
         ctx.fillStyle = '#9a6a35';
         ctx.fillRect(s.x, s.y, s.w, s.h);
@@ -324,7 +324,7 @@ window.SF = window.SF || {};
     // Luken (dunkel)
     L.hatches.forEach(h => {
       ctx.fillStyle = '#140c06';
-      ctx.fillRect(h.x, DECK, h.w, 120);
+      ctx.fillRect(h.x, DECK, h.w, 520);
     });
     // Tür der Kapitänskajüte
     const d = L.door;

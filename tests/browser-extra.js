@@ -157,4 +157,35 @@ module.exports = async function (page, label, assert, shot) {
   await page.click('#dialog-layer .btn-primary');
   await page.waitForSelector('#screen-sea:not([hidden])');
   assert(await page.evaluate(a => SF.state.amber >= a + 70 && SF.state.stats.wins === 1, amberB), `${label}: Kopfgeld bekommen`);
+
+  // Insel: an der Nahen Bucht an Land gehen
+  await page.evaluate(() => { const p = SF.world.placeById.bay; SF.state.pos.x = p.x; SF.state.pos.y = p.y; SF.state.course = []; });
+  await page.waitForSelector('#sea-land:not([hidden])', { timeout: 3000 });
+  await page.click('#sea-land');
+  await page.waitForSelector('#screen-island:not([hidden])');
+  await page.dispatchEvent('#is-right', 'pointerdown');
+  await page.waitForTimeout(900);
+  await page.dispatchEvent('#is-right', 'pointerup');
+  await shot(page, `insel-${label}`);
+  await noScroll('Insel');
+  await page.evaluate(() => { const L = SF.island._level(); L.p.x = L.chest.x; L.p.y = L.chest.y - 4; });
+  await page.waitForSelector('#dialog-layer h2', { timeout: 4000 });
+  assert((await page.textContent('#dialog-layer h2')).includes('Schatz'), `${label}: Schatz auf der Insel`);
+  await page.click('#dialog-layer .btn-primary');
+  await page.waitForSelector('#screen-sea:not([hidden])');
+
+  // Tauchen am Korallenriff
+  await page.evaluate(() => { const p = SF.world.placeById.reef; SF.state.pos.x = p.x; SF.state.pos.y = p.y; SF.state.course = []; });
+  await page.waitForSelector('#sea-dive:not([hidden])', { timeout: 3000 });
+  await page.click('#sea-dive');
+  await page.waitForSelector('#screen-dive:not([hidden])');
+  await page.evaluate(() => { const D = SF.dive._state(); D.y = 900; D.pearls = 2; });
+  await page.waitForTimeout(600);
+  await shot(page, `tauchen-${label}`);
+  await noScroll('Tauchen');
+  await page.evaluate(() => { const D = SF.dive._state(); D.t = 5; D.y = 40; });
+  await page.waitForSelector('#dialog-layer h2', { timeout: 4000 });
+  await page.click('#dialog-layer .btn-primary');
+  await page.waitForSelector('#screen-sea:not([hidden])');
+  assert(await page.evaluate(() => SF.state.pearls >= 2), `${label}: Perlen an Bord`);
 };

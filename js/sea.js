@@ -658,6 +658,14 @@ window.SF = window.SF || {};
     $('sea-dock').hidden = !near;
     if (near) SF.setHTML($('sea-dock'), `⚓ ${near.name} anlaufen`);
     $('sea-stop').hidden = !SF.voyage.moving();
+    // Insel mit Jump'n'Run in der Nähe? (nur wenn das Schiff steht)
+    const isle = SF.island && !SF.voyage.moving() ? SF.world.placeNear(s.pos.x, s.pos.y, 170, p => !!SF.island.LEVELS[p.id]) : null;
+    $('sea-land').hidden = !isle || !!near;
+    const reef = SF.dive && !SF.voyage.moving() ? SF.world.placeNear(s.pos.x, s.pos.y, 170, p => p.id === 'reef') : null;
+    $('sea-dive').hidden = !reef;
+    $('hud-pearls').hidden = !s.pearls;
+    if (s.pearls) SF.setText($('hud-pearls'), `🦪 ${s.pearls}`);
+    if (isle) SF.setHTML($('sea-land'), `🏝️ ${isle.name}: an Land gehen`);
   }
 
   // ---------- Bedienung ----------
@@ -841,6 +849,19 @@ window.SF = window.SF || {};
       const s = SF.state;
       const near = SF.world.placeNear(s.pos.x, s.pos.y, 130, p => p.harbor);
       if (near) dock(near.id);
+    });
+    $('sea-land').addEventListener('click', () => {
+      const s = SF.state;
+      const isle = SF.world.placeNear(s.pos.x, s.pos.y, 170, p => !!SF.island.LEVELS[p.id]);
+      if (!isle) return;
+      SF.sound.play('tap');
+      SF.voyage.setCourse([]);
+      SF.island.start(isle.id);
+    });
+    $('sea-dive').addEventListener('click', () => {
+      SF.sound.play('splash');
+      SF.voyage.setCourse([]);
+      SF.dive.start('reef');
     });
     $('sea-cabin').addEventListener('click', () => { SF.sound.play('tap'); if (SF.cabin) SF.cabin.open(); });
   }

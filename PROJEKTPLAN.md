@@ -247,11 +247,14 @@ grünen Tests, einem Pull Request nach `main` und dem Merge.
 
 ### Stufe 3 – Inseln (Jump'n'Run mit Enterhaken), Tauchen und Perlen
 
-- [ ] **3.1 Jump'n'Run-Grundlage (quer):** Laufen, Springen, Enterhaken (Antippen = Haken fliegt hin,
-      Schwingen über Pendel-Physik). Level als kleine Daten-Tabellen.
-- [ ] **3.2 Insel-Level:** Nahe Bucht, Vulkaninsel, Eismeer … je ein Level mit Schatz am Ende.
-- [ ] **3.3 Tauchen:** Mit dem Finger ziehen, Taucher schwimmt hin; Luft und Licht knapp; Perlen und Wrackteile.
-- [ ] **3.4 Perlen** als zweite Währung (nur für Cosmetics). Bestzeiten je Level.
+- [x] **3.1 Jump'n'Run-Grundlage (quer):** Laufen, Springen, Enterhaken (Hakenring antippen = Haken fliegt hin,
+      das Seil zieht straff, Schwingen über Pendel-Physik, loslassen mit „Springen“). Level als kleine Daten-Tabellen.
+- [x] **3.2 Insel-Level:** Nahe Bucht (Wasser, Krabben) und Vulkaninsel (Lava) mit Schatzkiste und Bestzeit;
+      „An Land gehen“, wenn das Schiff dort steht. Ein Bot im Test schafft beide. *Eismeer und Drachenküste folgen
+      mit Stufe 4.*
+- [x] **3.3 Tauchen** am Korallenriff: Finger ziehen = Taucher schwimmt hin; Luft knapp, je tiefer desto dunkler;
+      Muscheln öffnen sich nur zeitweise, Quallen kosten Luft, Wrack mit Muscheln; Muscheln wachsen nach 2 Tagen nach.
+- [x] **3.4 Perlen** als zweite Währung (nur für Cosmetics; ohne Luft nur die Hälfte). Bestzeiten je Insel.
 
 ### Stufe 4 – Story-Kapitel, Verräter, alte Flotte, Cosmetics, Ende
 

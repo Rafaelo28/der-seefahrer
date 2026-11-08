@@ -53,6 +53,9 @@ Der ganze Plan mit allen Ausbaustufen steht in `PROJEKTPLAN.md` (Häkchen nach j
   - `story.test.js` – Story-Schritte, Kneipen-Gespräche, Salz-Auftrag, Vulkaninsel, Logbuch.
   - `battle.test.js` – Seeschlacht (rechnet überall gleich, keine Winkelfunktionen), Piraten auf der Karte, Beute, Werft.
   - `boarding.test.js` – Entern: Springen, Piraten von oben, Luken, Tür, Zeit, Deck ist schaffbar.
+  - `island.test.js` – Inseln: Enterhaken und Pendel, Gefahren, Krabben, Truhe, Bestzeit; ein Bot schafft jede Insel.
+  - `dive.test.js` – Tauchen: Luft, Muscheln nur offen, Quallen, Auftauchen, Perlen, Nachwachsen.
+  - Neue Levels immer mit einem Bot im Test prüfen – so ist sicher, dass sie lösbar sind.
 - `node tests/browser.test.js` – im Browser mit Playwright (Chromium ist vorinstalliert), in der
   iPad-Emulation `devices['iPad (gen 7)']` hoch und quer: keine Konsolenfehler, kein seitliches Scrollen,
   Prolog bis zur Seekarte durchspielen, Hafen, Kneipe, Markt, Werft, Kajüte, Seeschlacht und Entern.
