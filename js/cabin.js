@@ -47,7 +47,7 @@ window.SF = window.SF || {};
           <div class="cabin-title">${gk ? SF.rank.icon(gk.rank) + ' ' : ''}${title}</div>
           <div class="cabin-ship">${SF.ships.sideSVG(t.id)}<span><b>${t.name}</b><br>
             <span class="small">Tempo ${Math.round(st.speed)} · 📦 ${SF.ships.cargoCount()}/${st.hold} · 🛢️ ${SF.formatDecimal(s.food, 1, 1)}/${st.food} · 💣 ${st.cannons}/${st.cannonSlots}</span></span></div>
-          <div>${SF.amberHTML(s.amber)}</div>
+          <div>${SF.amberHTML(s.amber)}${s.pearls ? ` · 🦪 ${SF.formatInt(s.pearls)} Perlen` : ''}</div>
           ${wallpaper}
         </div>
       </div>
@@ -64,6 +64,9 @@ window.SF = window.SF || {};
           <dt>Orte entdeckt</dt><dd>${Object.keys(s.visited).length} / ${SF.world.PLACES.length}</dd>
           <dt>Handel</dt><dd>${SF.formatInt(s.stats.trades)} Kisten · Gewinn ${SF.amberHTML(s.stats.profit)}</dd>
           <dt>Treibgut</dt><dd>${SF.formatInt(s.stats.flotsam)}</dd>
+          <dt>Seeschlachten</dt><dd>${SF.formatInt(s.stats.wins || 0)} gewonnen von ${SF.formatInt(s.stats.battles || 0)} · Kopfgeld ${SF.amberHTML(s.stats.bounty || 0)}</dd>
+          <dt>Tauchgänge</dt><dd>${SF.formatInt(s.stats.dives || 0)} · ${SF.formatInt(s.stats.pearls || 0)} Perlen</dd>
+          <dt>Inseln</dt><dd>${Object.entries(s.islands || {}).map(([id, r]) => `${SF.island.LEVELS[id].name}: Bestzeit ${SF.formatDecimal(r.best, 1, 1)} s`).join(' · ') || '–'}</dd>
           <dt>Bernstein verdient</dt><dd>${SF.amberHTML(s.stats.amberEarned)}</dd>
           <dt>Spielzeit</dt><dd>${SF.formatDuration(s.playTime)}</dd>
         </dl>

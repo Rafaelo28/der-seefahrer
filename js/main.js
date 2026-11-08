@@ -73,6 +73,8 @@ window.SF = window.SF || {};
     if (SF.sea && SF.ui.current() === 'sea') SF.sea.frame(dt, now);
     if (SF.battleView && SF.ui.current() === 'battle') SF.battleView.frame(dt);
     if (SF.boarding && SF.ui.current() === 'boarding') SF.boarding.frame(dt);
+    if (SF.island && SF.ui.current() === 'island') SF.island.frame(dt);
+    if (SF.dive && SF.ui.current() === 'dive') SF.dive.frame(dt);
     requestAnimationFrame(frame);
   }
 
@@ -86,6 +88,8 @@ window.SF = window.SF || {};
     if (SF.cabin) SF.cabin.bind();
     if (SF.battleView) SF.battleView.bind();
     if (SF.boarding) SF.boarding.bind();
+    if (SF.island) SF.island.bind();
+    if (SF.dive) SF.dive.bind();
     $('soon-title').addEventListener('click', () => SF.newgame.showTitle());
     syncSoundButtons();
     // Speichern beim Verlassen (Tab wechseln, App schließen, Neuladen)
