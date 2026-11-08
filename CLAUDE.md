@@ -55,6 +55,7 @@ Der ganze Plan mit allen Ausbaustufen steht in `PROJEKTPLAN.md` (Häkchen nach j
   - `boarding.test.js` – Entern: Springen, Piraten von oben, Luken, Tür, Zeit, Deck ist schaffbar.
   - `island.test.js` – Inseln: Enterhaken und Pendel, Gefahren, Krabben, Truhe, Bestzeit; ein Bot schafft jede Insel.
   - `dive.test.js` – Tauchen: Luft, Muscheln nur offen, Quallen, Auftauchen, Perlen, Nachwachsen.
+  - `cosmetics.test.js` – Cosmetics: nur mit Perlen, Kaufen legt an, kaputte Werte, Farben beim Zeichnen.
   - Neue Levels immer mit einem Bot im Test prüfen – so ist sicher, dass sie lösbar sind.
 - `node tests/browser.test.js` – im Browser mit Playwright (Chromium ist vorinstalliert), in der
   iPad-Emulation `devices['iPad (gen 7)']` hoch und quer: keine Konsolenfehler, kein seitliches Scrollen,

@@ -526,7 +526,7 @@ body[data-screen="boarding"] .klabauter-tip { bottom: auto; top: calc(84px + var
 .harbor-icon { font-size: 2.2rem; }
 .harbor-head p { margin: 6px 0; }
 .harbor-stats { display: flex; flex-wrap: wrap; gap: 6px 18px; font-weight: 700; font-size: 1.05rem; }
-.harbor-tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 10px; }
+.harbor-tabs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 10px; }
 .harbor-tab {
   min-height: 54px;
   border: 2px solid var(--parchment-line);
@@ -648,6 +648,17 @@ body[data-screen="boarding"] .klabauter-tip { bottom: auto; top: calc(84px + var
 body[data-screen="dive"] .klabauter-tip { bottom: auto; top: calc(70px + var(--safe-top)); }
 body[data-screen="island"] .klabauter-tip { bottom: auto; top: calc(70px + var(--safe-top)); }
 
+/* ---------- Laden (Cosmetics) ---------- */
+.cos-slot { margin-bottom: 12px; }
+.cos-slot-name { font-weight: 800; margin-bottom: 6px; }
+.cos-items { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 8px; }
+.cos-item { display: flex; flex-direction: column; align-items: center; gap: 4px; min-height: 92px; padding: 8px; border: 2px solid var(--parchment-line); border-radius: 12px; background: rgba(255, 255, 255, .5); color: var(--ink); font: inherit; cursor: pointer; }
+.cos-item.active { border-color: var(--green); background: #d9ecc6; }
+.cos-item:disabled { opacity: .5; cursor: default; }
+.cos-swatch { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 50%; border: 2px solid rgba(0, 0, 0, .25); font-size: 1.3rem; background: #fff; }
+.cos-name { font-weight: 700; font-size: .9rem; }
+.cos-price { font-size: .82rem; color: var(--ink-soft); }
+
 /* ---------- Kajüte ---------- */
 .cabin-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
 .cabin-h1 { margin: 0; color: var(--gold); font-size: 2rem; }
@@ -706,7 +717,7 @@ body[data-screen="island"] .klabauter-tip { bottom: auto; top: calc(70px + var(-
   body { font-size: 16px; }
   .good { grid-template-columns: 1fr 1fr; }
   .good-name { grid-column: span 2; }
-  .harbor-tabs { grid-template-columns: repeat(2, 1fr); }
+  .harbor-tabs { grid-template-columns: repeat(3, 1fr); }
   .cabin-captain, .cabin-grid { grid-template-columns: 1fr; }
   .cabin-fig { max-width: 160px; margin: 0 auto; }
   .hud-btn-text, .hud-day { display: none; }
