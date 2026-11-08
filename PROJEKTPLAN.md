@@ -261,10 +261,18 @@ grünen Tests, einem Pull Request nach `main` und dem Merge.
 
 ### Stufe 4 – Story-Kapitel, Verräter, alte Flotte, Cosmetics, Ende
 
-- [ ] **4.1 Kapitel 1–3:** Spur des Diebes, neue Meeresgebiete (Eismeer, Drachenküste, Sargassosee,
-      Bermuda-Dreieck mit drehendem Kompass), Crew anheuern.
-- [ ] **4.2 Der Verräter:** Geld verschwindet aus der Schiffskasse; Hinweise sammeln; wer ist es?
-- [ ] **4.3 Die alte Flotte:** gestohlene Schiffe aus Gamble Klicker wiederfinden (Galeone, Geisterschiff …).
+- [x] **4.1a Kapitel 2 „Kalte Spur“:** Nach der Vulkaninsel holt man **Smutje Fiete** aus Port Dublone an Bord
+      (Proviant hält ein Viertel länger), segelt ins **Eismeer** und geht dort an Land (Insel mit rutschigem Eis).
+      Dort steckt eine **Galeone im Eis** und ein Logbuch von „L. J.“ – **Long John** – mit dem Satz „Unser Mann an Bord
+      verrät uns jeden Kurs“. Ein Bot im Test schafft die Eisinsel.
+- [x] **4.1b Crew:** Kanonierin Karla (Schmugglerinsel, schneller nachladen) und Navigator Nils (Bernsteinbucht,
+      schneller segeln) lassen sich ab Kapitel 2 anheuern. Crew in der Kajüte.
+- [ ] **4.2 Kapitel 3 „Der Verräter“:** Aus der Schiffskasse verschwindet Bernstein; drei Hinweise sammeln
+      (Mehlspuren an der Kasse, Frieda sah den Koch eine Flaschenpost werfen, Ede kennt Fiete als Long Johns Koch);
+      in der Kajüte den Verräter anklagen. Danach zur Drachenküste (Insel mit Feuer): Long Johns Versteck.
+- [x] **4.3a Die alte Flotte:** Wiedergefundene Schiffe liegen in der Werft, Umsteigen kostet nichts (jedes Schiff
+      behält Ausbau und Kanonen). Die Galeone aus dem Eis ist das erste. *Weitere Schiffe in Kapitel 3 und im Finale
+      (das Geisterschiff ist der Fliegende Holländer).*
 - [x] **4.4 Cosmetics-Laden** (vorgezogen, damit Perlen gleich etwas wert sind): Segel, Rumpf, Flagge, Galionsfigur
       (Meerjungfrau, John Pork, Drache, Krake), Kielwasser, Kanonenrauch – für Perlen, im Laden jedes Hafens.
       Zu sehen auf der Seekarte, in der Schlacht, in Werft und Kajüte. *Später: Muster für Segel.*

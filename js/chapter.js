@@ -1,5 +1,7 @@
-// Kapitel 1 „Die Spur“: Leute in den Kneipen der Häfen, der Salz-Auftrag von Einauge Ede und das verlassene Lager
-// an der Vulkaninsel (Ende von Stufe 1). Jede Person sagt je nach Story-Schritt etwas anderes.
+// Story-Kapitel: Leute in den Kneipen der Häfen, die je nach Story-Schritt etwas anderes sagen.
+// Kapitel 1 „Die Spur“: Frieda, Einauge Ede mit dem Salz-Auftrag, das verlassene Lager an der Vulkaninsel.
+// Kapitel 2 „Kalte Spur“: Smutje Fiete kommt an Bord, im Eismeer steckt eine Galeone im Eis – mit dem Logbuch von „L. J.“.
+// Außerdem: Crew zum Anheuern (Kanonierin Karla, Navigator Nils).
 window.SF = window.SF || {};
 
 (function () {
@@ -10,6 +12,9 @@ window.SF = window.SF || {};
     frieda: { name: 'Fischerin Frieda', fig: '1.2.0.0.0.8.0' },
     ede: { name: 'Einauge Ede', fig: '0.2.1.4.2.4.3' },
   };
+
+  // Crew-Mitglieder sprechen auch in den Kneipen (js/crew.js)
+  const who = id => PEOPLE[id] || (SF.crew && SF.crew.CREW[id]);
 
   const step = () => SF.story.step();
   const name = () => SF.escape(SF.state.captain.name || 'Kapitän');
@@ -38,6 +43,17 @@ window.SF = window.SF || {};
         ? `Du hast gestern ${s.lastDay.bread} Brote gekauft – für ${SF.formatLong(s.lastDay.start * 0.0003 * s.lastDay.bread)} Dublonen oder so. Heute kostet eins 1 Bernstein. Ha!`
         : 'Gestern kostete ein Brot eine Sextilliarde. Heute einen Bernstein. Ich komm nicht mehr mit!' });
     }
+    if (h === 'dublone' && step() === 'hire-cook' && !SF.crew.has('fiete')) {
+      out.push({ who: 'fiete', text: `Moin, ${name()}! Ich bin <b>Fiete</b>, Smutje. Ich hab gehört, du willst ins <b>Eismeer</b>? Ohne warme Suppe
+        erfriert deine Crew da oben! Nimm mich mit – mit mir hält der Proviant ein Viertel länger. Und ich will nicht mal Heuer.`,
+        action: { id: 'fiete-join', label: 'Willkommen an Bord, Fiete!' } });
+    }
+    hireable(h).forEach(id => {
+      const c = SF.crew.CREW[id];
+      out.push({ who: id, text: `Ich bin ${c.role === 'Kanonierin' ? 'die beste Kanonierin' : 'der beste Navigator'} zwischen hier und dem Eismeer.
+        Für ${SF.amberHTML(c.price)} Heuer komme ich mit. <span class="muted small">(${c.bonus})</span>`,
+        action: { id: 'hire-' + id, label: `Anheuern für ${SF.amberHTML(c.price)}`, disabled: !SF.amber.can(c.price) } });
+    });
     if (h === 'amberbay') {
       if (step() === 'find-amberbay') {
         out.push({ who: 'frieda', text: `Ein Schiff mit <b>schwarzen Segeln</b>? Ja! Das lag vor drei Tagen hier und hat Proviant geholt.
@@ -66,9 +82,35 @@ window.SF = window.SF || {};
     return out;
   }
 
+  // Wer lässt sich hier anheuern? (erst ab Kapitel 2, damit es am Anfang übersichtlich bleibt)
+  function hireable(h) {
+    if (!chapter2()) return [];
+    return Object.keys(SF.crew.CREW).filter(id => {
+      const c = SF.crew.CREW[id];
+      return c.price && c.harbor === h && !SF.crew.has(id) && SF.crew.data()[id] !== 'gone';
+    });
+  }
+
+  const LATER = ['hire-cook', 'find-ice', 'traitor'];
+  const chapter2 = () => LATER.includes(step()) || !!SF.state.story.flags.chapter2;
+
   // Aktion in der Kneipe; gibt einen Text für die Meldung zurück (oder '')
   function act(h, id) {
     const s = SF.state;
+    if (id === 'fiete-join' && h === 'dublone' && step() === 'hire-cook') {
+      SF.crew.join('fiete');
+      SF.story.setStep('find-ice', 'Smutje Fiete ist an Bord. Mit warmer Suppe geht es ins Eismeer!');
+      SF.sound.play('fanfare');
+      return 'Fiete ist an Bord! Neues Ziel: das Eismeer im Norden.';
+    }
+    if (id.startsWith('hire-')) {
+      const c = id.slice(5);
+      if (!hireable(h).includes(c)) return '';
+      if (!SF.crew.hire(c)) { SF.sound.play('denied'); return 'Zu wenig Bernstein für die Heuer.'; }
+      SF.story.log(`${SF.crew.CREW[c].name} angeheuert.`);
+      SF.sound.play('fanfare');
+      return `${SF.crew.CREW[c].name} ist an Bord!`;
+    }
     if (id === 'frieda-thanks' && h === 'amberbay' && step() === 'find-amberbay') {
       SF.story.setStep('find-smuggler', 'Fischerin Frieda in der Bernsteinbucht: Das schwarze Schiff ist zur Schmugglerinsel im Südosten gesegelt.');
       SF.sound.play('discover');
@@ -101,7 +143,8 @@ window.SF = window.SF || {};
   function onDiscover(id) {
     if (id === 'volcano' && step() === 'find-volcano') {
       const n = SF.amber.add(50);
-      SF.story.setStep('end1', 'An der Vulkaninsel: ein verlassenes Lager, ein Fetzen schwarzes Segel und eine Karte mit einem Kreuz im Eismeer.');
+      SF.story.setStep('hire-cook', 'An der Vulkaninsel: ein verlassenes Lager, ein Fetzen schwarzes Segel und eine Karte mit einem Kreuz im Eismeer.');
+      SF.state.story.flags.chapter2 = true;
       SF.sound.play('fanfare');
       SF.track('seefahrer-stufe1-geschafft');
       setTimeout(() => SF.ui.dialog({
@@ -109,12 +152,43 @@ window.SF = window.SF || {};
         html: `<p>An der Vulkaninsel findest du ein <b>verlassenes Lager</b>. Die Feuerstelle ist noch warm. An einem Felsen hängt ein Fetzen
           <b>schwarzes Segel</b>, daneben liegt eine zerrissene Karte – mit einem Kreuz mitten im <b>Eismeer</b>.</p>
           <p>Im Sand findest du ${SF.amberHTML(n)}, die der Schatten wohl verloren hat.</p>
-          <p>„Wir sind ihm auf den Fersen!“, flüstert der Klabautermann.</p>
-          <p class="muted"><b>Ende von Stufe 1 – Fortsetzung folgt!</b> Bis dahin: Handle, erkunde die ganze Karte und rüste dein Schiff aus.</p>`,
+          <p>„Wir sind ihm auf den Fersen!“, flüstert der Klabautermann. „Aber im Eismeer erfrieren wir ohne warmes Essen.
+          In Port Dublone sucht ein Schiffskoch Arbeit – den holen wir uns!“</p>`,
         buttons: [{ label: 'Weiter segeln', value: true, kind: 'primary' }],
       }), 300);
     }
   }
 
-  SF.chapter = { PEOPLE, tavern, act, onDiscover, rumor };
+  // Insel geschafft (js/island.js); gibt Text für das Fenster zurück oder ''
+  function onIsland(id) {
+    const s = SF.state;
+    if (id === 'ice' && step() === 'find-ice') {
+      const mine = s.gk && s.gk.ships.includes('galleon');
+      SF.crew.addShip('galleon');
+      s.story.flags.longjohn = true;
+      SF.story.setStep('traitor', 'Im Eismeer: eine Galeone im Eis und das Logbuch von „L. J.“ – Long John! Jemand an Bord verrät uns.');
+      SF.track('seefahrer-kapitel2-geschafft');
+      return `<p>Hinter der Schatzkiste ragt ein Mast aus dem Eis: Da steckt eine <b>Galeone</b> fest! ${mine
+        ? 'Das ist <b>deine alte Galeone aus Gamble Klicker</b>!'
+        : 'Der Schatten hat sie wohl gestohlen und hier zurückgelassen.'} Die Crew hackt sie frei – sie liegt jetzt in der Werft, du kannst jederzeit umsteigen.</p>
+        <p>In der Kajüte liegt ein gefrorenes Logbuch: <i>„Beute zur Drachenküste. Der Holländer wartet im Nebel.
+        Unser Mann an Bord des Kapitäns verrät uns jeden Kurs. – L. J.“</i></p>
+        <p>L. J.? Das kann nur <b>Long John</b> sein – ${s.gk ? 'der Computer-Gegner, der in Gamble Klicker immer gegen dich verloren hat' : 'der Pirat, der in Port Dublone beim Würfeln immer verloren hat'}!
+        Und „unser Mann an Bord“ … <b>Jemand aus deiner Crew ist ein Verräter!</b></p>`;
+    }
+    if (id === 'ice' && step() === 'hire-cook') {
+      return '<p class="muted small">Im Eis steckt irgendetwas Großes fest – aber ohne warmes Essen hält es deine Crew hier nicht lange aus. Hol erst den Schiffskoch aus Port Dublone.</p>';
+    }
+    return '';
+  }
+
+  // Alte Spielstände: „Ende von Stufe 1“ wird zum Anfang von Kapitel 2
+  function migrate() {
+    if (SF.state.story.step === 'end1') {
+      SF.state.story.step = 'hire-cook';
+      SF.state.story.flags.chapter2 = true;
+    }
+  }
+
+  SF.chapter = { PEOPLE, tavern, act, onDiscover, onIsland, migrate, rumor, who, hireable };
 })();

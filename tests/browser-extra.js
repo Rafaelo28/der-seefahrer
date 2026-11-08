@@ -197,4 +197,36 @@ module.exports = async function (page, label, assert, shot) {
   assert(await page.evaluate(() => SF.state.pearls === 4 && SF.cosmetics.data().on.sail === 'sail-red'), `${label}: rote Segel gekauft`);
   await shot(page, `laden-${label}`);
   await noScroll('Laden');
+
+  // Kapitel 2: Smutje Fiete in Port Dublone
+  await page.evaluate(() => { SF.state.story.step = 'hire-cook'; SF.harbor.open('dublone'); });
+  await page.waitForSelector('[data-act="fiete-join"]');
+  await shot(page, `fiete-${label}`);
+  await page.click('[data-act="fiete-join"]');
+  assert(await page.evaluate(() => SF.crew.has('fiete') && SF.state.story.step === 'find-ice'), `${label}: Fiete an Bord`);
+  // Eismeer: an Land gehen, Schatz und Galeone
+  await page.click('#harbor-leave');
+  await page.waitForSelector('#screen-sea:not([hidden])');
+  await page.evaluate(() => { const p = SF.world.placeById.ice; SF.state.pos.x = p.x; SF.state.pos.y = p.y; SF.state.course = []; SF.state.pirates = []; });
+  await page.waitForSelector('#sea-land:not([hidden])', { timeout: 3000 });
+  await page.click('#sea-land');
+  await page.waitForSelector('#screen-island:not([hidden])');
+  await page.waitForTimeout(400);
+  await shot(page, `eismeer-${label}`);
+  await page.evaluate(() => { const L = SF.island._level(); L.p.x = L.chest.x; L.p.y = L.chest.y - 4; });
+  await page.waitForSelector('#dialog-layer h2', { timeout: 4000 });
+  assert((await page.textContent('#dialog-layer')).includes('Long John'), `${label}: Logbuch von Long John`);
+  await page.click('#dialog-layer .btn-primary');
+  await page.waitForSelector('#screen-sea:not([hidden])');
+  // Umsteigen auf die Galeone in der Werft
+  await page.evaluate(() => { SF.state.cargo = {}; SF.harbor.open('dublone'); });
+  await page.click('.harbor-tab[data-tab="yard"]');
+  await page.click('[data-swap="0"]');
+  assert(await page.evaluate(() => SF.state.ship.type === 'galleon'), `${label}: auf die Galeone umgestiegen`);
+  await shot(page, `flotte-${label}`);
+  await page.click('#harbor-cabin');
+  await page.waitForSelector('#screen-cabin:not([hidden])');
+  assert((await page.textContent('#cabin-body')).includes('Smutje Fiete'), `${label}: Fiete in der Kajüte`);
+  await shot(page, `crew-${label}`);
+  await noScroll('Kajüte mit Crew');
 };

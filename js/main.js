@@ -40,6 +40,7 @@ window.SF = window.SF || {};
 
   // Weiterspielen: dort einsteigen, wo die Story steht
   function resume() {
+    if (SF.chapter) SF.chapter.migrate();
     if (!SF.state.started) {
       SF.newgame.showTitle();
       return;
@@ -82,6 +83,7 @@ window.SF = window.SF || {};
     // Symbole in die Platzhalter im HTML setzen (<i data-ic="…">)
     document.querySelectorAll('[data-ic]').forEach(el => { el.outerHTML = SF.icon(el.dataset.ic); });
     SF.load();
+    if (SF.chapter) SF.chapter.migrate();
     SF.story.bind();
     SF.lastday.bind();
     SF.newgame.bind();

@@ -55,7 +55,7 @@ window.SF = window.SF || {};
     if (s.ship.hp == null || s.ship.hp > maxHp) s.ship.hp = maxHp;
     const w = s.wind || { x: 1, y: 0, s: 0.5 };
     b = SF.battle.create(
-      { type: s.ship.type, hp: s.ship.hp, maxHp, cannons: st.cannons, speed: st.speed },
+      { type: s.ship.type, hp: s.ship.hp, maxHp, cannons: st.cannons, speed: st.speed, reloadMul: SF.crew ? SF.crew.reloadMul() : 1 },
       SF.pirates.enemyFor(p),
       { x: w.x, y: w.y, s: w.s },
       Math.floor(SF.rng.float() * 4294967295),
@@ -325,7 +325,7 @@ window.SF = window.SF || {};
     SF.setText($('bt-hp-me-text'), `${Math.ceil(p.hp)} / ${p.maxHp}`);
     SF.setText($('bt-hp-enemy-text'), `${Math.ceil(e.hp)} / ${e.maxHp}`);
     ['port', 'star'].forEach(side => {
-      const r = p.reload[side] / SF.battle.RELOAD;
+      const r = p.reload[side] / p.reloadTime;
       $(`bt-${side}`).classList.toggle('loading', r > 0);
       $(`bt-${side}-load`).style.transform = `scaleX(${(1 - r).toFixed(3)})`;
     });

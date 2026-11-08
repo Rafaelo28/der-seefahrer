@@ -1,6 +1,6 @@
 // Tests für die Story von Stufe 1: Schritte, Ziele, Logbuch, Kneipen-Gespräche, Salz-Auftrag, Vulkaninsel.
 const { assert, load } = require('./setup');
-load('format', 'state', 'rank', 'figure', 'gk-import', 'ships', 'world', 'trade');
+load('format', 'state', 'rank', 'figure', 'gk-import', 'ships', 'world', 'trade', 'crew');
 // Oberfläche, Ton und Zählung braucht der Test nicht
 SF.ui = { dialog: () => Promise.resolve(true), toast() {}, tip() {}, KLABAUTER: '<svg></svg>' };
 SF.sound = { play() {} };
@@ -58,7 +58,7 @@ SF.state.captain.name = 'Testkapitän';
   assert(St.step() === 'find-volcano', 'Andere Orte ändern nichts');
   const a0 = SF.state.amber;
   C.onDiscover('volcano');
-  assert(St.step() === 'end1' && SF.state.amber === a0 + 50 && St.goal() === '', 'Ende von Stufe 1');
+  assert(St.step() === 'hire-cook' && SF.state.amber === a0 + 50 && St.goal() === 'dublone', 'Vulkaninsel: weiter mit Kapitel 2 (Schiffskoch in Port Dublone)');
   C.onDiscover('volcano');
   assert(SF.state.amber === a0 + 50, 'Belohnung nur einmal');
 }
@@ -78,4 +78,30 @@ SF.state.captain.name = 'Testkapitän';
   assert(p[0].text.includes('Septilliarden') && p[3].text.includes('Brigg'), 'Prolog nennt Vermögen und gestohlene Flotte');
   const e = St.eveningScenes({ leftover: 5e40, exchange: 25, amber: 55 });
   assert(e.length === 2 && e[0].text.includes('25'), 'Abend: Umtausch');
+}
+
+// ---------- Kapitel 2: Smutje Fiete und das Eismeer ----------
+{
+  SF.state = SF.createDefaultState();
+  SF.state.started = true;
+  SF.state.story.step = 'end1';
+  SF.chapter.migrate();
+  assert(SF.story.step() === 'hire-cook' && SF.story.goal() === 'dublone', 'Alter Spielstand „Ende Stufe 1“ geht mit Kapitel 2 weiter');
+  assert(SF.chapter.onIsland('ice').includes('Schiffskoch') && SF.crew.fleet().length === 0, 'Eismeer ohne Koch: noch nichts');
+  const fiete = SF.chapter.tavern('dublone').find(t => t.who === 'fiete');
+  assert(fiete && fiete.action.id === 'fiete-join', 'Fiete sucht Arbeit in Port Dublone');
+  SF.chapter.act('dublone', 'fiete-join');
+  assert(SF.crew.has('fiete') && SF.story.step() === 'find-ice' && SF.story.goal() === 'ice', 'Fiete an Bord, weiter ins Eismeer');
+  assert(!SF.chapter.tavern('dublone').some(t => t.who === 'fiete'), 'Fiete sitzt nicht mehr in der Kneipe');
+  // Anheuern ab Kapitel 2
+  const karla = SF.chapter.tavern('smuggler').find(t => t.who === 'karla');
+  assert(karla && karla.action.disabled, 'Karla in der Schmugglerinsel, aber zu teuer');
+  SF.state.amber = 200;
+  assert(SF.chapter.act('smuggler', 'hire-karla').includes('an Bord') && SF.crew.has('karla') && SF.state.amber === 110, 'Karla angeheuert');
+  assert(SF.chapter.act('dublone', 'hire-nils') === '' && !SF.crew.has('nils'), 'Nils gibt es nur in der Bernsteinbucht');
+  // Eismeer geschafft
+  const text = SF.chapter.onIsland('ice');
+  assert(text.includes('Long John') && text.includes('Verräter'), 'Logbuch von L. J.: Long John und ein Verräter');
+  assert(SF.crew.fleet().some(f => f.type === 'galleon') && SF.story.step() === 'traitor', 'Galeone gefunden, Kapitel 3 beginnt');
+  assert(SF.chapter.onIsland('ice') === '', 'Nur einmal');
 }

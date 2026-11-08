@@ -31,10 +31,21 @@ window.SF = window.SF || {};
         <div class="trophy">${SF.icon('monster')}${SF.formatInt(tr.monsters)} Seeungeheuer</div>
       </div><p class="muted small">Aus Gamble Klicker: Boss-Stufe ${SF.formatInt(gk.bossLevel)} besiegt.</p>`;
     }
-    const fleet = gk && gk.ships.length
-      ? `<ul class="fleet-list">${gk.ships.map(id => `<li>${SF.ships.sideSVG(id)}<span>${SF.gk.shipName(id)}<br><span class="muted small">gestohlen</span></span></li>`).join('')}</ul>
-        <p class="muted small">Der Schatten hat deine alte Flotte aus Gamble Klicker gestohlen. Halte die Augen offen!</p>`
+    // Alte Flotte: gestohlen oder wiedergefunden (in der Werft oder das eigene Schiff)
+    const found = id => s.ship.type === id || SF.crew.fleet().some(f => f.type === id);
+    const thief = s.story.flags.longjohn ? 'Long John' : 'Der Schatten';
+    const fleetIds = gk ? gk.ships.slice() : [];
+    SF.crew.fleet().forEach(f => { if (!fleetIds.includes(f.type)) fleetIds.push(f.type); });
+    const fleet = fleetIds.length
+      ? `<ul class="fleet-list">${fleetIds.map(id => `<li class="${found(id) ? 'found' : ''}">${SF.ships.sideSVG(id)}<span>${SF.gk.shipName(id)}<br>
+          <span class="muted small">${found(id) ? 'wiedergefunden' : 'gestohlen'}</span></span></li>`).join('')}</ul>
+        <p class="muted small">${thief} hat deine alte Flotte gestohlen. Wiedergefundene Schiffe liegen in der Werft.</p>`
       : '<p class="muted small">Du hattest keine Flotte in Gamble Klicker.</p>';
+    const crew = SF.crew.members();
+    const crewHTML = crew.length
+      ? crew.map(id => { const c = SF.crew.CREW[id]; return `<div class="crew-member"><div class="crew-fig">${SF.figure.svg(c.fig)}</div>
+          <div><b>${c.name}</b><br><span class="muted small">${c.role}</span><br><span class="small">${c.bonus}</span></div></div>`; }).join('')
+      : '<p class="muted small">Noch niemand an Bord außer dem Klabautermann. In den Kneipen kannst du Leute anheuern.</p>';
     const wallpaper = s.lastDay && s.lastDay.leftover > 0
       ? `<p class="small">Die Wände sind mit alten Dublonen-Scheinen tapeziert: ${SF.dublonenHTML(s.lastDay.leftover)} – nichts mehr wert, aber hübsch.</p>` : '';
     const log = s.story.log.slice().reverse().map(e => `<li><span class="muted small">Tag ${e.day}</span> ${SF.escape(e.text)}</li>`).join('');
@@ -55,6 +66,8 @@ window.SF = window.SF || {};
       <div class="cabin-grid">
         <div class="card"><h3>${SF.icon('trophy')} Trophäen</h3>${trophies}</div>
         <div class="card"><h3>${SF.icon('ship')} Alte Flotte</h3>${fleet}</div>
+      </div>
+      <div class="card"><h3>${SF.icon('crew')} Crew</h3><div class="crew-list">${crewHTML}</div>
       </div>
       <div class="card"><h3>${SF.icon('scroll')} Logbuch</h3><ul class="logbook">${log || '<li class="muted">Noch leer.</li>'}</ul></div>
       <div class="card"><h3>${SF.icon('chart')} Statistik</h3>

@@ -34,7 +34,7 @@ window.SF = window.SF || {};
     const t = type(ship.type);
     return {
       name: t.name,
-      speed: t.speed * (1 + 0.08 * (ship.sails || 0)),
+      speed: t.speed * (1 + 0.08 * (ship.sails || 0)) * (SF.crew ? SF.crew.speedMul() : 1),
       hold: t.hold + 3 * (ship.hold || 0),
       food: t.food + 2 * (ship.pantry || 0),
       cannons: Math.min(ship.cannons || 0, t.cannons),
