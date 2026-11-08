@@ -1,0 +1,56 @@
+# Der Seefahrer – Hinweise für die Entwicklung
+
+Seefahrer-Abenteuer (Story, Seekarte, Häfen, Seeschlachten, Jump'n'Run) von **Rafaelo28**, Nachfolger von
+**Gamble Klicker**. Reines HTML, CSS und JavaScript ohne Framework und ohne Build-Schritt – `index.html` im
+Browser öffnen genügt. Online über GitHub Pages aus `main`: https://rafaelo28.github.io/der-seefahrer/
+
+Der ganze Plan mit allen Ausbaustufen steht in `PROJEKTPLAN.md` (Häkchen nach jedem Schritt setzen).
+
+## Arbeitsweise (mit Rafaelo28 abgesprochen)
+
+- Auf dem Arbeits-Branch entwickeln, einen **Pull Request nach `main`** erstellen und ihn **selbst mergen**,
+  sobald alle Tests grün sind. Rafaelo28 muss nichts tun.
+- Nach dem Merge prüfen, dass GitHub Pages die neue Version zeigt (1–2 Minuten), und Rafaelo28 den Link zum
+  Pull Request geben.
+- Nach einem Merge den Arbeits-Branch auf den neuen Stand von `main` setzen, bevor es weitergeht.
+
+## Regeln
+
+- **Alles auf Deutsch**: Texte im Spiel, Code-Kommentare, Commits, Pull Requests.
+- **Versionsnummer erhöhen**: Bei jeder Änderung an JS- oder CSS-Dateien in `index.html` alle `?v=…` auf einen
+  neuen Wert setzen (Format `JJJJMMTTNN`), sonst mischen Browser alte und neue Dateien aus dem Zwischenspeicher.
+- **Spielstände bleiben kompatibel**: Neue Felder bekommen Standardwerte in `js/state.js`
+  (`createDefaultState` / `applyData`), damit alte Spielstände weiter laden.
+- **Gamble-Klicker-Spielstand niemals ändern oder löschen** (`gamble-klicker-save` nur lesen, siehe
+  `js/gk-import.js`). Das alte Geld ist nur in der Story weg.
+- **Kleine Zahlen**: Bernstein-Preise bleiben im Bereich von ein paar bis ein paar tausend. Fortschritt über
+  Schiffe, Crew, Karte und Story – nicht über immer größere Zahlen.
+- **Bernstein** nur über `SF.amber.add` / `SF.amber.spend` bewegen.
+- **Zielgerät**: iPad 8. Generation (810 × 1080 hochkant, 1080 × 810 quer, Touch). Große Tippflächen, kein
+  Doppeltipp-Zoom, Hover-Effekte nur in `@media (hover: hover)`. Seekarte, Häfen und Geschichte hoch und quer;
+  Schlacht und Jump'n'Run nur quer.
+- **Flüssig auf dem iPad**: Dauer-Animationen nur mit `transform` oder `opacity` (kein `box-shadow`, `left`,
+  `background-position` im Dauerlauf, kein `backdrop-filter`). Anzeigen, die oft aktualisiert werden, über
+  `SF.setHTML` / `SF.setText` schreiben (nur bei Änderung).
+- **Physik in Online-Spielen** nur mit + − × ÷ und `Math.sqrt` rechnen, keine Winkelfunktionen in der
+  Simulation – sonst kommen auf verschiedenen Geräten andere Ergebnisse heraus. (Fürs Zeichnen sind
+  Winkelfunktionen erlaubt; Schiffe werden mit Richtungsvektoren gedreht.)
+- **Besucherzählung** (`js/analytics.js`, GoatCounter): nur Seitenaufrufe und Ereignisse wie
+  `SF.track('seefahrer-…')` – niemals Namen, Raum-Codes, Spieler-IDs oder Spielstände mitsenden.
+- **Alles ist Spielgeld.** Es gibt keine Käufe mit echtem Geld.
+- Code aus Gamble Klicker (`Rafaelo28/Gamble-Klicker`) darf übernommen und angepasst werden
+  (`figure.js`, `rank.js`, `sound.js`, `format.js`, später `mp/room.js`, `mp/cannon.js`).
+
+## Testen
+
+- `node tests/run-all.js` – führt alle `tests/*.test.js` mit node aus (ohne Browser).
+  - `state.test.js` – Spielstand: Standardwerte, alte Spielstände, Export/Import, Bernstein.
+  - `gk-import.test.js` – Übernahme aus Gamble Klicker: Code lesen, Zusammenfassung, Titel, nie schreiben.
+  - `lastday.test.js` – Der letzte Tag der Dublone: Preise, Verdopplung, Ausgleich arm/reich, Ergebnis.
+  - `world.test.js` – Welt: Land/Wasser, Orte im Wasser erreichbar, Nebel, Wegsuche.
+  - `voyage.test.js` – Segeln: Kurs folgen, Küste, Wind, Proviant, Treibgut.
+  - `trade.test.js` – Handel und Werft: Preise je Hafen, Kaufen/Verkaufen, keine Endlos-Gewinne.
+  - `story.test.js` – Story-Schritte und Logbuch.
+- `node tests/browser.test.js` – im Browser mit Playwright (Chromium ist vorinstalliert), in der
+  iPad-Emulation `devices['iPad (gen 7)']` hoch und quer: keine Konsolenfehler, kein seitliches Scrollen,
+  Prolog bis zur Seekarte durchspielen, Hafen öffnen.
