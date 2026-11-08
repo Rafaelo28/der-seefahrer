@@ -45,7 +45,10 @@ load('format', 'state', 'rank', 'figure', 'gk-import');
   store[SF.SAVE_KEY] = JSON.stringify(Object.assign({}, old, { cargo: [1, 2], pos: { x: 'a' }, food: -3, amber: 12.6, course: 'x' }));
   assert(SF.load() && !Array.isArray(SF.state.cargo) && SF.state.pos === null && SF.state.food === 0 && SF.state.amber === 12 && Array.isArray(SF.state.course), 'Kaputte Felder repariert');
   store[SF.SAVE_KEY] = '{kaputt';
+  const warn = console.warn;
+  console.warn = () => {}; // die erwartete Warnung nicht ausgeben
   assert(!SF.load(), 'Kaputter Text: neu anfangen');
+  console.warn = warn;
   store[SF.SAVE_KEY] = JSON.stringify({ money: 5, casino: {} });
   assert(!SF.load(), 'Gamble-Klicker-Daten sind kein Seefahrer-Spielstand');
 }

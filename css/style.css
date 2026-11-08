@@ -404,6 +404,194 @@ ul { margin: 0 0 .7em; padding-left: 1.3em; }
   .ld-price { font-size: 1.25rem; }
 }
 
+/* ---------- Seekarte ---------- */
+#screen-sea { position: fixed; inset: 0; overflow: hidden; background: #ecddb2; }
+.sea-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+.hud-top {
+  position: absolute;
+  top: calc(8px + var(--safe-top));
+  left: 8px;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+}
+.hud-top > * { pointer-events: auto; }
+.hud-btn {
+  min-height: 48px;
+  padding: 6px 14px;
+  border: 2px solid var(--wood-dark);
+  border-radius: 12px;
+  background: linear-gradient(180deg, var(--wood-light), var(--wood));
+  color: var(--text-light);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.hud-stats {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 14px;
+  min-height: 48px;
+  padding: 6px 14px;
+  border-radius: 12px;
+  background: rgba(243, 230, 196, .93);
+  color: var(--ink);
+  border: 2px solid var(--parchment-line);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.hud-day { color: var(--ink-soft); font-weight: 600; }
+.hud-food { display: inline-flex; align-items: center; gap: 6px; }
+.food-bar { position: relative; display: inline-block; width: 70px; height: 12px; border-radius: 6px; background: rgba(0, 0, 0, .18); overflow: hidden; vertical-align: middle; }
+.food-bar i { position: absolute; inset: 0; background: linear-gradient(90deg, #6fa35a, #2e8b57); transform-origin: left center; }
+.hud-food.low .food-bar i { background: linear-gradient(90deg, #f0a030, #d07a14); }
+.hud-food.empty { color: var(--red); }
+.food-bar.big { display: block; width: 100%; height: 30px; border-radius: 15px; margin: 6px 0 10px; }
+.food-bar.big span { position: relative; display: block; text-align: center; line-height: 30px; font-weight: 700; }
+.hud-wind {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 82px;
+  min-height: 48px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: rgba(243, 230, 196, .93);
+  color: var(--ink);
+  border: 2px solid var(--parchment-line);
+  line-height: 1.1;
+}
+.hud-wind-arrow { display: inline-block; font-size: 1.3rem; color: #2c5d8a; transition: transform .6s ease; }
+.hud-wind-text { font-size: .72rem; font-weight: 700; }
+.sea-goal {
+  position: absolute;
+  top: calc(66px + var(--safe-top));
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: calc(100% - 100px);
+  padding: 8px 14px;
+  border-radius: 12px;
+  background: rgba(42, 29, 16, .82);
+  color: var(--parchment);
+  font-size: .92rem;
+  text-align: center;
+  pointer-events: none;
+}
+.hud-side {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.hud-round {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  border: 2px solid var(--parchment-line);
+  background: rgba(243, 230, 196, .93);
+  color: var(--ink);
+  font-size: 1.5rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.hud-bottom {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(14px + var(--safe-bottom));
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  pointer-events: none;
+}
+.hud-bottom .btn { pointer-events: auto; }
+body[data-screen="sea"] .klabauter-tip { bottom: calc(86px + var(--safe-bottom)); }
+
+/* ---------- Hafen ---------- */
+.harbor-head { margin-bottom: 10px; }
+.harbor-title { display: flex; align-items: center; gap: 12px; }
+.harbor-title h2 { margin: 0; }
+.harbor-icon { font-size: 2.2rem; }
+.harbor-head p { margin: 6px 0; }
+.harbor-stats { display: flex; flex-wrap: wrap; gap: 6px 18px; font-weight: 700; font-size: 1.05rem; }
+.harbor-tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 10px; }
+.harbor-tab {
+  min-height: 54px;
+  border: 2px solid var(--parchment-line);
+  border-radius: 12px;
+  background: rgba(243, 230, 196, .55);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.harbor-tab.active { background: var(--parchment); border-color: var(--amber-dark); box-shadow: inset 0 -4px 0 var(--amber); }
+.harbor-tab.story { animation: twinkle 1.6s ease-in-out infinite; }
+.harbor-tab.story.active { animation: none; }
+.harbor-panel { min-height: 240px; }
+.harbor-foot { justify-content: space-between; }
+.goods { display: grid; gap: 8px; }
+.good {
+  display: grid;
+  grid-template-columns: 1fr 130px 130px;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .45);
+}
+.good-name { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.good-icon { font-size: 1.8rem; }
+.good .btn { min-height: 58px; padding: 6px 8px; font-size: .9rem; line-height: 1.25; }
+.yard-ship, .cabin-ship { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.yard-ship .ship-svg, .cabin-ship .ship-svg { width: 120px; height: auto; flex: 0 0 auto; }
+.yard-row { display: grid; grid-template-columns: 44px 1fr auto; align-items: center; gap: 10px; padding: 8px; margin-bottom: 6px; border-radius: 12px; background: rgba(255, 255, 255, .45); }
+.yard-icon { font-size: 1.8rem; text-align: center; }
+.yard-row .btn { min-width: 96px; }
+.ship-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; }
+.ship-card { display: grid; grid-template-columns: 90px 1fr; grid-template-rows: auto auto; gap: 4px 10px; align-items: center; padding: 8px; border-radius: 12px; background: rgba(255, 255, 255, .45); }
+.ship-card .ship-svg { width: 90px; height: auto; grid-row: span 2; }
+.ship-card.mine { outline: 3px solid var(--green); }
+.tag { display: inline-block; padding: 2px 10px; border-radius: 10px; background: var(--green); color: #fff; font-weight: 700; font-size: .85rem; }
+.talk { display: grid; grid-template-columns: 84px 1fr; gap: 12px; align-items: start; padding: 10px; margin-bottom: 8px; border-radius: 12px; background: rgba(255, 255, 255, .45); }
+.talk-fig svg { width: 84px; height: auto; display: block; }
+.talk-body p { margin: 4px 0 8px; }
+
+/* ---------- Kajüte ---------- */
+.cabin-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.cabin-h1 { margin: 0; color: var(--gold); font-size: 2rem; }
+.cabin-captain { display: grid; grid-template-columns: 170px 1fr; gap: 18px; align-items: center; }
+.cabin-fig svg { width: 100%; height: auto; display: block; }
+.cabin-title { font-family: var(--font-display); font-weight: 700; color: var(--ink-soft); margin: -6px 0 10px; }
+.cabin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.cabin-grid .card { margin-bottom: 0; }
+.cabin-grid + .card { margin-top: 16px; }
+.trophies { display: flex; flex-wrap: wrap; gap: 10px; }
+.trophy { display: flex; flex-direction: column; align-items: center; min-width: 100px; padding: 8px; border-radius: 12px; background: rgba(255, 255, 255, .5); font-weight: 700; font-size: .9rem; text-align: center; }
+.trophy span { font-size: 2rem; }
+.fleet-list { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; }
+.fleet-list li { display: flex; align-items: center; gap: 6px; filter: grayscale(.6); opacity: .8; }
+.fleet-list .ship-svg { width: 64px; height: auto; }
+.logbook { list-style: none; padding: 0; max-height: 260px; overflow-y: auto; margin: 0; }
+.logbook li { padding: 6px 0; border-bottom: 1px dashed var(--parchment-line); }
+.stats { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; margin: 0; }
+.stats dt { font-weight: 700; }
+.stats dd { margin: 0; }
+.setting { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 50px; font-weight: 700; }
+.switch { appearance: none; -webkit-appearance: none; width: 60px; height: 34px; border-radius: 17px; background: #b8a888; position: relative; cursor: pointer; flex: 0 0 auto; }
+.switch::after { content: ''; position: absolute; top: 3px; left: 3px; width: 28px; height: 28px; border-radius: 50%; background: #fff; transition: transform .2s ease; }
+.switch:checked { background: var(--green); }
+.switch:checked::after { transform: translateX(26px); }
+
 /* ---------- Animationen ---------- */
 @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
 @keyframes wave-sway { from { transform: translateX(-3%); } to { transform: translateX(3%); } }
@@ -432,6 +620,14 @@ ul { margin: 0 0 .7em; padding-left: 1.3em; }
 }
 @media (max-width: 600px) {
   body { font-size: 16px; }
+  .good { grid-template-columns: 1fr 1fr; }
+  .good-name { grid-column: span 2; }
+  .harbor-tabs { grid-template-columns: repeat(2, 1fr); }
+  .cabin-captain, .cabin-grid { grid-template-columns: 1fr; }
+  .cabin-fig { max-width: 160px; margin: 0 auto; }
+  .hud-btn-text, .hud-day { display: none; }
+  .hud-stats { gap: 2px 10px; padding: 4px 8px; font-size: .9rem; }
+  .food-bar { width: 44px; }
   .ng-layout { grid-template-columns: 1fr; }
   .gk-card { flex-direction: column; text-align: center; }
   .ld-item { min-height: 112px; padding: 10px; }

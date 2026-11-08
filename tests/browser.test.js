@@ -146,7 +146,7 @@ async function run(browser, base, device, landscape, withGK) {
     const gk = await page.evaluate(() => localStorage.getItem('gamble-klicker-save'));
     assert(gk === JSON.stringify(GK_SAVE), `${label}: Gamble-Klicker-Spielstand unverändert`);
   }
-  if (SF_EXTRA) await SF_EXTRA(page, label);
+  if (SF_EXTRA) await SF_EXTRA(page, label, assert, shot);
   assert(errors.length === 0, `${label}: keine Konsolenfehler ${errors.join(' | ')}`);
   await context.close();
 }
