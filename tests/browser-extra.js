@@ -188,4 +188,13 @@ module.exports = async function (page, label, assert, shot) {
   await page.click('#dialog-layer .btn-primary');
   await page.waitForSelector('#screen-sea:not([hidden])');
   assert(await page.evaluate(() => SF.state.pearls >= 2), `${label}: Perlen an Bord`);
+
+  // Laden: rote Segel für Perlen
+  await page.evaluate(() => { SF.state.pearls = 10; SF.harbor.open('dublone'); });
+  await page.waitForSelector('#screen-harbor:not([hidden])');
+  await page.click('.harbor-tab[data-tab="shop"]');
+  await page.click('[data-cos="sail-red"]');
+  assert(await page.evaluate(() => SF.state.pearls === 4 && SF.cosmetics.data().on.sail === 'sail-red'), `${label}: rote Segel gekauft`);
+  await shot(page, `laden-${label}`);
+  await noScroll('Laden');
 };

@@ -111,9 +111,11 @@ window.SF = window.SF || {};
 
   // Von der Seite als SVG (aus Gamble Klicker übernommen), ohne IDs
   const svgCache = {};
-  function sideSVG(id) {
-    if (svgCache[id]) return svgCache[id];
-    const s = type(id);
+  // colors: { sail, hull, flag, head } aus den Cosmetics (fehlende Werte = Farben des Schiffstyps)
+  function sideSVG(id, colors) {
+    const key = id + (colors ? JSON.stringify(colors) : '');
+    if (svgCache[key]) return svgCache[key];
+    const s = colors ? Object.assign({}, type(id), colors) : type(id);
     const xs = s.masts === 1 ? [60] : s.masts === 2 ? [46, 76] : [36, 60, 84];
     const line = 'stroke="#2a1a0c" stroke-width="1.5" stroke-linejoin="round"';
     let out = '<svg class="ship-svg" viewBox="0 0 120 92" aria-hidden="true">';
@@ -131,13 +133,14 @@ window.SF = window.SF || {};
       if (s.masts === 1) out += `<path d="M${x + 2} ${top + 30} L${x + 28} 54 L${x + 2} 54 Z" fill="${s.sail}" ${line}/>`;
     });
     const main = xs[Math.floor(xs.length / 2)];
-    out += `<path d="M${main} 8 L${main + 14} 11 L${main} 14 Z" fill="${s.ghost ? '#cfe0f0' : '#16181d'}"/>`;
+    out += `<path d="M${main} 8 L${main + 14} 11 L${main} 14 Z" fill="${s.flag || (s.ghost ? '#cfe0f0' : '#16181d')}"/>`;
     out += `<path d="M8 58 L112 58 L100 80 Q60 86 20 80 Z" fill="${s.hull}" ${line}/>`;
     out += `<path d="M10 62 L110 62" stroke="${s.gold ? '#f5c542' : 'rgba(255,255,255,.25)'}" stroke-width="${s.gold ? 2.4 : 1.2}"/>`;
     if (s.ports) [30, 45, 60, 75, 90].forEach(x => { out += `<circle cx="${x}" cy="70" r="2.6" fill="#1a1008" stroke="${s.gold ? '#f5c542' : '#8a6a4a'}" stroke-width="0.8"/>`; });
     out += '<path d="M104 58 L116 52" stroke="#4a2d14" stroke-width="2.2"/>';
+    if (s.head) out += `<text x="111" y="66" font-size="13" text-anchor="middle">${s.head}</text>`;
     out += '</svg>';
-    svgCache[id] = out;
+    svgCache[key] = out;
     return out;
   }
 
@@ -194,13 +197,20 @@ window.SF = window.SF || {};
     });
     ctx.globalAlpha = 1;
     // Flagge am Heck
-    ctx.fillStyle = s.ghost ? '#cfe0f0' : '#16181d';
+    ctx.fillStyle = s.flag || (s.ghost ? '#cfe0f0' : '#16181d');
     ctx.beginPath();
     ctx.moveTo(-L * 0.42, 0);
     ctx.lineTo(-L * 0.62, -B * 0.18 + sway * B * 0.1);
     ctx.lineTo(-L * 0.62, B * 0.18 + sway * B * 0.1);
     ctx.closePath();
     ctx.fill();
+    // Galionsfigur am Bug
+    if (s.head) {
+      ctx.font = `${Math.round(L * 0.34)}px system-ui, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(s.head, L * 0.6, 0);
+    }
     ctx.restore();
   }
 

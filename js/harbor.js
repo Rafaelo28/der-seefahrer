@@ -65,6 +65,7 @@ window.SF = window.SF || {};
     if (tab === 'market') panel.innerHTML = market();
     else if (tab === 'food') panel.innerHTML = food();
     else if (tab === 'yard') panel.innerHTML = yard();
+    else if (tab === 'shop') panel.innerHTML = shop();
     else panel.innerHTML = tavernHTML();
   }
 
@@ -146,12 +147,37 @@ window.SF = window.SF || {};
       </div>`;
     }).join('');
     return `<h3>Werft</h3>
-      <div class="yard-ship">${SF.ships.sideSVG(t.id)}<div><b>${t.name}</b><br>
+      <div class="yard-ship">${SF.ships.sideSVG(t.id, SF.cosmetics.shipColors())}<div><b>${t.name}</b><br>
         <span class="small">Tempo ${Math.round(st.speed)} · Laderaum ${st.hold} · Proviant ${st.food} · Kanonen ${st.cannons}/${st.cannonSlots}</span></div></div>
       ${repair}${ups}${cannons}
       <h3>Neues Schiff</h3>
       <p class="muted small">Dein altes Schiff nimmt die Werft für die Hälfte in Zahlung. Der Ausbau bleibt beim alten Schiff.</p>
       <div class="ship-list">${ships}</div>`;
+  }
+
+  // Laden: Cosmetics für Perlen
+  function shop() {
+    const C = SF.cosmetics;
+    const pearls = SF.state.pearls || 0;
+    const on = C.data().on;
+    const swatch = x => {
+      if (x.slot === 'head') return `<span class="cos-swatch">${x.value || '–'}</span>`;
+      if (x.slot === 'wake' || x.slot === 'smoke') return `<span class="cos-swatch" style="background:rgb(${x.value})"></span>`;
+      const def = x.slot === 'sail' ? SF.ships.type().sail : x.slot === 'hull' ? SF.ships.type().hull : '#16181d';
+      return `<span class="cos-swatch" style="background:${x.value || def}"></span>`;
+    };
+    const rows = C.SLOTS.map(sl => `<div class="cos-slot"><div class="cos-slot-name">${sl.name}</div><div class="cos-items">${
+      C.ITEMS.filter(x => x.slot === sl.id).map(x => {
+        const owned = C.owns(x.id);
+        const active = on[sl.id] === x.id;
+        const label = active ? '✔ an' : owned ? 'Anlegen' : `🦪 ${x.price}`;
+        return `<button type="button" class="cos-item ${active ? 'active' : ''}" data-cos="${x.id}" ${!owned && pearls < x.price ? 'disabled' : ''}>
+          ${swatch(x)}<span class="cos-name">${x.name}</span><span class="cos-price">${label}</span></button>`;
+      }).join('')}</div></div>`).join('');
+    return `<h3>Laden</h3>
+      <div class="yard-ship">${SF.ships.sideSVG(SF.ships.type().id, C.shipColors())}<div><b>Dein Schiff</b><br>
+        <span class="small">Du hast <b>🦪 ${pearls} Perlen</b>. Perlen findest du beim Tauchen am Korallenriff.</span></div></div>
+      ${rows}`;
   }
 
   function person(who) {
@@ -207,6 +233,10 @@ window.SF = window.SF || {};
     } else if (d.ship) {
       buyShip(d.ship);
       return;
+    } else if (d.cos) {
+      const C = SF.cosmetics;
+      if (C.owns(d.cos)) { ok = C.equip(d.cos); if (ok) SF.sound.play('tap'); }
+      else { ok = C.buy(d.cos); if (ok) { SF.sound.play('fanfare'); SF.ui.toast(`Gekauft: ${C.byId[d.cos].name}`); SF.track('seefahrer-cosmetic'); } }
     } else if (d.act) {
       const text = SF.chapter.act(harbor, d.act);
       if (text) SF.ui.toast(text, 3500);

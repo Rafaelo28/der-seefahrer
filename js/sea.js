@@ -367,10 +367,11 @@ window.SF = window.SF || {};
     }
 
     // Kielwasser
+    const wakeColor = SF.cosmetics ? SF.cosmetics.value('wake') : '255,255,255';
     if (wake.length > 1) {
       ctx.lineCap = 'round';
       for (let i = 1; i < wake.length; i++) {
-        ctx.strokeStyle = `rgba(255,255,255,${(i / wake.length) * 0.5})`;
+        ctx.strokeStyle = `rgba(${wakeColor},${(i / wake.length) * 0.6})`;
         ctx.lineWidth = 2 + (i / wake.length) * 5;
         ctx.beginPath();
         ctx.moveTo(wake[i - 1].x, wake[i - 1].y);
@@ -412,7 +413,7 @@ window.SF = window.SF || {};
     // Schiff (mindestens gut sichtbar groß)
     const type = SF.ships.type();
     const scale = Math.max(1, 30 / (type.len * z));
-    SF.ships.drawTop(ctx, type.id, s.pos.x, s.pos.y, s.pos.dx, s.pos.dy, scale, (Math.sin(time * 2.2) + 1) / 2);
+    SF.ships.drawTop(ctx, type.id, s.pos.x, s.pos.y, s.pos.dx, s.pos.dy, scale, (Math.sin(time * 2.2) + 1) / 2, SF.cosmetics ? SF.cosmetics.shipColors() : null);
 
     // Ab hier in Bildschirmpunkten: Ortsnamen, Ziel
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);

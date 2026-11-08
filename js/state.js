@@ -46,6 +46,7 @@ window.SF = window.SF || {};
       islands: {},         // Inseln: { ortId: { best: Bestzeit in s, wins } } (js/island.js)
       pearls: 0,           // Perlen (nur für Cosmetics, js/dive.js)
       dives: {},           // gepflückte Muscheln: { ort: { day, taken: [ids] } }
+      cosmetics: { owned: [], on: {} }, // Cosmetics fürs Schiff (js/cosmetics.js)
       stats: createDefaultStats(),
       settings: createDefaultSettings(),
       ui: { zoom: 1, tips: {} },
@@ -131,7 +132,7 @@ window.SF = window.SF || {};
     s.settings = Object.assign(createDefaultSettings(), isObj(data.settings) ? data.settings : {});
     s.ui = Object.assign({ zoom: 1, tips: {} }, isObj(data.ui) ? data.ui : {});
     if (!isObj(s.ui.tips)) s.ui.tips = {};
-    ['cargo', 'visited', 'market', 'pirateClock', 'islands', 'dives'].forEach(k => { if (!isObj(s[k])) s[k] = {}; });
+    ['cargo', 'visited', 'market', 'pirateClock', 'islands', 'dives', 'cosmetics'].forEach(k => { if (!isObj(s[k])) s[k] = {}; });
     ['course', 'flotsam', 'pirates'].forEach(k => { if (!Array.isArray(s[k])) s[k] = []; });
     if (s.ship.hp != null && !(typeof s.ship.hp === 'number' && s.ship.hp > 0)) s.ship.hp = null;
     if (!isObj(s.pos) || !isFinite(s.pos.x) || !isFinite(s.pos.y)) s.pos = null;

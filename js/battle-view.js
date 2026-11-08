@@ -60,6 +60,7 @@ window.SF = window.SF || {};
       { x: w.x, y: w.y, s: w.s },
       Math.floor(SF.rng.float() * 4294967295),
     );
+    if (SF.cosmetics) b.player.colors = SF.cosmetics.shipColors();
     input = {};
     fx = [];
     wakes.player = [];
@@ -113,7 +114,7 @@ window.SF = window.SF || {};
       case 'fire':
         SF.sound.play('cannon');
         for (let i = 0; i < Math.min(e.count, 6); i++) {
-          fx.push({ k: 'smoke', x: e.x + e.nx * 30 + (Math.random() - 0.5) * 40, y: e.y + e.ny * 30 + (Math.random() - 0.5) * 40, t: 0, life: 1.1, vx: e.nx * 30, vy: e.ny * 30 });
+          fx.push({ k: 'smoke', c: e.by === 'player' && SF.cosmetics ? SF.cosmetics.value('smoke') : '230,230,230', x: e.x + e.nx * 30 + (Math.random() - 0.5) * 40, y: e.y + e.ny * 30 + (Math.random() - 0.5) * 40, t: 0, life: 1.1, vx: e.nx * 30, vy: e.ny * 30 });
         }
         break;
       case 'hit':
@@ -225,7 +226,7 @@ window.SF = window.SF || {};
     ['player', 'enemy'].forEach(side => {
       const list = wakes[side];
       for (let i = 1; i < list.length; i++) {
-        ctx.strokeStyle = `rgba(255,255,255,${(i / list.length) * 0.4})`;
+        ctx.strokeStyle = `rgba(${side === 'player' && SF.cosmetics ? SF.cosmetics.value('wake') : '255,255,255'},${(i / list.length) * 0.45})`;
         ctx.lineWidth = 3 + (i / list.length) * 8;
         ctx.beginPath();
         ctx.moveTo(list[i - 1].x, list[i - 1].y);
@@ -281,7 +282,7 @@ window.SF = window.SF || {};
     fx.forEach(f => {
       const a = 1 - f.t / f.life;
       if (f.k === 'smoke') {
-        ctx.fillStyle = `rgba(230,230,230,${0.6 * a})`;
+        ctx.fillStyle = `rgba(${f.c || '230,230,230'},${0.6 * a})`;
         ctx.beginPath();
         ctx.arc(f.x + f.vx * f.t, f.y + f.vy * f.t, 14 + f.t * 30, 0, Math.PI * 2);
         ctx.fill();

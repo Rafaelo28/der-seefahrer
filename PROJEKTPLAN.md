@@ -179,7 +179,7 @@ tests/*.test.js       Tests mit node (Regeln, Physik, Spielstände) und Playwrig
 | Name des ausgeraubten Hafens | Bleibt **Port Dublone** |
 | Alten Spielstand einmal oder öfter übernehmen? | **Einmal pro neuem Spielstand** (beim Start eines neuen Spiels) |
 | Hochkant oder quer? | Seekarte, Häfen, Kajüte und Geschichte **hoch und quer**; Schlacht und Jump'n'Run **nur quer** (Hinweis „Bitte drehen“) |
-| Ab wann Perlen und Cosmetics? | Perlen mit dem Tauchen (Stufe 3), Cosmetics-Laden ab Stufe 4 |
+| Ab wann Perlen und Cosmetics? | Perlen mit dem Tauchen am Korallenriff (Stufe 3), Cosmetics-Laden gleich danach |
 | Wer ist der Dieb, wer der Verräter, wie ist das Ende? | **Noch offen** – vor Stufe 4 entscheiden. Ideen: Dieb = **Long John** (hat in Gamble Klicker immer gegen dich verloren und will Rache); Verräter = jemand aus der Crew, den man in Stufe 2–3 anheuert; Endkampf gegen den Fliegenden Holländer |
 | Besucherzählung | Zählt vorerst bei `gamble-klicker.goatcounter.com` mit (Pfad `/der-seefahrer/`); eigene Seite später möglich |
 
@@ -262,8 +262,9 @@ grünen Tests, einem Pull Request nach `main` und dem Merge.
       Bermuda-Dreieck mit drehendem Kompass), Crew anheuern.
 - [ ] **4.2 Der Verräter:** Geld verschwindet aus der Schiffskasse; Hinweise sammeln; wer ist es?
 - [ ] **4.3 Die alte Flotte:** gestohlene Schiffe aus Gamble Klicker wiederfinden (Galeone, Geisterschiff …).
-- [ ] **4.4 Cosmetics-Laden:** Segel, Flagge, Rumpffarbe, Galionsfigur (z. B. John Pork), Kielwasser,
-      Kanonenrauch – für Perlen.
+- [x] **4.4 Cosmetics-Laden** (vorgezogen, damit Perlen gleich etwas wert sind): Segel, Rumpf, Flagge, Galionsfigur
+      (Meerjungfrau, John Pork, Drache, Krake), Kielwasser, Kanonenrauch – für Perlen, im Laden jedes Hafens.
+      Zu sehen auf der Seekarte, in der Schlacht, in Werft und Kajüte. *Später: Muster für Segel.*
 - [ ] **4.5 Endkampf und Abspann**, danach Schwer-Modus und Geheimnisse für 100 %.
 
 ### Stufe 5 – Online mit Freunden

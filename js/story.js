@@ -194,7 +194,7 @@ window.SF = window.SF || {};
       <circle cx="80" cy="150" r="30" fill="#ffd27a" opacity=".85"/>
       <rect x="0" y="150" width="400" height="90" fill="#2a6a8e"/>
       ${waves(172)}
-      <g class="sc-bob">${ship(SF.state.ship.type, 120, 74, 170)}${klabauter(268, 120, 30)}</g>
+      <g class="sc-bob">${embed(SF.ships.sideSVG(SF.state.ship.type, SF.cosmetics ? SF.cosmetics.shipColors() : null), 120, 74, 170, 170 * 92 / 120)}${klabauter(268, 120, 30)}</g>
       <g transform="translate(350 60)"><circle r="30" fill="#f4ead0" stroke="#5a3a10" stroke-width="2"/>
         <path d="M0 -24 L5 0 L0 24 L-5 0 Z" fill="#5a3a10"/><path d="M-24 0 L0 -5 L24 0 L0 5 Z" fill="#8a6a4a"/>
         <path d="M0 0 L17 -17" stroke="#c0392b" stroke-width="4" stroke-linecap="round" class="sc-twinkle"/>

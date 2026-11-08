@@ -45,7 +45,7 @@ window.SF = window.SF || {};
         <div>
           <h2>Kapitän ${SF.escape(s.captain.name)}</h2>
           <div class="cabin-title">${gk ? SF.rank.icon(gk.rank) + ' ' : ''}${title}</div>
-          <div class="cabin-ship">${SF.ships.sideSVG(t.id)}<span><b>${t.name}</b><br>
+          <div class="cabin-ship">${SF.ships.sideSVG(t.id, SF.cosmetics.shipColors())}<span><b>${t.name}</b><br>
             <span class="small">Tempo ${Math.round(st.speed)} · 📦 ${SF.ships.cargoCount()}/${st.hold} · 🛢️ ${SF.formatDecimal(s.food, 1, 1)}/${st.food} · 💣 ${st.cannons}/${st.cannonSlots}</span></span></div>
           <div>${SF.amberHTML(s.amber)}${s.pearls ? ` · 🦪 ${SF.formatInt(s.pearls)} Perlen` : ''}</div>
           ${wallpaper}
