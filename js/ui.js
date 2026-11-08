@@ -14,6 +14,7 @@ window.SF = window.SF || {};
     document.querySelectorAll('.screen').forEach(el => { el.hidden = el.id !== 'screen-' + id; });
     current = id;
     document.body.dataset.screen = id;
+    hideTip();
     window.scrollTo(0, 0);
     if (onShow[id]) onShow[id]();
   }

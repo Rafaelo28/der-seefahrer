@@ -212,15 +212,15 @@ grünen Tests, einem Pull Request nach `main` und dem Merge.
       Vorsprung (im Test: reich ≈ 1,16-mal so gute Ausrüstung wie arm, niemand bekommt alles). Zu kaufen: Brigg oder Fregatte, Kanonen, Proviant, Kisten Tuch, Brot.
       Am Abend tauscht die Hafenbank 1 Billion Dublonen gegen 1 Bernstein (höchstens 25).
       Mindestausstattung für alle: Schaluppe, 3 Fässer Proviant, 30 Bernstein.
-- [ ] **1.6 Seekarte:** Welt mit Inseln, Pergament-Nebel (die Karte entsteht beim Segeln), Kurs mit dem Finger
+- [x] **1.6 Seekarte:** Welt mit Inseln, Pergament-Nebel (die Karte entsteht beim Segeln), Kurs mit dem Finger
       vom Schiff aus zeichnen, Antippen eines bekannten Orts = Kurs dorthin (Wegsuche um Inseln herum),
       Karte verschieben und zoomen, Wind mit Rückenwind, Proviant-Balken (leer = langsamer, Crew murrt),
       Treibgut (Bernstein, Kisten, Fässer). Tests: Kurs folgen, Land, Nebel, Proviant, Wind, Wegsuche.
-- [ ] **1.7 Häfen:** Port Dublone, Bernsteinbucht, Schmugglerinsel. Markt mit 5 Waren (Fisch, Salz, Rum,
+- [x] **1.7 Häfen:** Port Dublone, Bernsteinbucht, Schmugglerinsel. Markt mit 5 Waren (Fisch, Salz, Rum,
       Tuch, Gewürze) und eigenen Preisen je Hafen (Angebot und Nachfrage, Tagesschwankung), Proviant
       auffüllen, Werft (Segel, Laderaum, Vorratskammer, Kanonen, neue Schiffe), Kneipe mit Gerüchten.
       Tests: Preise, Kaufen/Verkaufen, Werft, keine Endlos-Gewinne an einem Ort.
-- [ ] **1.8 Orte und erste Spur:** Die 6 Ziele aus Gamble Klicker als Orte auf der Karte (Entdecker-Belohnung),
+- [x] **1.8 Orte und erste Spur:** Die 6 Ziele aus Gamble Klicker als Orte auf der Karte (Entdecker-Belohnung),
       Spur des Diebes über Bernsteinbucht → Schmugglerinsel → Vulkaninsel (Ende von Stufe 1: „Fortsetzung
       folgt“), Logbuch, Kajüte (Kapitän, Titel, Trophäen, gestohlene Flotte, Einstellungen, Spielstand-Code).
 - [ ] **1.9 Feinschliff:** Sounds, Klabautermann-Tipps, Prüfung auf dem iPad (hoch/quer), Merge.

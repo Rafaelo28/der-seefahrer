@@ -20,7 +20,7 @@
   <meta name="description" content="Der Seefahrer – ein Seefahrer-Abenteuer nach Gamble Klicker: Segle über die Seekarte, handle in Häfen und finde den Dieb der Goldenen Dublone. Nur Spielgeld.">
   <meta name="author" content="Rafaelo28">
   <!-- ?v=… ist die Spielversion: bei jedem Update erhöhen, damit Browser keine alten Dateien mischen -->
-  <link rel="stylesheet" href="css/style.css?v=2026110801">
+  <link rel="stylesheet" href="css/style.css?v=2026110802">
 </head>
 <body data-screen="">
 
@@ -117,6 +117,60 @@
     <div id="ld-result" class="overlay" hidden></div>
   </section>
 
+  <!-- Seekarte -->
+  <section id="screen-sea" class="screen" hidden>
+    <canvas id="sea-canvas" class="sea-canvas"></canvas>
+    <div class="hud-top">
+      <button type="button" id="sea-cabin" class="hud-btn" aria-label="Kajüte">☰ <span class="hud-btn-text">Kajüte</span></button>
+      <div class="hud-stats">
+        <span id="hud-amber"></span>
+        <span id="hud-food" class="hud-food" title="Proviant">🛢️ <span class="food-bar"><i id="hud-food-fill"></i></span> <span id="hud-food-text"></span></span>
+        <span id="hud-cargo"></span>
+        <span id="hud-day" class="hud-day"></span>
+      </div>
+      <div class="hud-wind" title="Wind"><span id="hud-wind-arrow" class="hud-wind-arrow">➜</span><span id="hud-wind-text" class="hud-wind-text"></span></div>
+    </div>
+    <div id="sea-goal" class="sea-goal" hidden></div>
+    <div class="hud-side">
+      <button type="button" id="sea-zoom-in" class="hud-round" aria-label="Näher heran">+</button>
+      <button type="button" id="sea-zoom-out" class="hud-round" aria-label="Weiter weg">−</button>
+      <button type="button" id="sea-center" class="hud-round" aria-label="Zum Schiff">⛵</button>
+    </div>
+    <div class="hud-bottom">
+      <button type="button" id="sea-stop" class="btn" hidden>✋ Anhalten</button>
+      <button type="button" id="sea-dock" class="btn btn-primary btn-big" hidden>⚓ Anlaufen</button>
+    </div>
+  </section>
+
+  <!-- Hafen -->
+  <section id="screen-harbor" class="screen page" hidden>
+    <div class="card harbor-head">
+      <div class="harbor-title"><span id="harbor-icon" class="harbor-icon"></span><h2 id="harbor-name"></h2></div>
+      <p id="harbor-text" class="muted small"></p>
+      <div id="harbor-stats" class="harbor-stats"></div>
+    </div>
+    <nav class="harbor-tabs">
+      <button type="button" class="harbor-tab" data-tab="market">🏪 Markt</button>
+      <button type="button" class="harbor-tab" data-tab="food">🛢️ Proviant</button>
+      <button type="button" class="harbor-tab" data-tab="yard">🔨 Werft</button>
+      <button type="button" class="harbor-tab" data-tab="tavern" id="harbor-tab-tavern">🍺 Kneipe</button>
+    </nav>
+    <div id="harbor-panel" class="card harbor-panel"></div>
+    <div class="btn-row harbor-foot">
+      <button type="button" id="harbor-cabin" class="btn">☰ Kajüte</button>
+      <button type="button" id="harbor-leave" class="btn btn-primary btn-big">⛵ Ablegen</button>
+    </div>
+  </section>
+
+  <!-- Kajüte -->
+  <section id="screen-cabin" class="screen page" hidden>
+    <div class="cabin-head">
+      <h1 class="cabin-h1">Kajüte</h1>
+      <button type="button" id="cabin-back" class="btn btn-primary">‹ Zurück</button>
+    </div>
+    <div id="cabin-body"></div>
+  </section>
+
   <!-- Platzhalter für Teile, die noch kommen -->
   <section id="screen-soon" class="screen page" hidden>
     <div class="card">
@@ -132,18 +186,25 @@
   <div id="dialog-layer" class="overlay" hidden></div>
   <noscript><p class="card">Der Seefahrer braucht JavaScript.</p></noscript>
 
-  <script src="js/format.js?v=2026110801"></script>
-  <script src="js/state.js?v=2026110801"></script>
-  <script src="js/rank.js?v=2026110801"></script>
-  <script src="js/figure.js?v=2026110801"></script>
-  <script src="js/gk-import.js?v=2026110801"></script>
-  <script src="js/sound.js?v=2026110801"></script>
-  <script src="js/ui.js?v=2026110801"></script>
-  <script src="js/analytics.js?v=2026110801"></script>
-  <script src="js/ships.js?v=2026110801"></script>
-  <script src="js/story.js?v=2026110801"></script>
-  <script src="js/lastday.js?v=2026110801"></script>
-  <script src="js/newgame.js?v=2026110801"></script>
-  <script src="js/main.js?v=2026110801"></script>
+  <script src="js/format.js?v=2026110802"></script>
+  <script src="js/state.js?v=2026110802"></script>
+  <script src="js/rank.js?v=2026110802"></script>
+  <script src="js/figure.js?v=2026110802"></script>
+  <script src="js/gk-import.js?v=2026110802"></script>
+  <script src="js/sound.js?v=2026110802"></script>
+  <script src="js/ui.js?v=2026110802"></script>
+  <script src="js/analytics.js?v=2026110802"></script>
+  <script src="js/ships.js?v=2026110802"></script>
+  <script src="js/story.js?v=2026110802"></script>
+  <script src="js/lastday.js?v=2026110802"></script>
+  <script src="js/world.js?v=2026110802"></script>
+  <script src="js/trade.js?v=2026110802"></script>
+  <script src="js/voyage.js?v=2026110802"></script>
+  <script src="js/chapter.js?v=2026110802"></script>
+  <script src="js/sea.js?v=2026110802"></script>
+  <script src="js/harbor.js?v=2026110802"></script>
+  <script src="js/cabin.js?v=2026110802"></script>
+  <script src="js/newgame.js?v=2026110802"></script>
+  <script src="js/main.js?v=2026110802"></script>
 </body>
 </html>
