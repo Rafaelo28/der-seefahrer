@@ -50,7 +50,10 @@ Der ganze Plan mit allen Ausbaustufen steht in `PROJEKTPLAN.md` (Häkchen nach j
   - `world.test.js` – Welt: Land/Wasser, Orte im Wasser erreichbar, Nebel, Wegsuche.
   - `voyage.test.js` – Segeln: Kurs folgen, Küste, Wind, Proviant, Treibgut.
   - `trade.test.js` – Handel und Werft: Preise je Hafen, Kaufen/Verkaufen, keine Endlos-Gewinne.
-  - `story.test.js` – Story-Schritte und Logbuch.
+  - `story.test.js` – Story-Schritte, Kneipen-Gespräche, Salz-Auftrag, Vulkaninsel, Logbuch.
+  - `battle.test.js` – Seeschlacht (rechnet überall gleich, keine Winkelfunktionen), Piraten auf der Karte, Beute, Werft.
+  - `boarding.test.js` – Entern: Springen, Piraten von oben, Luken, Tür, Zeit, Deck ist schaffbar.
 - `node tests/browser.test.js` – im Browser mit Playwright (Chromium ist vorinstalliert), in der
   iPad-Emulation `devices['iPad (gen 7)']` hoch und quer: keine Konsolenfehler, kein seitliches Scrollen,
-  Prolog bis zur Seekarte durchspielen, Hafen öffnen.
+  Prolog bis zur Seekarte durchspielen, Hafen, Kneipe, Markt, Werft, Kajüte, Seeschlacht und Entern.
+  Mehrere `.dialog` liegen versteckt im HTML: Fenster im Test über `#dialog-layer …` ansprechen.

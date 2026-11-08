@@ -118,7 +118,7 @@ async function run(browser, base, device, landscape, withGK) {
   const ship = await page.evaluate(() => SF.ships && document.querySelector('#ld-myship').textContent);
   assert(ship && ship.includes('Fregatte'), `${label}: Fregatte gekauft (${ship})`);
   await page.click('#ld-done');
-  await page.click('.dialog-buttons .btn-primary');
+  await page.click('#dialog-layer .btn-primary');
   await page.waitForSelector('#ld-result:not([hidden])');
   await shot(page, `ergebnis-${label}`);
   await page.click('#ld-result-next');
@@ -153,7 +153,7 @@ async function run(browser, base, device, landscape, withGK) {
 
 // Platz für weitere Prüfungen späterer Schritte (Seekarte, Hafen)
 let SF_EXTRA = null;
-try { SF_EXTRA = require('./browser-extra.js'); } catch (e) { SF_EXTRA = null; }
+try { SF_EXTRA = require('./browser-extra.js'); } catch (e) { if (e.code !== 'MODULE_NOT_FOUND') throw e; SF_EXTRA = null; }
 
 (async () => {
   const server = await serve();

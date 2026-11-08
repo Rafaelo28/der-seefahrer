@@ -223,21 +223,27 @@ grünen Tests, einem Pull Request nach `main` und dem Merge.
 - [x] **1.8 Orte und erste Spur:** Die 6 Ziele aus Gamble Klicker als Orte auf der Karte (Entdecker-Belohnung),
       Spur des Diebes über Bernsteinbucht → Schmugglerinsel → Vulkaninsel (Ende von Stufe 1: „Fortsetzung
       folgt“), Logbuch, Kajüte (Kapitän, Titel, Trophäen, gestohlene Flotte, Einstellungen, Spielstand-Code).
-- [ ] **1.9 Feinschliff:** Sounds, Klabautermann-Tipps, Prüfung auf dem iPad (hoch/quer), Merge.
+- [x] **1.9 Feinschliff:** Sounds, Klabautermann-Tipps, Prüfung auf dem iPad (hoch/quer), Merge. Kurse werden mit
+      Sicherheitsabstand zur Küste geplant (Test fährt alle Routen zwischen allen Orten ab).
 
 ### Stufe 2 – Seeschlacht gegen Computer-Piraten, mit Entern
 
-- [ ] **2.1 Gegner auf der Karte:** Piratenschiffe mit Kopfgeld kreuzen in bestimmten Gebieten; Zusammenstoß =
-      Schlacht (Ausweichen möglich, wenn man schneller ist).
-- [ ] **2.2 Schlacht-Bildschirm (quer):** Schiff mit dem Finger lenken, Knöpfe „Backbord“ und „Steuerbord“
+- [x] **2.1 Gegner auf der Karte:** Piratenschiffe mit Kopfgeld kreuzen in 5 Gebieten (nie rund um Port Dublone),
+      jagen das Schiff, wenn sie es sehen; Zusammenstoß = Schlacht. Besiegte Piraten kommen nach einer Weile wieder.
+- [x] **2.2 Schlacht-Bildschirm (quer, Hinweis „Bitte drehen“ hochkant):** Schiff mit dem Finger lenken, Knöpfe „Backbord“ und „Steuerbord“
       für Breitseiten, Nachladen, Rumpf-Punkte, Wind beeinflusst Tempo. Physik nur mit + − × ÷ und `Math.sqrt`
-      (für die Online-Schlacht in Stufe 5 wiederverwendbar). Flugbahn aus `js/mp/cannon.js` übernehmen.
-- [ ] **2.3 Computer-Piraten:** Käpt'n Blaubart, Long John und namenlose Piraten in drei Stärken.
-- [ ] **2.4 Entern:** Ist der Gegner schwer beschädigt, erscheint „Entern!“: Enterhaken-Schwung hinüber, dann
-      kurzes Jump'n'Run auf dem Deck bis zur Kapitänskajüte (Kiste mit Beute).
-- [ ] **2.5 Beute und Kopfgeld:** Bernstein, Waren, Karten-Fetzen; verlorene Schlacht = etwas Ladung weg,
-      kein „Game Over“. Rumpf in der Werft reparieren.
-- [ ] **2.6 Kanonen und Rumpf in der Werft**, Tests für Treffer, Schaden, Gegner-Verhalten.
+      (für die Online-Schlacht in Stufe 5 wiederverwendbar), eigener Zufall aus einem Startwert. Fliehen: an den Rand
+      der Arena segeln, wenn der Gegner nicht zu nah ist. Zielhilfe: Schussbereich der Breitseiten wird angezeigt.
+- [x] **2.3 Computer-Piraten:** Seeräuber (Schaluppe), Hai-Piraten (Brigg) und Käpt'n Blaubart (Fregatte, an der
+      Drachenküste) in drei Stärken. *Long John bleibt frei, bis feststeht, wer der Dieb ist.*
+- [x] **2.4 Entern:** Ist der Gegner schwer beschädigt, erscheint „Entern!“: Enterhaken-Schwung hinüber, dann
+      kurzes Jump'n'Run auf dem Deck bis zur Kapitänskajüte (45 Sekunden, Piraten von oben besiegen, offene Luken,
+      Blaubart braucht zwei Treffer). Die Spielfigur ist die eigene Figur aus Gamble Klicker.
+- [x] **2.5 Beute und Kopfgeld:** Bernstein, Waren, Karten-Fetzen; verlorene Schlacht = etwas Ladung weg,
+      kein „Game Over“ (Hälfte der Ladung, höchstens 50 Bernstein weg, in den nächsten Hafen geschleppt).
+      Versenkt = halbes Kopfgeld, geentert = ganzes Kopfgeld und Ladung.
+- [x] **2.6 Kanonen und Rumpf in der Werft** (reparieren, „Rumpf verstärken“), Tests für Treffer, Schaden,
+      Gegner-Verhalten (ein Spieler-Bot mit Fregatte schlägt Seeräuber meistens), Entern (ein Bot schafft jedes Deck).
 
 ### Stufe 3 – Inseln (Jump'n'Run mit Enterhaken), Tauchen und Perlen
 

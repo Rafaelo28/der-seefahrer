@@ -56,6 +56,7 @@ window.SF = window.SF || {};
     SF.setHTML($('harbor-stats'), `<span>${SF.amberHTML(s.amber)}</span>
       <span>🛢️ ${SF.formatDecimal(s.food, 1, 1)} / ${st.food}</span>
       <span>📦 ${SF.ships.cargoCount()} / ${st.hold}</span>
+      <span>🛡️ ${SF.ships.hullNow()} / ${SF.ships.hullMax()}</span>
       <span class="muted">Tag ${SF.story.day()}</span>`);
     document.querySelectorAll('.harbor-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
     const goal = SF.story.goal() === harbor;
@@ -115,10 +116,19 @@ window.SF = window.SF || {};
         <button type="button" class="btn btn-small" data-up="${u.id}" ${cost != null && SF.amber.can(cost) ? '' : 'disabled'}>${cost == null ? 'Voll' : SF.amberHTML(cost)}</button>
       </div>`;
     }).join('');
+    const hullNow = SF.ships.hullNow();
+    const hullMax = SF.ships.hullMax();
+    const rc = SF.ships.repairCost();
+    const repair = `<div class="yard-row">
+        <span class="yard-icon">🔧</span>
+        <div class="yard-info"><b>Rumpf reparieren</b> <span class="muted small">${hullNow} / ${hullMax}</span>
+          <div class="hp-bar small-bar"><i style="transform:scaleX(${(hullNow / hullMax).toFixed(3)})"></i></div></div>
+        <button type="button" class="btn btn-small" data-repair="1" ${rc > 0 && SF.amber.can(rc) ? '' : 'disabled'}>${rc > 0 ? SF.amberHTML(rc) : 'Heil'}</button>
+      </div>`;
     const cannonFull = s.ship.cannons >= st.cannonSlots;
     const cannons = `<div class="yard-row">
         <span class="yard-icon">💣</span>
-        <div class="yard-info"><b>Kanone</b> <span class="muted small">${st.cannons} / ${st.cannonSlots}</span><br><span class="small">Für Seeschlachten (kommen in Stufe 2)</span></div>
+        <div class="yard-info"><b>Kanone</b> <span class="muted small">${st.cannons} / ${st.cannonSlots}</span><br><span class="small">Jede Kanone feuert bei jeder Breitseite mit</span></div>
         <button type="button" class="btn btn-small" data-cannon="1" ${!cannonFull && SF.amber.can(SF.ships.CANNON_PRICE) ? '' : 'disabled'}>${cannonFull ? 'Voll' : SF.amberHTML(SF.ships.CANNON_PRICE)}</button>
       </div>`;
     const ships = SF.ships.TYPES.map(x => {
@@ -138,7 +148,7 @@ window.SF = window.SF || {};
     return `<h3>Werft</h3>
       <div class="yard-ship">${SF.ships.sideSVG(t.id)}<div><b>${t.name}</b><br>
         <span class="small">Tempo ${Math.round(st.speed)} · Laderaum ${st.hold} · Proviant ${st.food} · Kanonen ${st.cannons}/${st.cannonSlots}</span></div></div>
-      ${ups}${cannons}
+      ${repair}${ups}${cannons}
       <h3>Neues Schiff</h3>
       <p class="muted small">Dein altes Schiff nimmt die Werft für die Hälfte in Zahlung. Der Ausbau bleibt beim alten Schiff.</p>
       <div class="ship-list">${ships}</div>`;
@@ -188,6 +198,9 @@ window.SF = window.SF || {};
     } else if (d.up) {
       ok = SF.ships.buyUpgrade(d.up);
       if (ok) { SF.sound.play('upgrade'); SF.story.log(`Werft: ${SF.ships.UPGRADES.find(u => u.id === d.up).name} ausgebaut.`); }
+    } else if (d.repair) {
+      ok = SF.ships.repair();
+      if (ok) SF.sound.play('upgrade');
     } else if (d.cannon) {
       ok = SF.ships.buyCannon();
       if (ok) SF.sound.play('buy');
