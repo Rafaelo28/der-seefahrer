@@ -151,6 +151,8 @@ Freunde ohne alten Spielstand mitspielen können.
 ```
 index.html            Einstieg: alle Bildschirme (Titel, Geschichte, Laden, Seekarte, Hafen, Kajüte)
 css/style.css         Aussehen (Seekarte, Pergament, Bernstein)
+icons/                Webseiten-Icon: Vorlagen icon.svg und favicon.svg, daraus die PNGs (node tools/icons.js)
+js/icons.js           Eigene Symbole statt Emojis (24 × 24, als SVG im HTML und auf dem Canvas)
 js/format.js          Zahlen und Zeiten auf Deutsch, Anzeigen nur bei Änderung schreiben
 js/state.js           Spielstand: Standardwerte, Speichern, Laden, Export/Import, Bernstein
 js/rank.js            Ränge aus Gamble Klicker (für den Titel)
@@ -300,6 +302,13 @@ grünen Tests, einem Pull Request nach `main` und dem Merge.
 - [x] **5.3 Rangliste mit Freunden:** Bei jeder Online-Seeschlacht tauschen beide ihre Rekorde aus (Duell-Siege,
       Bestzeiten der vier Inseln, Geheimnisse). Die Kajüte zeigt eine Rangliste mit allen Freunden und wie oft man
       gegen sie gewonnen hat.
+
+### Feinschliff
+
+- [x] **Schönere Symbole:** Alle Symbole mit Schatten und Glanzlicht; Enterhaken, Seeungeheuer, Drache, Meerjungfrau,
+      Salz, Tuch und Schraubenschlüssel neu gezeichnet; Totenkopf mit gekreuzten Knochen.
+- [x] **Neues Webseiten-Icon:** Galeone vor der Goldenen Dublone als Abendsonne (iPad-Startbildschirm), dazu ein
+      vereinfachtes Icon für den Browser-Tab, das auch in 16 Pixeln noch lesbar ist.
 
 ### Ideen für danach
 
