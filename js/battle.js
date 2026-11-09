@@ -18,6 +18,11 @@ window.SF = window.SF || {};
   const BOARD_HP = 0.35;      // Entern ab 35 % Rumpf des Gegners …
   const BOARD_DIST = 190;     // … und so nah
   const EDGE = 60;
+  const AIM_CONE = 0.8;       // Zielhilfe: Gegner höchstens etwa 37° neben der Breitseite …
+  const AIM_REACH = 1.15;     // … und höchstens so weit weg (× Reichweite)
+  const AIM_HELP = 0.5;       // so stark lenkt die Zielhilfe die Kugeln zum Gegner (0 = gar nicht, 1 = ganz)
+  const AIM_LEAD = 0.7;       // so weit rechnet sie voraus, wohin der Gegner fährt
+  const STEER_DEAD = 0.7;     // Finger direkt am Schiff (× Schiffslänge): Kurs halten statt im Kreis drehen
 
   // Wendigkeit je Schiffstyp (Drehung pro Sekunde, als Anteil des Richtungsvektors)
   const TURN = { sloop: 1.25, brig: 1.05, frigate: 0.9, galleon: 0.72, ghost: 1.0 };
@@ -90,23 +95,65 @@ window.SF = window.SF || {};
     s.hy = n.y;
   }
 
+  // Zum Finger lenken – liegt der Finger direkt am Schiff, Kurs halten (sonst dreht es sich im Kreis)
+  function steerTo(s, tx, ty, dt) {
+    const dx = tx - s.x;
+    const dy = ty - s.y;
+    const dead = s.len * STEER_DEAD;
+    if (dx * dx + dy * dy < dead * dead) return;
+    steer(s, dx, dy, dt);
+  }
+
   // Seiten: Steuerbord (rechts) = (-hy, hx), Backbord (links) = (hy, -hx) – bei y nach unten
   const sideNormal = (s, side) => (side === 'star' ? { x: -s.hy, y: s.hx } : { x: s.hy, y: -s.hx });
+
+  // Liegt der Gegner vor dieser Breitseite (nah genug, nicht zu schräg)? Gibt den Abstand zurück, sonst 0
+  function inArc(b, s, side, cone = AIM_CONE, reach = AIM_REACH) {
+    const o = s === b.player ? b.enemy : b.player;
+    const n = sideNormal(s, side);
+    const dx = o.x - s.x;
+    const dy = o.y - s.y;
+    const d = Math.sqrt(dx * dx + dy * dy) || 1;
+    return d <= BALL_RANGE * reach && (dx * n.x + dy * n.y) / d >= cone ? d : 0;
+  }
+
+  // Zielhilfe für Menschen: dorthin zielen, wo der Gegner sein wird, wenn die Kugeln ankommen
+  function aimPoint(b, s, side) {
+    const d = inArc(b, s, side);
+    if (!d) return null;
+    const o = s === b.player ? b.enemy : b.player;
+    const t = d / BALL_SPEED;
+    const v = o.speed * windFactor(b, o) * t * AIM_LEAD;
+    return { x: o.x + o.hx * v, y: o.y + o.hy * v, hx: o.hx, hy: o.hy, t };
+  }
 
   function fire(b, s, side, events) {
     if (s.reload[side] > 0 || b.over) return false;
     s.reload[side] = s.reloadTime;
     const n = sideNormal(s, side);
-    const spread = s.side === 'enemy' && !b.duel ? s.aim : 0.04;
+    const human = s.side === 'player' || !!b.duel; // Computer-Piraten zielen selbst (mit Streuung)
+    const spread = human ? 0.04 : s.aim;
     const v = s.speed * windFactor(b, s);
+    const aim = human ? aimPoint(b, s, side) : null;
     for (let i = 0; i < s.cannons; i++) {
       const along = s.cannons === 1 ? 0 : (i / (s.cannons - 1) - 0.5) * s.len * 0.6;
+      const x = s.x + s.hx * along + n.x * s.len * 0.2;
+      const y = s.y + s.hy * along + n.y * s.len * 0.2;
+      let ax = n.x;
+      let ay = n.y;
+      if (aim) {
+        // Kugeln über die Länge des Gegners verteilt; der Schwung des eigenen Schiffs wird abgezogen
+        const a = norm(aim.x + aim.hx * along * 0.5 - s.hx * v * 0.5 * aim.t - x, aim.y + aim.hy * along * 0.5 - s.hy * v * 0.5 * aim.t - y);
+        if (a.x * n.x + a.y * n.y > 0.5) {
+          ax = n.x + (a.x - n.x) * AIM_HELP;
+          ay = n.y + (a.y - n.y) * AIM_HELP;
+        }
+      }
       const jitter = (rand(b) - 0.5) * 2 * spread;
-      const d = norm(n.x + s.hx * jitter, n.y + s.hy * jitter);
+      const d = norm(ax + s.hx * jitter, ay + s.hy * jitter);
       b.balls.push({
         from: s.side,
-        x: s.x + s.hx * along + n.x * s.len * 0.2,
-        y: s.y + s.hy * along + n.y * s.len * 0.2,
+        x, y,
         vx: d.x * BALL_SPEED + s.hx * v * 0.5,
         vy: d.y * BALL_SPEED + s.hy * v * 0.5,
         life: BALL_RANGE / BALL_SPEED,
@@ -182,11 +229,11 @@ window.SF = window.SF || {};
     b.t += dt;
     const p = b.player;
     const e = b.enemy;
-    if (input.tx != null) steer(p, input.tx - p.x, input.ty - p.y, dt);
+    if (input.tx != null) steerTo(p, input.tx, input.ty, dt);
     if (input.fire) fire(b, p, input.fire, events);
     if (b.duel) {
       const i2 = input2 || {};
-      if (i2.tx != null) steer(e, i2.tx - e.x, i2.ty - e.y, dt);
+      if (i2.tx != null) steerTo(e, i2.tx, i2.ty, dt);
       if (i2.fire) fire(b, e, i2.fire, events);
     } else {
       ai(b, e, p, dt, events);
@@ -257,6 +304,7 @@ window.SF = window.SF || {};
 
   SF.battle = {
     ARENA_W, ARENA_H, SCALE, BALL_SPEED, BALL_RANGE, BALL_DAMAGE, RELOAD, FLEE_DIST, FLEE_EDGE, BOARD_HP, BOARD_DIST, HULL, HULL_UP,
-    create, step, fire, steer, canBoard, distance, atEdge, inHull, sideNormal, maxHull, rand,
+    AIM_CONE, AIM_REACH, STEER_DEAD,
+    create, step, fire, steer, steerTo, inArc, canBoard, distance, atEdge, inHull, sideNormal, maxHull, rand,
   };
 })();

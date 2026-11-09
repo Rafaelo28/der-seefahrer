@@ -62,7 +62,8 @@ Der ganze Plan mit allen Ausbaustufen steht in `PROJEKTPLAN.md` (Häkchen nach j
   - `voyage.test.js` – Segeln: Kurs folgen, Küste, Wind, Proviant, Treibgut.
   - `trade.test.js` – Handel und Werft: Preise je Hafen, Kaufen/Verkaufen, keine Endlos-Gewinne.
   - `story.test.js` – Story-Schritte, Kneipen-Gespräche, Salz-Auftrag, Vulkaninsel, Logbuch.
-  - `battle.test.js` – Seeschlacht (rechnet überall gleich, keine Winkelfunktionen), Piraten auf der Karte, Beute, Werft.
+  - `battle.test.js` – Seeschlacht (rechnet überall gleich, keine Winkelfunktionen), Steuern, Zielhilfe, Piraten auf der
+    Karte, Beute, Werft.
   - `boarding.test.js` – Entern: Springen, Piraten von oben, Luken, Tür, Zeit, Deck ist schaffbar.
   - `island.test.js` – Inseln: Enterhaken und Pendel, Gefahren, Krabben, Truhe, Bestzeit; ein Bot schafft jede Insel.
   - `dive.test.js` – Tauchen: Luft, Muscheln nur offen, Quallen, Auftauchen, Perlen, Nachwachsen.

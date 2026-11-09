@@ -119,6 +119,19 @@ module.exports = async function (page, label, assert, shot) {
   await page.mouse.down();
   await page.waitForTimeout(600);
   await page.mouse.up();
+  // Gegner genau an Steuerbord: Knopf und Bereich leuchten, oben steht „Feuer frei“
+  await page.evaluate(() => {
+    const b = SF.battleView.current();
+    const n = SF.battle.sideNormal(b.player, 'star');
+    b.enemy.x = b.player.x + n.x * 250;
+    b.enemy.y = b.player.y + n.y * 250;
+    b.enemy.speed = 0;
+    b.player.speed = 0;
+    b.enemy.delay = 999;
+  });
+  await page.waitForSelector('#bt-star.ready', { timeout: 3000 });
+  assert(!(await page.$('#bt-port.ready')) && (await page.textContent('#bt-info')).includes('Steuerbord'), `${label}: Steuerbord-Knopf leuchtet, wenn der Gegner davor liegt`);
+  await shot(page, `zielen-${label}`);
   await page.dispatchEvent('#bt-port', 'pointerdown');
   await page.dispatchEvent('#bt-star', 'pointerdown');
   await page.waitForTimeout(700);
