@@ -61,6 +61,52 @@ const player = (o = {}) => Object.assign({ type: 'frigate', hp: 130, maxHp: 130,
   assert(one.player.cannons === 1, 'Ohne Kanonen bleibt ein Drehbassen-Geschütz');
 }
 
+// ---------- Bessere Steuerung: Finger am Schiff, Zielhilfe ----------
+{
+  // Finger direkt auf dem eigenen Schiff: Kurs halten statt im Kreis drehen
+  const b = B.create(player(), enemy(), null, 8);
+  const p = b.player;
+  p.x = 600; p.y = 500; p.hx = 1; p.hy = 0;
+  b.enemy.x = 1000; b.enemy.y = 800; b.enemy.delay = 99; b.enemy.speed = 0; // nah genug (sonst gilt es als Flucht)
+  for (let i = 0; i < 20; i++) B.step(b, 1 / 60, { tx: p.x - 10, ty: p.y + 15 });
+  assert(!b.over && p.hx > 0.999, 'Finger direkt am Schiff: Kurs bleibt');
+  for (let i = 0; i < 60; i++) B.step(b, 1 / 60, { tx: p.x, ty: p.y + 400 });
+  assert(p.hy > 0.3, 'Finger weiter weg: das Schiff dreht hin');
+
+  // Zielhilfe: Gegner fährt schräg vor der Breitseite vorbei – mit Vorhalt treffen mehr Kugeln
+  const shoot = assist => {
+    const g = B.create(player({ cannons: 6 }), enemy(), null, 9);
+    const q = g.player;
+    const e = g.enemy;
+    q.x = 600; q.y = 500; q.hx = 1; q.hy = 0; q.speed = 0;
+    e.x = 480; e.y = 800; e.hx = 1; e.hy = 0; e.delay = 99; e.speed = 110;
+    const arc = B.inArc(g, q, 'star');
+    if (!assist) q.side = 'ohne'; // zum Vergleich: so schießen wie ein Computer-Pirat (genau quer, ohne Streuung)
+    q.aim = 0;
+    B.fire(g, q, 'star', []);
+    q.side = 'player';
+    g.balls.forEach(x => { x.from = 'player'; });
+    for (let i = 0; i < 90; i++) B.step(g, 1 / 60, {});
+    return { hits: g.hits.player, arc };
+  };
+  const withAim = shoot(true);
+  const without = shoot(false);
+  assert(withAim.arc > 0, 'Gegner liegt im Bereich der Zielhilfe');
+  assert(withAim.hits > without.hits, `Zielhilfe: Kugeln fliegen dorthin, wo der Gegner sein wird (${withAim.hits} statt ${without.hits} Treffer)`);
+  // Gegner zu weit hinter der Breitseite: keine Zielhilfe
+  const g2 = B.create(player(), enemy(), null, 10);
+  g2.player.x = 600; g2.player.y = 500; g2.player.hx = 1; g2.player.hy = 0;
+  g2.enemy.x = 300; g2.enemy.y = 560;
+  assert(!B.inArc(g2, g2.player, 'star') && !B.inArc(g2, g2.player, 'port'), 'Gegner hinter dem Heck: keine Seite leuchtet');
+  // Computer-Piraten bekommen keine Zielhilfe (ihre Kugeln fliegen quer zur Fahrt, mit eigener Streuung)
+  const g3 = B.create(player(), enemy(), null, 11);
+  const ce = g3.enemy;
+  ce.x = 600; ce.y = 500; ce.hx = 1; ce.hy = 0; ce.aim = 0;
+  g3.player.x = 760; g3.player.y = 760;
+  B.fire(g3, ce, 'star', []);
+  assert(g3.balls.every(x => Math.abs(x.vx - ce.hx * ce.speed * 0.5) < 1e-6), 'Computer-Pirat: keine Zielhilfe');
+}
+
 // ---------- Computer-Gegner, Ausgänge ----------
 {
   // Wer sich nicht wehrt, verliert gegen Käpt'n Blaubart

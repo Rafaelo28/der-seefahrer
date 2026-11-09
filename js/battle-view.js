@@ -1,6 +1,7 @@
-// Schlacht-Bildschirm: Seeschlacht gegen einen Computer-Piraten. Finger aufs Wasser = dorthin steuern,
-// große Knöpfe für die Breitseiten nach Backbord (links) und Steuerbord (rechts), „Entern!“ wenn der Gegner
-// schwer beschädigt und nah ist. An den Rand segeln = fliehen. Die Rechnung steckt in js/battle.js.
+// Schlacht-Bildschirm: Seeschlacht gegen einen Computer-Piraten. Finger aufs Wasser = dorthin steuern (der Zielpunkt
+// bleibt unter dem Finger, auch wenn die Kamera mitfährt), große Knöpfe für die Breitseiten nach Backbord (rot, links
+// vom Schiff) und Steuerbord (grün, rechts vom Schiff). Liegt der Gegner vor einer geladenen Seite, leuchten Bereich und
+// Knopf. „Entern!“, wenn der Gegner schwer beschädigt und nah ist. An den Rand segeln = fliehen. Rechnung: js/battle.js.
 window.SF = window.SF || {};
 
 (function () {
@@ -14,6 +15,8 @@ window.SF = window.SF || {};
   let pirate = null;       // Pirat von der Seekarte
   let input = {};
   let steerPointer = null;
+  let finger = null;       // Bildschirm-Punkt des lenkenden Fingers (wird jedes Bild in die Welt umgerechnet)
+  const SIDE_COLOR = { port: '220,70,55', star: '60,190,110' }; // Backbord rot, Steuerbord grün (wie die Positionslichter)
   let fx = [];             // Effekte: Rauch, Spritzer, Treffer
   let time = 0;
   let hudClock = 0;
@@ -53,7 +56,8 @@ window.SF = window.SF || {};
     } else await SF.ui.dialog({
       title: `${SF.icon('skull')} ${SF.escape(p.name)} greift an!`,
       html: `<p>${k.name === p.name ? '' : `Ein ${k.name} in einer ${SF.ships.byId[k.ship].name}. `}Kopfgeld: ${SF.amberHTML(k.bounty)}</p>
-        <p class="muted small">Steuern: Finger aufs Wasser halten. Feuern: Backbord (links) und Steuerbord (rechts), wenn der Gegner neben dir ist.
+        <p class="muted small">Steuern: Finger aufs Wasser halten – dein Schiff fährt dorthin. Feuern: <b class="side-port">Backbord</b> (rot, links vom
+        Schiff) und <b class="side-star">Steuerbord</b> (grün, rechts vom Schiff). Leuchtet ein Knopf, liegt der Gegner genau davor.
         Ist er schwer getroffen und nah, kannst du <b>entern</b>. Fliehen: an den Rand des Meeres segeln.</p>`,
       buttons: [{ label: `${SF.icon('swords')} Zum Kampf!`, value: true, kind: 'primary' }],
     });
@@ -71,6 +75,9 @@ window.SF = window.SF || {};
     );
     if (SF.cosmetics) b.player.colors = SF.cosmetics.shipColors();
     input = {};
+    finger = null;
+    steerPointer = null;
+    time = 0;
     fx = [];
     wakes.player = [];
     wakes.enemy = [];
@@ -84,7 +91,7 @@ window.SF = window.SF || {};
     hudClock = 1;
     updateHud();
     SF.track('seefahrer-schlacht');
-    SF.ui.tipOnce('battle', 'Halte den Finger aufs Wasser – dein Schiff steuert dorthin. Dreh dich <b>seitlich</b> zum Gegner und feuere!', 7000);
+    SF.ui.tipOnce('battle', 'Halte den Finger aufs Wasser – dein Schiff fährt dorthin. Dreh dich <b>seitlich</b> zum Gegner: Leuchtet ein Knopf, feuern!', 7000);
   }
 
   // ---------- Spielschleife ----------
@@ -92,6 +99,11 @@ window.SF = window.SF || {};
   function frame(dt) {
     if (!b || !canvas) return;
     time += dt;
+    if (finger) {
+      const w = toWorld(finger.x, finger.y);
+      input.tx = w.x;
+      input.ty = w.y;
+    }
     const fire = input.fire;
     input.fire = null;
     let events;
@@ -265,18 +277,16 @@ window.SF = window.SF || {};
       }
     });
 
-    // Schussbereich der eigenen Breitseiten (Zielhilfe)
+    // Schussbereich der eigenen Breitseiten: Backbord rot, Steuerbord grün; hell, wenn der Gegner davor liegt
     const p = b.player;
     ['port', 'star'].forEach(side => {
       const n = SF.battle.sideNormal(p, side);
-      const ready = p.reload[side] <= 0;
-      const ex = b.enemy.x - p.x;
-      const ey = b.enemy.y - p.y;
-      const ed = Math.sqrt(ex * ex + ey * ey) || 1;
-      const inLine = (ex * n.x + ey * n.y) / ed > 0.86 && ed < SF.battle.BALL_RANGE;
+      const loaded = p.reload[side] <= 0;
+      const hot = loaded && aimed(side);
       const half = p.len * 0.35;
       const R = SF.battle.BALL_RANGE;
-      ctx.fillStyle = ready ? (inLine ? 'rgba(255,210,122,.32)' : 'rgba(255,255,255,.12)') : 'rgba(0,0,0,.08)';
+      const c = SIDE_COLOR[side];
+      ctx.fillStyle = !loaded ? 'rgba(0,0,0,.08)' : `rgba(${c},${hot ? 0.42 : 0.16})`;
       ctx.beginPath();
       ctx.moveTo(p.x + p.hx * half, p.y + p.hy * half);
       ctx.lineTo(p.x + p.hx * half + n.x * R + p.hx * R * 0.25, p.y + p.hy * half + n.y * R + p.hy * R * 0.25);
@@ -284,7 +294,28 @@ window.SF = window.SF || {};
       ctx.lineTo(p.x - p.hx * half, p.y - p.hy * half);
       ctx.closePath();
       ctx.fill();
+      if (loaded) {
+        ctx.strokeStyle = `rgba(${c},${hot ? 0.9 : 0.4})`;
+        ctx.lineWidth = (hot ? 4 : 2) / z;
+        ctx.stroke();
+      }
     });
+    // Zielpunkt des Fingers mit gestrichelter Linie vom Bug
+    if (input.tx != null) {
+      const dx = input.tx - p.x;
+      const dy = input.ty - p.y;
+      const far = dx * dx + dy * dy > (p.len * SF.battle.STEER_DEAD) * (p.len * SF.battle.STEER_DEAD);
+      if (far) {
+        ctx.strokeStyle = 'rgba(255,255,255,.55)';
+        ctx.lineWidth = 3 / z;
+        ctx.setLineDash([12 / z, 10 / z]);
+        ctx.beginPath();
+        ctx.moveTo(p.x + p.hx * p.len * 0.5, p.y + p.hy * p.len * 0.5);
+        ctx.lineTo(input.tx, input.ty);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+    }
 
     // Schiffe
     const sway = (Math.sin(time * 2.2) + 1) / 2;
@@ -336,13 +367,46 @@ window.SF = window.SF || {};
 
     // Zielpunkt des Fingers
     if (input.tx != null) {
-      ctx.strokeStyle = 'rgba(255,255,255,.7)';
+      ctx.strokeStyle = 'rgba(255,255,255,.8)';
       ctx.lineWidth = 3 / z;
       ctx.beginPath();
-      ctx.arc(input.tx, input.ty, 16 / z, 0, Math.PI * 2);
+      ctx.arc(input.tx, input.ty, 22 / z, 0, Math.PI * 2);
       ctx.stroke();
     }
+
+    // Am Anfang die Namen der Seiten an die Schussbereiche schreiben (zum Merken: Backbord rot, Steuerbord grün)
+    if (time < 8) {
+      const a = time < 7 ? 1 : 8 - time;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.font = '800 15px system-ui, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ['port', 'star'].forEach(side => {
+        const n = SF.battle.sideNormal(p, side);
+        const wx = p.x + n.x * SF.battle.BALL_RANGE * 0.88;
+        const wy = p.y + n.y * SF.battle.BALL_RANGE * 0.88;
+        const sx = (wx - cam.x) * z + vw / 2;
+        const sy = (wy - cam.y) * z + vh / 2;
+        const label = side === 'port' ? 'Backbord' : 'Steuerbord';
+        const w = ctx.measureText(label).width + 20;
+        ctx.globalAlpha = a;
+        ctx.fillStyle = `rgb(${SIDE_COLOR[side]})`;
+        ctx.beginPath();
+        ctx.moveTo(sx - w / 2 + 12, sy - 14);
+        ctx.arcTo(sx + w / 2, sy - 14, sx + w / 2, sy + 14, 12);
+        ctx.arcTo(sx + w / 2, sy + 14, sx - w / 2, sy + 14, 12);
+        ctx.arcTo(sx - w / 2, sy + 14, sx - w / 2, sy - 14, 12);
+        ctx.arcTo(sx - w / 2, sy - 14, sx + w / 2, sy - 14, 12);
+        ctx.fill();
+        ctx.fillStyle = '#fff';
+        ctx.fillText(label, sx, sy + 1);
+      });
+      ctx.globalAlpha = 1;
+    }
   }
+
+  // Liegt der Gegner vor dieser Breitseite und in Reichweite? (dann leuchten Bereich und Knopf)
+  const aimed = side => !!SF.battle.inArc(b, b.player, side, SF.battle.AIM_CONE, 1);
 
   // ---------- Anzeigen ----------
 
@@ -354,15 +418,23 @@ window.SF = window.SF || {};
     $('bt-hp-enemy').style.transform = `scaleX(${(e.hp / e.maxHp).toFixed(3)})`;
     SF.setText($('bt-hp-me-text'), `${Math.ceil(p.hp)} / ${p.maxHp}`);
     SF.setText($('bt-hp-enemy-text'), `${Math.ceil(e.hp)} / ${e.maxHp}`);
+    let ready = '';
     ['port', 'star'].forEach(side => {
       const r = p.reload[side] / p.reloadTime;
+      const hot = r <= 0 && aimed(side);
+      if (hot) ready = side;
       $(`bt-${side}`).classList.toggle('loading', r > 0);
+      $(`bt-${side}`).classList.toggle('ready', hot);
       $(`bt-${side}-load`).style.transform = `scaleX(${(1 - r).toFixed(3)})`;
     });
     $('bt-board').hidden = !!duel || !SF.battle.canBoard(b);
     const d = SF.battle.distance(b);
     const near = p.x < 200 || p.y < 200 || p.x > SF.battle.ARENA_W - 200 || p.y > SF.battle.ARENA_H - 200;
-    SF.setText($('bt-info'), duel ? 'Online-Seeschlacht' : near && d > SF.battle.FLEE_EDGE ? 'Zum Rand: fliehen' : `${p.cannons} Kanone${p.cannons === 1 ? '' : 'n'} je Breitseite`);
+    const info = ready ? `Feuer frei: ${ready === 'port' ? 'Backbord' : 'Steuerbord'}!`
+      : duel ? 'Online-Seeschlacht'
+        : near && d > SF.battle.FLEE_EDGE ? 'Zum Rand: fliehen' : `${p.cannons} Kanone${p.cannons === 1 ? '' : 'n'} je Breitseite`;
+    SF.setText($('bt-info'), info);
+    $('bt-info').classList.toggle('ready', !!ready);
   }
 
   // ---------- Bedienung ----------
@@ -379,23 +451,25 @@ window.SF = window.SF || {};
   function bind() {
     canvas = $('battle-canvas');
     ctx = canvas.getContext('2d');
+    // Lenken: der Punkt unter dem Finger zählt (jedes Bild neu umgerechnet, die Kamera fährt ja mit).
+    // Ein neuer Finger auf dem Wasser übernimmt das Lenken.
     canvas.addEventListener('pointerdown', e => {
       e.preventDefault();
       try { canvas.setPointerCapture(e.pointerId); } catch (err) { /* kein echter Finger (z. B. im Test) */ }
       steerPointer = e.pointerId;
-      const w = toWorld(local(e).x, local(e).y);
+      finger = local(e);
+      const w = toWorld(finger.x, finger.y);
       input.tx = w.x;
       input.ty = w.y;
     });
     canvas.addEventListener('pointermove', e => {
       if (e.pointerId !== steerPointer) return;
-      const w = toWorld(local(e).x, local(e).y);
-      input.tx = w.x;
-      input.ty = w.y;
+      finger = local(e);
     });
     const up = e => {
       if (e.pointerId !== steerPointer) return;
       steerPointer = null;
+      finger = null;
       input.tx = null;
       input.ty = null;
     };
@@ -463,6 +537,9 @@ window.SF = window.SF || {};
     });
     pirate = null;
     input = {};
+    finger = null;
+    steerPointer = null;
+    time = 0;
     fx = [];
     wakes.player = [];
     wakes.enemy = [];

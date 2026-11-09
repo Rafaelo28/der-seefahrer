@@ -309,6 +309,11 @@ grünen Tests, einem Pull Request nach `main` und dem Merge.
       Salz, Tuch und Schraubenschlüssel neu gezeichnet; Totenkopf mit gekreuzten Knochen.
 - [x] **Neues Webseiten-Icon:** Galeone vor der Goldenen Dublone als Abendsonne (iPad-Startbildschirm), dazu ein
       vereinfachtes Icon für den Browser-Tab, das auch in 16 Pixeln noch lesbar ist.
+- [x] **Bessere Steuerung in der Seeschlacht:** Der Zielpunkt bleibt unter dem Finger (auch wenn die Kamera mitfährt),
+      eine gestrichelte Linie zeigt den Kurs, Finger direkt am Schiff = Kurs halten statt im Kreis drehen, ein neuer
+      Finger übernimmt. Backbord rot, Steuerbord grün (Bereiche und Knöpfe, am Anfang beschriftet); liegt der Gegner vor
+      einer geladenen Seite, leuchten Bereich und Knopf („Feuer frei“). Zielhilfe für Menschen (auch online): Die Kugeln
+      lenken etwas dorthin, wo der Gegner sein wird – Computer-Piraten zielen weiter selbst.
 
 ### Ideen für danach
 
