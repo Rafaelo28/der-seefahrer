@@ -13,8 +13,9 @@ window.SF = window.SF || {};
   const BALL_DAMAGE = 8;
   const RELOAD = 2.6;         // Sekunden je Seite
   const WIND = 0.2;           // Rückenwind ±20 %
-  const FLEE_DIST = 760;      // so weit weg = entkommen …
-  const FLEE_EDGE = 340;      // … oder am Rand der Arena, wenn der Gegner mindestens so weit weg ist
+  // Fliehen nur mit dem Knopf „Fliehen“ (nie aus Versehen): nah am Rand des Meeres und der Gegner außer Schussweite
+  const FLEE_ZONE = 130;      // so nah am Rand (in der Nebelbank) …
+  const FLEE_GAP = 480;       // … und der Gegner mindestens so weit weg
   const BOARD_HP = 0.35;      // Entern ab 35 % Rumpf des Gegners …
   const BOARD_DIST = 190;     // … und so nah
   const EDGE = 60;
@@ -278,13 +279,27 @@ window.SF = window.SF || {};
     // Ausgang
     if (e.hp <= 0) b.over = 'sunk';
     else if (p.hp <= 0) b.over = 'lost';
-    else if (!b.duel && (dd > FLEE_DIST || (dd > FLEE_EDGE && atEdge(p)))) b.over = 'fled'; // im Duell kein Fliehen
     if (b.over) events.push({ type: 'over', result: b.over });
     return events;
   }
 
   // Steht das Schiff am Rand der Arena?
   const atEdge = s => s.x <= EDGE + 1 || s.y <= EDGE + 1 || s.x >= ARENA_W - EDGE - 1 || s.y >= ARENA_H - EDGE - 1;
+
+  // Kann man fliehen? Nah am Rand und weit weg vom Gegner – im Duell nie
+  function canFlee(b) {
+    if (b.over || b.duel) return false;
+    const p = b.player;
+    const nearEdge = p.x < EDGE + FLEE_ZONE || p.y < EDGE + FLEE_ZONE || p.x > ARENA_W - EDGE - FLEE_ZONE || p.y > ARENA_H - EDGE - FLEE_ZONE;
+    return nearEdge && distance(b) > FLEE_GAP;
+  }
+
+  // Fliehen (Knopf): klappt nur, wenn canFlee
+  function flee(b) {
+    if (!canFlee(b)) return false;
+    b.over = 'fled';
+    return true;
+  }
 
   // Kann man entern?
   function canBoard(b) {
@@ -303,8 +318,8 @@ window.SF = window.SF || {};
   }
 
   SF.battle = {
-    ARENA_W, ARENA_H, SCALE, BALL_SPEED, BALL_RANGE, BALL_DAMAGE, RELOAD, FLEE_DIST, FLEE_EDGE, BOARD_HP, BOARD_DIST, HULL, HULL_UP,
+    ARENA_W, ARENA_H, SCALE, BALL_SPEED, BALL_RANGE, BALL_DAMAGE, RELOAD, FLEE_ZONE, FLEE_GAP, BOARD_HP, BOARD_DIST, HULL, HULL_UP,
     AIM_CONE, AIM_REACH, STEER_DEAD,
-    create, step, fire, steer, steerTo, inArc, canBoard, distance, atEdge, inHull, sideNormal, maxHull, rand,
+    create, step, fire, steer, steerTo, inArc, canBoard, canFlee, flee, distance, atEdge, inHull, sideNormal, maxHull, rand,
   };
 })();

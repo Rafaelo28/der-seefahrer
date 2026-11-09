@@ -657,6 +657,8 @@ body[data-screen="boarding"] .klabauter-tip { bottom: auto; top: calc(84px + var
 .reload { position: absolute; left: 10px; right: 10px; bottom: 10px; height: 8px; border-radius: 4px; background: rgba(0, 0, 0, .35); overflow: hidden; }
 .reload i { position: absolute; inset: 0; background: var(--amber-light); transform-origin: left center; }
 .board-btn { position: absolute; left: 50%; bottom: calc(26px + var(--safe-bottom)); transform: translateX(-50%); animation: pulse-btn 1s ease-in-out infinite; }
+.flee-btn { position: absolute; left: 50%; bottom: calc(26px + var(--safe-bottom)); transform: translateX(-50%); }
+.flee-btn:active { transform: translateX(-50%) scale(.96); }
 
 /* ---------- Entern ---------- */
 .bd-time { position: absolute; top: calc(10px + var(--safe-top)); left: 50%; transform: translateX(-50%); padding: 8px 18px; border-radius: 14px; background: rgba(42, 29, 16, .85); color: var(--parchment); font-weight: 900; font-size: 1.3rem; font-variant-numeric: tabular-nums; }
