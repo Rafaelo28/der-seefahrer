@@ -1,7 +1,8 @@
 // Schlacht-Bildschirm: Seeschlacht gegen einen Computer-Piraten. Finger aufs Wasser = dorthin steuern (der Zielpunkt
 // bleibt unter dem Finger, auch wenn die Kamera mitfährt), große Knöpfe für die Breitseiten nach Backbord (rot, links
 // vom Schiff) und Steuerbord (grün, rechts vom Schiff). Liegt der Gegner vor einer geladenen Seite, leuchten Bereich und
-// Knopf. „Entern!“, wenn der Gegner schwer beschädigt und nah ist. An den Rand segeln = fliehen. Rechnung: js/battle.js.
+// Knopf. „Entern!“, wenn der Gegner schwer beschädigt und nah ist. „Fliehen“ nur mit Knopf (am Rand, Gegner weit weg).
+// Rechnung: js/battle.js.
 window.SF = window.SF || {};
 
 (function () {
@@ -58,7 +59,8 @@ window.SF = window.SF || {};
       html: `<p>${k.name === p.name ? '' : `Ein ${k.name} in einer ${SF.ships.byId[k.ship].name}. `}Kopfgeld: ${SF.amberHTML(k.bounty)}</p>
         <p class="muted small">Steuern: Finger aufs Wasser halten – dein Schiff fährt dorthin. Feuern: <b class="side-port">Backbord</b> (rot, links vom
         Schiff) und <b class="side-star">Steuerbord</b> (grün, rechts vom Schiff). Leuchtet ein Knopf, liegt der Gegner genau davor.
-        Ist er schwer getroffen und nah, kannst du <b>entern</b>. Fliehen: an den Rand des Meeres segeln.</p>`,
+        Ist er schwer getroffen und nah, kannst du <b>entern</b>. Fliehen: weit weg vom Gegner an den Rand des Meeres segeln und auf
+        <b>Fliehen</b> tippen.</p>`,
       buttons: [{ label: `${SF.icon('swords')} Zum Kampf!`, value: true, kind: 'primary' }],
     });
     starting = false;
@@ -88,6 +90,7 @@ window.SF = window.SF || {};
     cam.y = (b.player.y + b.enemy.y) / 2;
     $('bt-enemy-name').textContent = p.name;
     $('bt-board').hidden = true;
+    $('bt-flee').hidden = true;
     hudClock = 1;
     updateHud();
     SF.track('seefahrer-schlacht');
@@ -428,11 +431,9 @@ window.SF = window.SF || {};
       $(`bt-${side}-load`).style.transform = `scaleX(${(1 - r).toFixed(3)})`;
     });
     $('bt-board').hidden = !!duel || !SF.battle.canBoard(b);
-    const d = SF.battle.distance(b);
-    const near = p.x < 200 || p.y < 200 || p.x > SF.battle.ARENA_W - 200 || p.y > SF.battle.ARENA_H - 200;
+    $('bt-flee').hidden = !!duel || !SF.battle.canFlee(b);
     const info = ready ? `Feuer frei: ${ready === 'port' ? 'Backbord' : 'Steuerbord'}!`
-      : duel ? 'Online-Seeschlacht'
-        : near && d > SF.battle.FLEE_EDGE ? 'Zum Rand: fliehen' : `${p.cannons} Kanone${p.cannons === 1 ? '' : 'n'} je Breitseite`;
+      : duel ? 'Online-Seeschlacht' : `${p.cannons} Kanone${p.cannons === 1 ? '' : 'n'} je Breitseite`;
     SF.setText($('bt-info'), info);
     $('bt-info').classList.toggle('ready', !!ready);
   }
@@ -488,6 +489,12 @@ window.SF = window.SF || {};
       if (!b || !SF.battle.canBoard(b)) return;
       SF.sound.play('tap');
       board();
+    });
+    // Fliehen nur mit Absicht: Knopf erscheint am Rand, wenn der Gegner außer Schussweite ist
+    $('bt-flee').addEventListener('click', () => {
+      if (!b || duel || !SF.battle.flee(b)) return;
+      SF.sound.play('tap');
+      finish('fled');
     });
     $('bt-rotate-ok').addEventListener('click', () => {
       SF.state.ui.tips['battle-portrait'] = 1;
@@ -550,6 +557,7 @@ window.SF = window.SF || {};
     cam.y = (b.player.y + b.enemy.y) / 2;
     $('bt-enemy-name').textContent = d.other.name;
     $('bt-board').hidden = true;
+    $('bt-flee').hidden = true;
     hudClock = 1;
     updateHud();
     SF.sound.play('horn');

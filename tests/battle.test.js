@@ -114,17 +114,27 @@ const player = (o = {}) => Object.assign({ type: 'frigate', hp: 130, maxHp: 130,
   let t = 0;
   while (!b.over && t < 240) { B.step(b, 1 / 30, { tx: 900, ty: 550 }); t += 1 / 30; }
   assert(b.over === 'lost', `Blaubart besiegt einen wehrlosen Spieler (${b.over}, ${Math.round(t)} s)`);
-  // Wegsegeln = Flucht
+  // Fliehen nie aus Versehen: Wer an den Rand segelt, kämpft weiter – erst der Knopf „Fliehen“ beendet die Schlacht
   const f = B.create(player({ speed: 120 }), enemy('raider'), null, 5);
   f.player.x = 500; f.player.y = 550; f.enemy.x = 900; f.enemy.y = 550;
   f.enemy.speed = 20;
   t = 0;
-  while (!f.over && t < 60) { B.step(f, 1 / 30, { tx: -500, ty: 550 }); t += 1 / 30; }
-  assert(f.over === 'fled', `Fliehen an den Rand klappt, wenn man schneller ist (${f.over})`);
+  while (!f.over && t < 20 && !B.atEdge(f.player)) { B.step(f, 1 / 30, { tx: -500, ty: 550 }); t += 1 / 30; }
+  for (let i = 0; i < 30; i++) B.step(f, 1 / 30, { tx: -500, ty: 550 }); // noch eine Sekunde am Rand entlang
+  assert(!f.over && B.atEdge(f.player), `Am Rand: kein automatisches Entkommen (${f.over || 'kämpft weiter'})`);
+  assert(B.canFlee(f), 'Am Rand und Gegner außer Schussweite: Fliehen möglich');
+  assert(B.flee(f) && f.over === 'fled', 'Knopf „Fliehen“: entkommen');
   const g2 = B.create(player(), enemy('raider'), null, 5);
-  g2.player.x = 70; g2.player.y = 550; g2.enemy.x = 200; g2.enemy.y = 550;
+  g2.player.x = 70; g2.player.y = 550; g2.enemy.x = 300; g2.enemy.y = 550;
   B.step(g2, 1 / 30, { tx: -500, ty: 550 });
-  assert(!g2.over, 'Am Rand, aber Gegner zu nah: noch nicht entkommen');
+  assert(!g2.over && !B.canFlee(g2) && !B.flee(g2), 'Am Rand, aber Gegner in Schussweite: kein Fliehen');
+  const g3 = B.create(player(), enemy('raider'), null, 5);
+  g3.player.x = 900; g3.player.y = 550; g3.enemy.x = 1650; g3.enemy.y = 550;
+  assert(!B.canFlee(g3), 'Gegner weit weg, aber mitten auf dem Meer: kein Fliehen');
+  // Beide Schiffe weit auseinander: auch dann kein automatisches Ende
+  g3.enemy.speed = 0; g3.player.speed = 0;
+  for (let i = 0; i < 30; i++) B.step(g3, 1 / 30, {});
+  assert(!g3.over, 'Weit auseinander: die Schlacht läuft weiter');
   // Ein einfacher Spieler-Bot (Gegner seitlich halten und feuern) besiegt Seeräuber mit einer Fregatte
   let wins = 0;
   for (let seed = 1; seed <= 6; seed++) {

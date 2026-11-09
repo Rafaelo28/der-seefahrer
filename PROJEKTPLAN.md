@@ -238,7 +238,7 @@ grünen Tests, einem Pull Request nach `main` und dem Merge.
 - [x] **2.2 Schlacht-Bildschirm (quer, Hinweis „Bitte drehen“ hochkant):** Schiff mit dem Finger lenken, Knöpfe „Backbord“ und „Steuerbord“
       für Breitseiten, Nachladen, Rumpf-Punkte, Wind beeinflusst Tempo. Physik nur mit + − × ÷ und `Math.sqrt`
       (für die Online-Schlacht in Stufe 5 wiederverwendbar), eigener Zufall aus einem Startwert. Fliehen: an den Rand
-      der Arena segeln, wenn der Gegner nicht zu nah ist. Zielhilfe: Schussbereich der Breitseiten wird angezeigt.
+      der Arena segeln, wenn der Gegner außer Schussweite ist, und auf „Fliehen“ tippen (nie automatisch). Zielhilfe: Schussbereich der Breitseiten wird angezeigt.
 - [x] **2.3 Computer-Piraten:** Seeräuber (Schaluppe), Hai-Piraten (Brigg) und Käpt'n Blaubart (Fregatte, an der
       Drachenküste) in drei Stärken. *Long John bleibt frei, bis feststeht, wer der Dieb ist.*
 - [x] **2.4 Entern:** Ist der Gegner schwer beschädigt, erscheint „Entern!“: Enterhaken-Schwung hinüber, dann
@@ -314,6 +314,8 @@ grünen Tests, einem Pull Request nach `main` und dem Merge.
       Finger übernimmt. Backbord rot, Steuerbord grün (Bereiche und Knöpfe, am Anfang beschriftet); liegt der Gegner vor
       einer geladenen Seite, leuchten Bereich und Knopf („Feuer frei“). Zielhilfe für Menschen (auch online): Die Kugeln
       lenken etwas dorthin, wo der Gegner sein wird – Computer-Piraten zielen weiter selbst.
+- [x] **Kein Entkommen aus Versehen:** Die Schlacht endet nicht mehr von selbst, wenn man an den Rand kommt oder weit
+      weg ist. Fliehen geht nur mit dem Knopf „Fliehen“, der am Rand erscheint, wenn der Gegner außer Schussweite ist.
 
 ### Ideen für danach
 

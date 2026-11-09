@@ -132,6 +132,23 @@ module.exports = async function (page, label, assert, shot) {
   await page.waitForSelector('#bt-star.ready', { timeout: 3000 });
   assert(!(await page.$('#bt-port.ready')) && (await page.textContent('#bt-info')).includes('Steuerbord'), `${label}: Steuerbord-Knopf leuchtet, wenn der Gegner davor liegt`);
   await shot(page, `zielen-${label}`);
+  // Am Rand und Gegner weit weg: Knopf „Fliehen“ – aber kein automatisches Entkommen
+  assert(await page.isHidden('#bt-flee'), `${label}: mitten im Kampf kein Knopf „Fliehen“`);
+  await page.evaluate(() => {
+    const b = SF.battleView.current();
+    b.player.x = 70; b.player.y = 550;
+    b.enemy.x = 900; b.enemy.y = 550;
+  });
+  await page.waitForSelector('#bt-flee:not([hidden])', { timeout: 3000 });
+  await page.waitForTimeout(400);
+  assert(await page.evaluate(() => !SF.battleView.current().over), `${label}: am Rand kein automatisches Entkommen`);
+  await shot(page, `fliehen-${label}`);
+  await page.evaluate(() => {
+    const b = SF.battleView.current();
+    b.player.x = 700; b.player.y = 550;
+    b.enemy.x = 950; b.enemy.y = 550;
+  });
+  await page.waitForSelector('#bt-flee', { state: 'hidden', timeout: 3000 });
   await page.dispatchEvent('#bt-port', 'pointerdown');
   await page.dispatchEvent('#bt-star', 'pointerdown');
   await page.waitForTimeout(700);
