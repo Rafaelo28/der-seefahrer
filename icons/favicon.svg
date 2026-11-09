@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Kleines Icon für den Browser-Tab: Schiff vor der Goldenen Dublone, mit dicken Linien für 16–32 Pixel -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0b2233"/>
+      <stop offset="1" stop-color="#1f5578"/>
+    </linearGradient>
+    <radialGradient id="coin" cx="0.38" cy="0.32" r="0.75">
+      <stop offset="0" stop-color="#fff6c8"/>
+      <stop offset="0.4" stop-color="#ffd85a"/>
+      <stop offset="1" stop-color="#d99212"/>
+    </radialGradient>
+    <clipPath id="rund"><rect width="64" height="64" rx="14"/></clipPath>
+  </defs>
+  <g clip-path="url(#rund)">
+  <rect width="64" height="64" fill="url(#bg)"/>
+  <circle cx="33" cy="28" r="20" fill="url(#coin)" stroke="#a86a08" stroke-width="2.5"/>
+  <g stroke="#2a1d10" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M33 42V11" fill="none"/>
+    <path d="M24 15h17c1 4 1 8-.5 11.5Q32.5 28.5 24.5 26.5C23 23 23 19 24 15z" fill="#fffaf0"/>
+    <path d="M22 28.5h21c1.2 3.6 1 7-.6 10Q32.5 41 22.6 38.5C21 35.5 20.8 32 22 28.5z" fill="#fffaf0"/>
+    <path d="M33 11l9 2.4-9 2.4" fill="#c0392b"/>
+    <path d="M5 37l9 4h31l4-5h10l-5 14H13z" fill="#8a5a2b"/>
+    <path d="M10 45h43" fill="none" stroke="#f5c542" stroke-width="2"/>
+  </g>
+  <path d="M0 52c3-1 6-2 9-1 5 2 8 3 12 0 5-4 10-4 15 0s10 4 15 0 7-3 13-1V64H0z" fill="#2c74a0"/>
+  <path d="M0 52c3-1 6-2 9-1 5 2 8 3 12 0 5-4 10-4 15 0s10 4 15 0 7-3 13-1" fill="none" stroke="#e8f6fb" stroke-width="3" stroke-linecap="round"/>
+  </g>
+</svg>

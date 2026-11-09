@@ -43,7 +43,11 @@ Der ganze Plan mit allen Ausbaustufen steht in `PROJEKTPLAN.md` (Häkchen nach j
   `SF.track('seefahrer-…')` – niemals Namen, Raum-Codes, Spieler-IDs oder Spielstände mitsenden.
 - **Keine Emojis** (Wunsch von Rafaelo28): Symbole kommen aus `js/icons.js` – im HTML `SF.icon('name')` bzw.
   `<i data-ic="name"></i>`, auf dem Canvas `SF.icons.draw(ctx, 'name', x, y, größe)`. Neue Symbole dort auf dem
-  24 × 24-Raster zeichnen. Ein Test (`cosmetics.test.js`) schlägt fehl, wenn irgendwo ein Emoji steht.
+  24 × 24-Raster zeichnen (mit Umriss, Schatten `sh(…)` und Glanzlicht `hi(…)` wie die anderen). Ein Test
+  (`cosmetics.test.js`) schlägt fehl, wenn irgendwo ein Emoji steht.
+- **Webseiten-Icon**: Vorlagen sind `icons/icon.svg` (iPad-Startbildschirm, App) und `icons/favicon.svg` (Browser-Tab).
+  Nach einer Änderung `node tools/icons.js` ausführen (erzeugt die PNGs) und die `?v=…` der Icons in `index.html` und
+  `manifest.webmanifest` erhöhen.
 - **Alles ist Spielgeld.** Es gibt keine Käufe mit echtem Geld.
 - Code aus Gamble Klicker (`Rafaelo28/Gamble-Klicker`) darf übernommen und angepasst werden
   (`figure.js`, `rank.js`, `sound.js`, `format.js`, später `mp/room.js`, `mp/cannon.js`).

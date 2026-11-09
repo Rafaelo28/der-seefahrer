@@ -1,0 +1,129 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Vorlage für das Webseiten-Icon (icon-180/192/512.png entstehen daraus mit tools/icons.js).
+       Galeone vor der Goldenen Dublone als Abendsonne. Alles Wichtige liegt im inneren Kreis (für runde Masken). -->
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0b2233"/>
+      <stop offset="0.38" stop-color="#1c4a6c"/>
+      <stop offset="0.56" stop-color="#7a5a78"/>
+      <stop offset="0.66" stop-color="#e8894a"/>
+      <stop offset="0.70" stop-color="#f6b45a"/>
+    </linearGradient>
+    <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2a6f93"/>
+      <stop offset="1" stop-color="#0b2a40"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0.45" stop-color="#ffd27a" stop-opacity="0.75"/>
+      <stop offset="1" stop-color="#ffb04a" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="coin" cx="0.38" cy="0.32" r="0.75">
+      <stop offset="0" stop-color="#fff6c8"/>
+      <stop offset="0.35" stop-color="#ffd85a"/>
+      <stop offset="0.75" stop-color="#f0b023"/>
+      <stop offset="1" stop-color="#c3820e"/>
+    </radialGradient>
+    <linearGradient id="sail" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#fffaf0"/>
+      <stop offset="0.6" stop-color="#f3e6c4"/>
+      <stop offset="1" stop-color="#d9c493"/>
+    </linearGradient>
+    <linearGradient id="hull" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8a5a2b"/>
+      <stop offset="1" stop-color="#4a2a10"/>
+    </linearGradient>
+    <linearGradient id="wave1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3d8ab0"/>
+      <stop offset="1" stop-color="#1d5578"/>
+    </linearGradient>
+    <linearGradient id="wave2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2c74a0"/>
+      <stop offset="1" stop-color="#0d3550"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Himmel und Sterne -->
+  <rect width="512" height="512" fill="url(#sky)"/>
+  <g fill="#fff4d6">
+    <circle cx="62" cy="58" r="3"/><circle cx="128" cy="34" r="2"/><circle cx="440" cy="46" r="2.6"/>
+    <circle cx="470" cy="112" r="1.8"/><circle cx="36" cy="140" r="1.8"/><circle cx="398" cy="20" r="1.6"/>
+  </g>
+
+  <!-- Goldene Dublone als Abendsonne -->
+  <circle cx="262" cy="236" r="196" fill="url(#glow)"/>
+  <circle cx="262" cy="236" r="140" fill="url(#coin)" stroke="#a86a08" stroke-width="6"/>
+  <circle cx="262" cy="236" r="116" fill="none" stroke="#c98c14" stroke-width="5" stroke-dasharray="2 12" stroke-linecap="round"/>
+  <circle cx="262" cy="236" r="104" fill="none" stroke="#d99c1c" stroke-width="3"/>
+
+  <!-- Meer mit Spiegelung der Sonne -->
+  <rect y="352" width="512" height="160" fill="url(#sea)"/>
+  <g fill="#ffd27a" opacity="0.85">
+    <rect x="150" y="364" width="230" height="6" rx="3"/>
+    <rect x="182" y="378" width="170" height="5" rx="2.5"/>
+    <rect x="210" y="391" width="120" height="4" rx="2"/>
+  </g>
+
+  <!-- Möwen -->
+  <g fill="none" stroke="#0b2233" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M82 118q10-12 20 0q10-12 20 0"/>
+    <path d="M118 84q7-8 14 0q7-8 14 0"/>
+  </g>
+
+  <!-- Galeone -->
+  <g stroke="#2a1d10" stroke-linejoin="round" stroke-linecap="round">
+    <!-- Bugspriet und Takelage -->
+    <path d="M118 300L58 262" stroke-width="7" fill="none"/>
+    <path d="M62 264L176 118M62 264L262 84M262 84L346 120" stroke-width="2.2" fill="none" opacity="0.8"/>
+    <!-- Klüver -->
+    <path d="M70 262L170 132L170 282C138 284 100 278 70 262z" fill="url(#sail)" stroke-width="4"/>
+    <!-- Masten -->
+    <path d="M176 300V110M262 300V76M346 300V116" stroke-width="8" fill="none"/>
+
+    <!-- Besan (hinten) -->
+    <path d="M308 148H384C388 168 388 186 382 204Q346 214 310 204C304 186 304 168 308 148z" fill="url(#sail)" stroke-width="4"/>
+    <path d="M302 214H390C395 236 394 258 386 278Q346 290 306 278C298 258 297 236 302 214z" fill="url(#sail)" stroke-width="4"/>
+    <!-- Fockmast (vorne) -->
+    <path d="M140 140H212C216 160 216 180 210 198Q176 208 142 198C136 180 136 160 140 140z" fill="url(#sail)" stroke-width="4"/>
+    <path d="M132 210H220C225 232 224 254 216 274Q176 286 136 274C128 254 127 232 132 210z" fill="url(#sail)" stroke-width="4"/>
+    <!-- Großmast (Mitte, vorne im Bild) -->
+    <path d="M226 104H298C302 120 302 136 296 150Q262 158 228 150C222 136 222 120 226 104z" fill="url(#sail)" stroke-width="4"/>
+    <path d="M214 164H310C315 186 314 208 306 228Q262 240 218 228C210 208 209 186 214 164z" fill="url(#sail)" stroke-width="4"/>
+    <path d="M206 242H318C322 258 321 274 314 290Q262 300 210 290C203 274 202 258 206 242z" fill="url(#sail)" stroke-width="4"/>
+    <!-- Rahen -->
+    <path d="M220 104h84M208 164h108M200 242h124M134 140h84M126 210h100M302 148h88M296 214h100" stroke-width="5" fill="none"/>
+    <!-- Wölbung der Segel -->
+    <g fill="none" stroke="#c9b27a" stroke-width="3" opacity="0.9">
+      <path d="M236 128q26 6 52 0M226 196q36 8 72 0M222 268q40 7 80 0M152 170q24 6 48 0M146 244q30 7 60 0M320 178q26 6 52 0M316 248q30 7 60 0"/>
+    </g>
+
+    <!-- Wimpel -->
+    <path d="M262 78C282 70 298 82 322 74C306 88 288 86 262 96z" fill="#c0392b" stroke-width="3.5"/>
+    <path d="M176 112c12-5 22 2 36-3c-9 9-20 8-36 13z" fill="#c0392b" stroke-width="3"/>
+    <path d="M346 118c12-5 22 2 36-3c-9 9-20 8-36 13z" fill="#c0392b" stroke-width="3"/>
+
+    <!-- Rumpf -->
+    <path d="M92 298C128 306 156 310 186 310H330L340 286L420 278L414 318C406 356 376 380 330 384H190C142 380 112 344 92 298z" fill="url(#hull)" stroke-width="5"/>
+    <path d="M104 314C140 326 164 330 190 330H412" fill="none" stroke="#f5c542" stroke-width="6"/>
+    <path d="M128 350C150 360 168 362 192 362H398" fill="none" stroke="#3a200a" stroke-width="3" opacity="0.8"/>
+    <!-- Reling am Achterkastell -->
+    <path d="M340 286L420 278M352 285v-10M368 283v-10M384 282v-10M400 280v-10M340 276L420 268" fill="none" stroke-width="3.5"/>
+    <!-- Stückpforten -->
+    <g fill="#1a1008" stroke="#f5c542" stroke-width="2.5">
+      <rect x="200" y="338" width="16" height="13" rx="2"/>
+      <rect x="240" y="338" width="16" height="13" rx="2"/>
+      <rect x="280" y="338" width="16" height="13" rx="2"/>
+      <rect x="320" y="338" width="16" height="13" rx="2"/>
+      <rect x="362" y="296" width="30" height="18" rx="3" fill="#ffd27a"/>
+    </g>
+    <path d="M377 296v18" stroke="#a86a08" stroke-width="2"/>
+  </g>
+
+  <!-- Wellen vorne -->
+  <path d="M0 384C40 368 70 372 100 384S160 398 196 384S262 366 300 382S372 400 410 384S470 368 512 380V512H0z" fill="url(#wave1)"/>
+  <path d="M0 384C40 368 70 372 100 384S160 398 196 384S262 366 300 382S372 400 410 384S470 368 512 380" fill="none" stroke="#bfe6f5" stroke-width="5" stroke-linecap="round"/>
+  <path d="M0 436C30 420 64 418 96 432C120 442 142 438 150 424C142 418 132 420 126 428C150 404 196 404 224 428S290 452 330 432S400 410 440 430S490 440 512 428V512H0z" fill="url(#wave2)"/>
+  <path d="M0 436C30 420 64 418 96 432C120 442 142 438 150 424C142 418 132 420 126 428C150 404 196 404 224 428S290 452 330 432S400 410 440 430S490 440 512 428" fill="none" stroke="#e8f6fb" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <g fill="none" stroke="#7cc4e0" stroke-width="4" stroke-linecap="round" opacity="0.8">
+    <path d="M40 472q20-8 40 0M180 486q24-8 48 0M330 470q22-8 44 0M440 492q18-7 36 0"/>
+  </g>
+</svg>
