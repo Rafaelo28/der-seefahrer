@@ -176,8 +176,13 @@ module.exports = async function (page, label, assert, shot) {
   await noScroll('Entern');
   const amberB = await page.evaluate(() => SF.state.amber);
   // direkt vor die Tür der Kajüte
+  const cargoB = await page.evaluate(() => SF.ships.cargoCount());
   await page.evaluate(() => {
     const L = SF.boarding._level();
+    L.enemies.forEach(e => { e.alive = false; });
+    L.shots = [];
+    L.hearts = L.maxHearts;
+    L.got = { amber: 9, chests: 2 }; // auf dem Deck geplündert
     L.p.x = L.door.x - 10;
     L.p.y = L.door.y + 30;
   });
@@ -186,7 +191,8 @@ module.exports = async function (page, label, assert, shot) {
   await shot(page, `beute-${label}`);
   await page.click('#dialog-layer .btn-primary');
   await page.waitForSelector('#screen-sea:not([hidden])');
-  assert(await page.evaluate(a => SF.state.amber >= a + 70 && SF.state.stats.wins === 1, amberB), `${label}: Kopfgeld bekommen`);
+  assert(await page.evaluate(a => SF.state.amber >= a + 70 + 9 && SF.state.stats.wins === 1, amberB), `${label}: Kopfgeld und geplünderter Bernstein bekommen`);
+  assert(await page.evaluate(c => SF.ships.cargoCount() === c + 2, cargoB), `${label}: Ladung aus zwei Schatzkisten an Bord`);
 
   // Insel: an der Nahen Bucht an Land gehen
   await page.evaluate(() => { const p = SF.world.placeById.bay; SF.state.pos.x = p.x; SF.state.pos.y = p.y; SF.state.course = []; });
@@ -298,7 +304,7 @@ module.exports = async function (page, label, assert, shot) {
   await page.waitForSelector('#screen-boarding:not([hidden])');
   await page.waitForTimeout(500);
   await shot(page, `long-john-${label}`);
-  await page.evaluate(() => { const L = SF.boarding._level(); L.enemies.forEach(e => { e.alive = false; }); L.p.x = L.door.x - 10; L.p.y = L.door.y + 30; });
+  await page.evaluate(() => { const L = SF.boarding._level(); L.enemies.forEach(e => { e.alive = false; }); L.shots = []; L.hearts = L.maxHearts; L.p.x = L.door.x - 10; L.p.y = L.door.y + 30; });
   // Ende: Bildergeschichte, dann Abspann
   await page.waitForSelector('#screen-story:not([hidden])', { timeout: 5000 });
   await page.waitForTimeout(400);

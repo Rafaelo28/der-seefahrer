@@ -317,6 +317,13 @@ grünen Tests, einem Pull Request nach `main` und dem Merge.
 - [x] **Kein Entkommen aus Versehen:** Die Schlacht endet nicht mehr von selbst, wenn man an den Rand kommt oder weit
       weg ist. Fliehen geht nur mit dem Knopf „Fliehen“, der am Rand erscheint, wenn der Gegner außer Schussweite ist.
 
+- [x] **Entern neu (schöner und schwieriger):** Das Deck besteht aus zufällig gereihten Abschnitten (je Schiff länger),
+      mit Säbel-Piraten (warnen und stürmen los), Flaschenwerfern, Kanonen (Lunte glimmt), rollenden Fässern bei Blaubart,
+      hängenden Planken und Luken. Drei Herzen statt Zeitstrafen. **Plündern:** Bernstein-Beutel und Schatzkisten liegen
+      an kniffligen Stellen – die Ladung der Piraten gibt es nur noch aus den Schatzkisten, und nur, wenn man die Kajüte
+      erreicht. Neu gezeichnet: Himmel je Gegner (Tag, Abendrot, Sturm mit Regen, Geisternacht), Masten mit Segeln und
+      Wanten, Reling, Kajüte, das eigene Schiff längsseits, Piraten als Figuren mit Beinen.
+
 ### Ideen für danach
 
 - Weitere Meeresgebiete (Sargassosee mit Algen, in denen das Schiff stecken bleibt), mehr Inseln und Wracks zum Tauchen

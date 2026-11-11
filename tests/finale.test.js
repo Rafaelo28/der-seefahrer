@@ -31,7 +31,7 @@ SF.state.started = true;
 {
   const L = SF.boarding.create('dutchman', 3);
   const lj = L.enemies.find(x => x.longjohn);
-  assert(lj && lj.lives === 3 && L.locked && L.time === 60, 'Long John mit drei Leben, 60 Sekunden');
+  assert(lj && lj.lives === 3 && L.locked && L.time === 100, 'Long John mit drei Leben, 100 Sekunden');
   for (let t = 0; t < 1; t += 1 / 60) SF.boarding.step(L, 1 / 60, {});
   L.enemies.forEach(x => { if (!x.longjohn) x.alive = false; });
   L.p.x = L.door.x - 5; L.p.y = L.door.y + 20;
@@ -39,7 +39,7 @@ SF.state.started = true;
   assert(!L.over, 'Tür zu, solange Long John steht');
   // dreimal von oben
   for (let k = 0; k < 3; k++) {
-    lj.vx = 0;
+    lj.vx = 0; lj.stun = 0; lj.mode = 'rest'; lj.clock = 9; // steht still und taumelt nicht mehr
     L.p.x = lj.x; L.p.y = lj.y - SF.boarding.PH - 10; L.p.vy = 400;
     for (let t = 0; t < 0.2; t += 1 / 60) SF.boarding.step(L, 1 / 60, {});
   }
