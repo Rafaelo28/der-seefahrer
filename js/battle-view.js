@@ -176,10 +176,10 @@ window.SF = window.SF || {};
 
   // ---------- Ende ----------
 
-  async function finish(result) {
+  async function finish(result, loot) {
     if (ending) return;
     ending = true;
-    const out = SF.pirates.resolve(pirate, result, b.player.hp);
+    const out = SF.pirates.resolve(pirate, result, b.player.hp, loot);
     if (pirate.kind === 'dutchman') {
       SF.finale.afterBattle(result);
       if (result === 'boarded') {
@@ -196,9 +196,12 @@ window.SF = window.SF || {};
     if (result === 'boarded') {
       SF.sound.play('fanfare');
       title = `${SF.icon('hook')} Geentert!`;
-      html = `<p>Du hast das Schiff von <b>${SF.escape(pirate.name)}</b> geentert! Das Kopfgeld gehört dir: ${SF.amberHTML(out.amber)}.</p>
-        ${Object.keys(out.cargo).length ? `<p>Erbeutet: ${goods(out.cargo)}</p>` : '<p class="muted small">Für die Ladung der Piraten war kein Platz mehr.</p>'}`;
-      SF.story.log(`${pirate.name} geentert – ${out.amber} Bernstein Kopfgeld.`);
+      html = `<p>Du hast das Schiff von <b>${SF.escape(pirate.name)}</b> geentert! Das Kopfgeld gehört dir: ${SF.amberHTML(out.bounty)}.</p>
+        ${out.looted ? `<p>Auf dem Deck geplündert: ${SF.amberHTML(out.looted)}</p>` : ''}
+        ${Object.keys(out.cargo).length ? `<p>Aus den Schatzkisten: ${goods(out.cargo)}</p>`
+    : out.chests ? '<p class="muted small">Für die Ladung aus den Schatzkisten war kein Platz mehr im Laderaum.</p>'
+      : '<p class="muted small">Tipp: In den <b>Schatzkisten</b> auf dem Deck steckt die Ladung der Piraten.</p>'}`;
+      SF.story.log(`${pirate.name} geentert – ${out.amber} Bernstein Kopfgeld und Beute.`);
     } else if (result === 'sunk') {
       SF.sound.play('fanfare');
       title = `${SF.icon('blast')} Versenkt!`;
@@ -508,10 +511,10 @@ window.SF = window.SF || {};
     const battle = b;
     battle.over = 'boarding';
     if (SF.boarding) {
-      SF.boarding.start(pirate, ok => {
+      SF.boarding.start(pirate, (ok, loot) => {
         battle.over = '';
         ending = false;
-        if (ok) finish('boarded');
+        if (ok) finish('boarded', loot || { amber: 0, chests: 0 });
         else finish('repelled'); // nicht geschafft: zurück aufs eigene Schiff, der Gegner segelt davon
       });
     } else {

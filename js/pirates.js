@@ -134,10 +134,12 @@ window.SF = window.SF || {};
   }
 
   // Ergebnis der Schlacht anwenden; gibt eine Beschreibung zurück
-  function resolve(p, result, playerHp) {
+  // loot: was man beim Entern auf dem Deck geplündert hat ({ amber, chests }, js/boarding.js) – ohne Angabe gibt es
+  // die Ladung des Piraten wie früher pauschal
+  function resolve(p, result, playerHp, loot) {
     const s = st();
     const k = KINDS[p.kind];
-    const out = { result, amber: 0, cargo: {}, lost: {}, lostAmber: 0, harbor: '' };
+    const out = { result, amber: 0, bounty: 0, looted: 0, chests: 0, cargo: {}, lost: {}, lostAmber: 0, harbor: '' };
     s.ship.hp = Math.max(1, Math.round(playerHp));
     s.stats.battles = (s.stats.battles || 0) + 1;
     if (result === 'sunk' || result === 'boarded') {
@@ -147,9 +149,13 @@ window.SF = window.SF || {};
       if (p.zone) s.pirateClock[p.zone] = s.seaTime + RESPAWN;
       s.stats.wins = (s.stats.wins || 0) + 1;
       if (result === 'boarded') {
-        out.amber = SF.amber.add(k.bounty);
-        // Ladung der Piraten, so viel in den Laderaum passt
-        for (let i = 0; i < k.cargo && SF.ships.freeHold() > 0; i++) {
+        out.bounty = SF.amber.add(k.bounty);
+        out.looted = loot && loot.amber > 0 ? SF.amber.add(Math.min(200, Math.round(loot.amber))) : 0;
+        out.amber = out.bounty + out.looted;
+        out.chests = loot ? Math.max(0, Math.min(12, Math.round(loot.chests) || 0)) : 0;
+        // Ladung der Piraten (eine Kiste je Schatzkiste), so viel in den Laderaum passt
+        const crates = loot ? out.chests : k.cargo;
+        for (let i = 0; i < crates && SF.ships.freeHold() > 0; i++) {
           const g = SF.rng.pick(SF.trade.GOODS).id;
           s.cargo[g] = (s.cargo[g] || 0) + 1;
           out.cargo[g] = (out.cargo[g] || 0) + 1;
