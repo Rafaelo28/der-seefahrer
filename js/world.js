@@ -44,6 +44,7 @@ window.SF = window.SF || {};
     { id: 'smuggler', name: 'Schmugglerinsel', kind: 'sand', town: true, palms: true, circles: blob(2390, 1590, 150, 41, 6) },
     { id: 'volcano', name: 'Vulkaninsel', kind: 'volcano', circles: blob(2700, 820, 140, 53, 5) },
     { id: 'dragon', name: 'Drachenküste', kind: 'dragon', circles: blob(3200, 2360, 420, 67, 8) },
+    { id: 'fort', name: 'Festungsinsel', kind: 'green', fort: true, circles: blob(620, 300, 105, 71, 5) }, // Kapitel 5
   ];
 
   // Korallenriff: Ring aus kleinen Felsen mit Lagune
@@ -163,6 +164,7 @@ window.SF = window.SF || {};
     { id: 'ice', name: 'Eismeer', icon: 'ice', gk: true, reward: 40, x: 1500, y: 330 },
     Object.assign({ id: 'dragon', name: 'Drachenküste', icon: 'dragon', gk: true, reward: 50 }, coast('dragon', -0.75, -0.65)),
     // Finale und Geheimnis: auf offener See (open), das Bermuda-Dreieck ist versteckt (erst nach dem Besuch auf der Karte)
+    Object.assign({ id: 'fort', name: 'Bernsteinfestung', icon: 'shield', reward: 60 }, coast('fort', 0.5, 0.85)),
     { id: 'mist', name: 'Nebelmeer', icon: 'skull', open: true, x: 3050, y: 1250 },
     { id: 'bermuda', name: 'Bermuda-Dreieck', icon: 'compass', open: true, hidden: true, x: 450, y: 2300 },
   ];

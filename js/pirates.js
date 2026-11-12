@@ -15,6 +15,12 @@ window.SF = window.SF || {};
     // Finale: der Fliegende Holländer (Long Johns Geisterschiff) – sinkt nicht, man muss ihn entern
     dutchman: { name: 'Der Fliegende Holländer', ship: 'ghost', hp: 240, cannons: 8, aim: 0.05, delay: 0.3, speed: 66, bounty: 300, cargo: 0,
       sail: '#9ab8d8', names: ['Der Fliegende Holländer'], boss: true, noSink: true },
+    // Kapitel 4: Kuriere des Bernstein-Barons (nur während der Suche nach den Briefen) – man muss sie entern
+    courier: { name: 'Kurier des Barons', ship: 'brig', hp: 80, cannons: 4, aim: 0.09, delay: 0.5, speed: 60, bounty: 50, cargo: 3,
+      sail: '#e0b030', names: ['Kurier „Goldpfeil“', 'Kurier „Eilbote“', 'Kurier „Silbermöwe“', 'Kurier „Windhund“'], respawn: 30 },
+    // Kapitel 5: das Flaggschiff des Barons – sinkt nicht (zu viel Gold im Bauch), man muss es entern
+    baron: { name: 'Die Goldene Gier', ship: 'galleon', hp: 280, cannons: 8, aim: 0.045, delay: 0.3, speed: 58, bounty: 400, cargo: 0,
+      sail: '#f0a030', names: ['Die Goldene Gier'], boss: true, noSink: true },
   };
 
   // Gebiete: Mittelpunkt, Radius, welche Piraten, wie viele gleichzeitig
@@ -24,6 +30,7 @@ window.SF = window.SF || {};
     { id: 'north', x: 2350, y: 650, r: 400, kinds: ['raider', 'shark'], max: 2 },
     { id: 'west', x: 380, y: 2000, r: 330, kinds: ['raider', 'shark'], max: 1 },
     { id: 'dragon', x: 2750, y: 1950, r: 380, kinds: ['bluebeard'], max: 1 },
+    { id: 'couriers', x: 1900, y: 1250, r: 360, kinds: ['courier'], max: 2, step: 'couriers' }, // nur in diesem Story-Schritt
   ];
 
   const SIGHT = 280;       // so weit sehen Piraten
@@ -70,7 +77,13 @@ window.SF = window.SF || {};
   function refill() {
     const s = st();
     if (!s.pirateClock || typeof s.pirateClock !== 'object') s.pirateClock = {};
+    const now = SF.story ? SF.story.step() : '';
     ZONES.forEach(z => {
+      if (z.step && z.step !== now) {
+        // Gebiet gehört zu einem Story-Schritt, der gerade nicht läuft: Schiffe ziehen ab
+        for (let i = list().length - 1; i >= 0; i--) if (list()[i].zone === z.id) list().splice(i, 1);
+        return;
+      }
       const here = list().filter(p => p.zone === z.id).length;
       if (here >= z.max) return;
       const due = s.pirateClock[z.id] || 0;
@@ -146,7 +159,7 @@ window.SF = window.SF || {};
       const i = list().indexOf(p);
       if (i >= 0) list().splice(i, 1);
       s.pirateClock = s.pirateClock || {};
-      if (p.zone) s.pirateClock[p.zone] = s.seaTime + RESPAWN;
+      if (p.zone) s.pirateClock[p.zone] = s.seaTime + (k.respawn || RESPAWN);
       s.stats.wins = (s.stats.wins || 0) + 1;
       if (result === 'boarded') {
         out.bounty = SF.amber.add(k.bounty);

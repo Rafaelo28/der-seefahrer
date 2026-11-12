@@ -82,7 +82,7 @@ function bot(L) {
   const crab = L.crabs.some(c => c.alive && c.x > p.x && c.x < p.x + 90);
   return { right: true, jump: p.ground && (wall || crab) };
 }
-['bay', 'volcano', 'ice', 'dragon'].forEach(id => {
+['bay', 'volcano', 'ice', 'dragon', 'fort'].forEach(id => {
   const L = I.create(id);
   const ev = run(L, L.d.time, bot);
   const pen = ev.filter(e => e.type === 'penalty' || e.type === 'pinch').length;

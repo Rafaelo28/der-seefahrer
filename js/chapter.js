@@ -1,6 +1,10 @@
 // Story-Kapitel: Leute in den Kneipen der Häfen, die je nach Story-Schritt etwas anderes sagen.
 // Kapitel 1 „Die Spur“: Frieda, Einauge Ede mit dem Salz-Auftrag, das verlassene Lager an der Vulkaninsel.
 // Kapitel 2 „Kalte Spur“: Smutje Fiete kommt an Bord, im Eismeer steckt eine Galeone im Eis – mit dem Logbuch von „L. J.“.
+// Kapitel 3 „Der Verräter“ und das Finale (js/finale.js). Nach dem ersten Ende geht es weiter:
+// Kapitel 4 „Der Auftraggeber“: Long John packt im Kerker aus – hinter allem steckt der Bernstein-Baron. Seine Kuriere
+// entern, die Briefe mit dem Codebuch aus dem Wrack am Riff entschlüsseln.
+// Kapitel 5 „Die Bernsteinfestung“: über den Burggraben in die Festung, dann das Flaggschiff „Goldene Gier“ entern.
 // Außerdem: Crew zum Anheuern (Kanonierin Karla, Navigator Nils).
 window.SF = window.SF || {};
 
@@ -14,6 +18,7 @@ window.SF = window.SF || {};
     bruno: { name: 'Bootsmann Bruno', role: 'Bootsmann', fig: '2.9.0.2.0.0.0' },
     jan: { name: 'Schiffsjunge Jan', role: 'Schiffsjunge', fig: '0.6.6.5.4.6.0' },
     longjohn: { name: 'Long John', fig: '1.1.3.3.2.4.1' }, // Dreispitz, Monokel, Schnurrbart, Papagei
+    baron: { name: 'Der Bernstein-Baron', fig: '0.5.3.3.1.6.2' }, // Zylinder, Monokel, Schnurrbart, Anzug in Gold, Goldkette
   };
 
   // Crew-Mitglieder sprechen auch in den Kneipen (js/crew.js)
@@ -45,6 +50,17 @@ window.SF = window.SF || {};
       out.push({ who: 'berta', text: s.lastDay && s.lastDay.bread
         ? `Du hast gestern ${s.lastDay.bread} Brote gekauft – für ${SF.formatLong(s.lastDay.start * 0.0003 * s.lastDay.bread)} Dublonen oder so. Heute kostet eins 1 Bernstein. Ha!`
         : 'Gestern kostete ein Brot eine Sextilliarde. Heute einen Bernstein. Ich komm nicht mehr mit!' });
+    }
+    if (h === 'dublone' && step() === 'jail') {
+      const rum = s.cargo.rum || 0;
+      out.unshift({ who: 'longjohn', text: `<span class="muted small">(Im Hafenkerker, durch das Gitter.)</span> Na, ${name()}? Du denkst, ich hätte mir das alles
+        allein ausgedacht? Ha! Ich war nur die Hand. Der <b>Kopf</b> sitzt woanders und lacht sich reich. Aber im Kerker gibt es nur Wasser …
+        Bring mir <b>2 Kisten Rum</b>, dann erzähl ich dir alles. Du hast ${rum}.`,
+        action: { id: 'lj-rum', label: `${SF.icon('rum')} 2 Kisten Rum geben`, disabled: rum < 2 } });
+    } else if (h === 'dublone' && SF.story.reached('couriers') && step() !== 'done2') {
+      out.unshift({ who: 'longjohn', text: '<span class="muted small">(Im Hafenkerker.)</span> Der Baron hat mir ein eigenes Schiff versprochen. Bekommen hab ich ein Gitter. Hol ihn dir, Käpt’n – und grüß ihn von mir!' });
+    } else if (h === 'dublone' && step() === 'done2') {
+      out.unshift({ who: 'longjohn', text: '<span class="muted small">(Im Hafenkerker.)</span> Der Baron sitzt jetzt in der Zelle nebenan und zählt den ganzen Tag Kieselsteine. Wenigstens hab ich jemanden zum Würfeln – und diesmal gewinne ich!' });
     }
     if (h === 'dublone' && step() === 'hire-cook' && !SF.crew.has('fiete')) {
       out.push({ who: 'fiete', text: `Moin, ${name()}! Ich bin <b>Fiete</b>, Smutje. Ich hab gehört, du willst ins <b>Eismeer</b>? Ohne warme Suppe
@@ -80,6 +96,11 @@ window.SF = window.SF || {};
           ? 'Ist das … Salz? Drei Kisten? Her damit!'
           : `Na, ${name()}? Wo bleibt mein Salz? <b>3 Kisten</b> will ich sehen. Du hast ${have}. In Port Dublone ist Salz billig.`,
           action: { id: 'ede-salt', label: `${SF.icon('salt')} 3 Kisten Salz geben`, disabled: have < 3 } });
+      } else if (step() === 'decode') {
+        out.push({ who: 'ede', text: `Zeig her … Das ist die <b>Geheimschrift des Barons</b>! Die liest keiner ohne sein Codebuch.
+          Aber ich weiß, wo eins liegt: Letzten Winter ist einer seiner Kuriere am <b>Korallenriff</b> auf Grund gelaufen. Das Wrack liegt noch da unten –
+          und das Codebuch steckt in einer wasserdichten Kapsel. Du musst nur <b>tauchen</b>.`,
+          action: { id: 'ede-code', label: 'Auf zum Korallenriff!' } });
       } else if (step() === 'traitor' && !clue('cook')) {
         const fish = s.cargo.fish || 0;
         out.push({ who: 'ede', text: `Ein Verräter auf deinem Schiff? Ich kenne jeden, der je für Long John gearbeitet hat …
@@ -103,8 +124,7 @@ window.SF = window.SF || {};
     });
   }
 
-  const LATER = ['hire-cook', 'find-ice', 'traitor', 'find-dragon', 'finale'];
-  const chapter2 = () => LATER.includes(step()) || !!SF.state.story.flags.chapter2;
+  const chapter2 = () => SF.story.reached('hire-cook') || !!SF.state.story.flags.chapter2;
 
   // Aktion in der Kneipe; gibt einen Text für die Meldung zurück (oder '')
   function act(h, id) {
@@ -114,6 +134,31 @@ window.SF = window.SF || {};
       SF.story.setStep('find-ice', 'Smutje Fiete ist an Bord. Mit warmer Suppe geht es ins Eismeer!');
       SF.sound.play('fanfare');
       return 'Fiete ist an Bord! Neues Ziel: das Eismeer im Norden.';
+    }
+    if (id === 'lj-rum' && h === 'dublone' && step() === 'jail' && (s.cargo.rum || 0) >= 2) {
+      s.cargo.rum -= 2;
+      if (!s.cargo.rum) delete s.cargo.rum;
+      s.story.flags.letters = 0;
+      SF.story.setStep('couriers', 'Long John hat ausgepackt: Der Bernstein-Baron hat den Raub bestellt. Seine Kuriere tragen seine Befehle über das Meer.');
+      SF.sound.play('fanfare');
+      SF.track('seefahrer-kapitel4-begonnen');
+      setTimeout(() => SF.ui.dialog({
+        title: 'Long John packt aus',
+        html: `<p>Long John nimmt einen tiefen Schluck. „Der Mann heißt <b>Bernstein-Baron</b>. Vor dem Raub hat er heimlich
+          <b>allen Bernstein</b> zwischen hier und dem Eismeer aufgekauft – für ein paar Dublonen. Dann hat er mich bezahlt, damit ich die
+          Goldene Dublone stehle.“</p>
+          <p>„Verstehst du? Die Dublone wird wertlos, alle müssen mit Bernstein zahlen – und <b>ihm gehört der ganze Bernstein</b>.
+          Der reichste Mann der Welt, über Nacht!“</p>
+          <p>„Wo er wohnt, weiß keiner. Aber seine Befehle schickt er mit <b>Kurierschiffen</b> – schnelle Briggs mit <b>goldenen Segeln</b>,
+          östlich von hier. Versenken nützt dir nichts, dann sinken die Briefe mit. <b>Entern</b> musst du sie!“</p>`,
+        buttons: [{ label: 'Den Baron hole ich mir!', value: true, kind: 'primary' }],
+      }), 200);
+      return '';
+    }
+    if (id === 'ede-code' && h === 'smuggler' && step() === 'decode') {
+      SF.story.setStep('codebook', 'Einauge Ede: Das Codebuch des Barons liegt in einem Wrack am Korallenriff.');
+      SF.sound.play('discover');
+      return 'Neues Ziel: am Korallenriff nach dem Codebuch tauchen!';
     }
     if (id === 'clue-bottle' && h === 'amberbay' && step() === 'traitor') {
       addClue('bottle');
@@ -217,6 +262,20 @@ window.SF = window.SF || {};
         <p>Aber Long John ist weg. An der Wand hängt ein Zettel: <i>„Zu spät, Landratte! Der Holländer bringt mich und die Goldene Dublone ins
         <b>Nebelmeer</b>. Dort findet mich niemand. – L. J.“</i></p>`;
     }
+    if (id === 'fort' && step() === 'find-fort') {
+      const n = SF.amber.add(150);
+      s.story.flags.fortLeft = true;
+      SF.story.setStep('baron', 'In der Bernsteinfestung: Die Schatzkammer ist halb leer – der Baron flieht mit seinem Flaggschiff „Goldene Gier“!');
+      SF.track('seefahrer-festung-geschafft');
+      return `<p>Hinter der letzten Mauer liegt die <b>Schatzkammer des Barons</b>: Bernstein bis unter die Decke! Du steckst ein, was du tragen kannst:
+        ${SF.amberHTML(n)}.</p>
+        <p>Auf dem Schreibtisch liegt ein Hauptbuch: <i>„Bernstein gekauft: alles. Bezahlt an L. J.: 1 Schiff (nie geliefert).
+        Nächster Schritt: die Goldene Dublone einschmelzen.“</i></p>
+        <p>Da dröhnt ein Horn vom Hafen: Der Baron hat dich bemerkt und läuft mit seinem Flaggschiff aus. <b>Zurück aufs Schiff – hinterher!</b></p>`;
+    }
+    if (id === 'fort' && !SF.story.reached('find-fort')) {
+      return '<p class="muted small">Hinter der Truhe geht es nicht weiter: ein schweres Tor mit einem Wappen aus Bernstein. Wer hier wohl wohnt?</p>';
+    }
     if (id === 'ice' && step() === 'hire-cook') {
       return '<p class="muted small">Im Eis steckt irgendetwas Großes fest – aber ohne warmes Essen hält es deine Crew hier nicht lange aus. Hol erst den Schiffskoch aus Port Dublone.</p>';
     }
@@ -289,13 +348,122 @@ window.SF = window.SF || {};
       <p>Fiete muss im nächsten Hafen von Bord. Der Proviant hält jetzt wieder normal – aber die Schiffskasse ist sicher.</p>` };
   }
 
-  // Alte Spielstände: „Ende von Stufe 1“ wird zum Anfang von Kapitel 2
+  // ---------- Kapitel 4: Der Auftraggeber ----------
+
+  const LETTERS = 3;
+  const letters = () => Math.max(0, Math.min(LETTERS, Math.floor(SF.state.story.flags.letters || 0)));
+
+  // Nach einer Schlacht: Zusatz für das Ergebnis-Fenster (Briefe der Kuriere)
+  function onBattle(p, result) {
+    if (!p || p.kind !== 'courier' || step() !== 'couriers') return '';
+    if (result === 'sunk') return '<p class="muted small">Der Brief des Barons ist mit dem Schiff versunken. Kuriere musst du <b>entern</b>!</p>';
+    if (result !== 'boarded') return '';
+    const f = SF.state.story.flags;
+    f.letters = letters() + 1;
+    const n = letters();
+    const texts = [
+      '„… die Lieferung Bernstein geht wie immer an die <b>Festung</b>. Zahlt den Fischern die Hälfte, mehr nicht.“',
+      '„… haltet euch von Port Dublone fern, seit dieser Kapitän die Dublone zurückgebracht hat. Ich hole sie mir <b>ein zweites Mal</b>.“',
+      '„… die <b>Goldene Gier</b> liegt bereit. Wenn die Dublone erst eingeschmolzen ist, gibt es nur noch <b>mein</b> Geld.“',
+    ];
+    let html = `<p>In der Kajüte des Kuriers: ein versiegelter <b>Brief des Barons</b> (${n} von ${LETTERS}). Das meiste ist in Geheimschrift, nur ein Satz ist lesbar:</p>
+      <p><i>${texts[n - 1]}</i></p>`;
+    if (n >= LETTERS) {
+      SF.story.setStep('decode', 'Drei Briefe des Barons erbeutet – aber wo die Festung liegt, steht dort in Geheimschrift.');
+      html += '<p>Drei Briefe – aber <b>wo</b> die Festung liegt, steht in Geheimschrift da. „Einauge Ede kennt jede Schmuggler-Schrift“, sagt der Klabautermann. „Auf zur Schmugglerinsel!“</p>';
+    } else SF.story.log(`Brief des Barons erbeutet (${n} von ${LETTERS}).`);
+    return html;
+  }
+
+  // Nach dem Tauchen: das Codebuch aus dem Wrack (nur wenn man heil wieder oben ist)
+  function onDive(site, ok) {
+    if (site !== 'reef' || step() !== 'codebook') return '';
+    if (!ok) return '<p class="muted small">Das Wrack hast du gesehen – aber ohne Luft kommst du nicht an das Codebuch. Tauche noch einmal und tauch rechtzeitig auf!</p>';
+    SF.story.setStep('find-fort', 'Das Codebuch aus dem Wrack am Riff: Die Bernsteinfestung liegt auf einer Insel im Nordwesten.');
+    SF.track('seefahrer-kapitel4-geschafft');
+    return `<p>Zwischen den Korallen liegt das Wrack des Kuriers – und in der Kajüte eine Messingkapsel: <b>das Codebuch des Barons</b>!</p>
+      <p>Der Klabautermann entschlüsselt die Briefe: <i>„… die Festung liegt auf der Insel im <b>Nordwesten</b>, nördlich der Nahen Bucht.
+      Das Tor zum Hafen ist mit einer Kette gesperrt – nur der Burggraben an der Rückseite ist unbewacht.“</i></p>
+      <p><b>Neues Ziel: die Bernsteinfestung!</b></p>`;
+  }
+
+  // ---------- Kapitel 5: Die Bernsteinfestung ----------
+
+  const BARON_RANGE = 200;
+  const BARON_LEAVE = 420;
+
+  function baronShip() {
+    const f = SF.world.placeById.fort;
+    return { id: 'baron', kind: 'baron', name: 'Die Goldene Gier', x: f.x, y: f.y, cool: 0 };
+  }
+
+  // Läuft das Flaggschiff jetzt aus? (nach Niederlage oder Flucht erst wieder, wenn man weit weg war)
+  function baronReady() {
+    const s = SF.state;
+    if (step() !== 'baron' || !s.pos || s.docked) return false;
+    const f = SF.world.placeById.fort;
+    const d = Math.hypot(s.pos.x - f.x, s.pos.y - f.y);
+    if (d > BARON_LEAVE) s.story.flags.fortLeft = true;
+    return d <= BARON_RANGE && s.story.flags.fortLeft !== false;
+  }
+
+  function afterBaron(result) {
+    if (result !== 'boarded') SF.state.story.flags.fortLeft = false;
+  }
+
+  function ending2Scenes() {
+    return [
+      { art: 'sieg', sound: 'fanfare', text: `<p>Der Zylinder des Barons rollt über das Deck der „Goldenen Gier“. „Das … das war alles ganz legal!“, stottert er.
+        „Ich habe den Bernstein <b>gekauft</b>!“</p><p>„Und die Goldene Dublone <b>stehlen lassen</b>“, sagt Kapitän ${name()}.</p>` },
+      { art: 'tresor', text: `<p>Im Bauch der Galeone liegt der Bernstein von der ganzen Küste. Du bringst ihn zurück: zu den Fischern der
+        <b>Bernsteinbucht</b>, zu den Händlern von <b>Port Dublone</b> – sogar Einauge Ede bekommt einen Beutel.</p>
+        <p>Die Hafenbank beschließt: Ab heute gilt beides, <b>Dublone und Bernstein</b>. Und niemand darf je wieder alles davon besitzen.</p>` },
+      { art: 'fest', sound: 'bell', text: `<p>Der Baron zieht in den Hafenkerker – in die Zelle neben Long John. „Würfeln wir um deinen Zylinder?“, fragt der.</p>
+        <p>Port Dublone feiert zum zweiten Mal. Diesmal backt Berta ein Brot, das so groß ist wie ein Beiboot.</p>` },
+      { art: 'klabauter', last: 'Zum Abspann', text: `<p>„Zwei Schurken, ein Käpt’n“, grinst der Klabautermann. „Jetzt kennt dich jedes Kind zwischen Eismeer und Drachenküste.
+        Und das Meer? Das ist immer noch groß …“</p>` },
+    ];
+  }
+
+  // Zweites Ende: Belohnung, Bildergeschichte, Abspann, danach freies Segeln
+  function ending2() {
+    if (step() === 'baron') {
+      SF.story.setStep('done2', 'Der Bernstein-Baron ist besiegt! Der Bernstein geht zurück an die Küste.');
+      SF.meta.set('finished2', true);
+      SF.track('seefahrer-baron-besiegt');
+      SF.save();
+    }
+    SF.story.play(ending2Scenes(), () => SF.finale.credits());
+  }
+
+  // Neuigkeit, die beim nächsten Blick auf die Seekarte als Fenster erscheint (einmal)
+  function news() {
+    const f = SF.state.story.flags;
+    if (f.news !== 'jail') return null;
+    delete f.news;
+    return {
+      title: `${SF.icon('scroll')} Post aus Port Dublone`,
+      html: `<p>Eine Möwe landet auf der Reling, am Bein eine Nachricht von Hafenmeister Hinnerk:</p>
+        <p><i>„Käpt’n ${name()}! Long John sitzt bei uns im <b>Hafenkerker</b> und redet wirres Zeug – er sei nur ‚die Hand‘ gewesen, und der ‚Kopf‘ laufe
+        noch frei herum. Er will nur mit <b>dir</b> sprechen. Komm schnell!“</i></p>
+        <p class="muted small">Kapitel 4: Der Auftraggeber</p>`,
+    };
+  }
+
+  // Alte Spielstände: „Ende von Stufe 1“ wird zum Anfang von Kapitel 2, „durchgespielt“ zum Anfang von Kapitel 4
   function migrate() {
-    if (SF.state.story.step === 'end1') {
-      SF.state.story.step = 'hire-cook';
-      SF.state.story.flags.chapter2 = true;
+    const st = SF.state.story;
+    if (st.step === 'end1') {
+      st.step = 'hire-cook';
+      st.flags.chapter2 = true;
+    }
+    if (st.step === 'done') {
+      st.step = 'jail';
+      st.flags.news = 'jail';
+      SF.story.log('Post aus Port Dublone: Long John will im Hafenkerker auspacken.');
     }
   }
 
-  SF.chapter = { PEOPLE, CLUES, tavern, act, onDiscover, onIsland, onDock, accuse, suspects, clue, clueCount, addClue, migrate, rumor, who, hireable };
+  SF.chapter = { PEOPLE, CLUES, LETTERS, BARON_RANGE, BARON_LEAVE, tavern, act, onDiscover, onIsland, onDock, accuse, suspects, clue, clueCount, addClue, migrate, rumor, who, hireable,
+    letters, onBattle, onDive, baronShip, baronReady, afterBaron, ending2, ending2Scenes, news };
 })();

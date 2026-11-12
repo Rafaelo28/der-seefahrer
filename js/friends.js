@@ -29,7 +29,7 @@ window.SF = window.SF || {};
       duels: s.stats.duels || 0,
       best,
       secrets: SF.finale ? SF.finale.percent() : 0,
-      done: SF.story.step() === 'done',
+      done: SF.story.reached('done'),
     };
   }
 

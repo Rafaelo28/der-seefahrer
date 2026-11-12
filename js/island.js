@@ -61,6 +61,18 @@ window.SF = window.SF || {};
       amber: [[690, 300], [1110, 320], [1430, 300], [2100, 300], [2780, 300], [3270, 340]],
       chest: [3680, 480],
     },
+    // Kapitel 5: über den Burggraben in die Bernsteinfestung
+    fort: {
+      name: 'Bernsteinfestung', theme: 'fort', w: 4400, time: 120, reward: 100,
+      start: [80, 380],
+      solids: [[0, 480, 500, 120], [840, 480, 360, 120], [1010, 370, 120, 20], [1560, 480, 340, 120], [2260, 480, 300, 120],
+        [2900, 480, 320, 120], [3560, 480, 300, 120], [3860, 430, 540, 170]],
+      anchors: [[670, 185], [1380, 190], [2050, 195], [2120, 170], [2730, 190], [3390, 185]],
+      hazards: [[500, 520, 340, 80, 'water'], [1200, 520, 360, 80, 'water'], [1900, 520, 360, 80, 'water'], [2560, 520, 340, 80, 'water'], [3220, 520, 340, 80, 'water']],
+      crabs: [[920, 850, 1180], [1680, 1580, 1780], [2990, 2920, 3080], [4000, 3880, 4200]],
+      amber: [[670, 300], [1070, 330], [1380, 300], [2085, 300], [2730, 300], [3390, 300], [4100, 370]],
+      chest: [4280, 430],
+    },
   };
 
   const overlap = (a, b) => a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
@@ -363,12 +375,12 @@ window.SF = window.SF || {};
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     const sky = ctx.createLinearGradient(0, 0, 0, vh);
     const theme = L.d.theme;
-    if (theme === 'volcano') { sky.addColorStop(0, '#4a2a3a'); sky.addColorStop(1, '#e8794a'); } else if (theme === 'dragon') { sky.addColorStop(0, '#2a1018'); sky.addColorStop(1, '#c84a2a'); } else if (theme === 'ice') { sky.addColorStop(0, '#8ab4d8'); sky.addColorStop(1, '#e8f2fa'); } else { sky.addColorStop(0, '#6ab0e0'); sky.addColorStop(1, '#f4e6c0'); }
+    if (theme === 'volcano') { sky.addColorStop(0, '#4a2a3a'); sky.addColorStop(1, '#e8794a'); } else if (theme === 'dragon') { sky.addColorStop(0, '#2a1018'); sky.addColorStop(1, '#c84a2a'); } else if (theme === 'ice') { sky.addColorStop(0, '#8ab4d8'); sky.addColorStop(1, '#e8f2fa'); } else if (theme === 'fort') { sky.addColorStop(0, '#34466a'); sky.addColorStop(1, '#f2b866'); } else { sky.addColorStop(0, '#6ab0e0'); sky.addColorStop(1, '#f4e6c0'); }
     ctx.fillStyle = sky;
     ctx.fillRect(0, 0, vw, vh);
     // Hintergrund (langsamer verschoben): Berge bzw. Vulkan
     ctx.setTransform(dpr * sc, 0, 0, dpr * sc, -camX * 0.3 * sc * dpr, dpr * offY());
-    ctx.fillStyle = theme === 'volcano' ? '#3a2a2a' : theme === 'dragon' ? '#1e1418' : theme === 'ice' ? '#f4faff' : '#8ac07a';
+    ctx.fillStyle = theme === 'volcano' ? '#3a2a2a' : theme === 'dragon' ? '#1e1418' : theme === 'ice' ? '#f4faff' : theme === 'fort' ? '#59606c' : '#8ac07a';
     ctx.beginPath();
     ctx.moveTo(0, 480);
     for (let x = 0; x <= L.d.w; x += 400) ctx.lineTo(x + 200, L.d.theme === 'volcano' ? 160 + (x % 800 ? 60 : 0) : 300 + (x % 800 ? 40 : 0)), ctx.lineTo(x + 400, 480);
@@ -383,9 +395,9 @@ window.SF = window.SF || {};
     });
     // Boden und Plattformen
     L.solids.forEach(s => {
-      ctx.fillStyle = lava ? '#4a3a32' : theme === 'ice' ? '#cfe4f2' : '#e8d39a';
+      ctx.fillStyle = lava ? '#4a3a32' : theme === 'ice' ? '#cfe4f2' : theme === 'fort' ? '#8a8f96' : '#e8d39a';
       ctx.fillRect(s.x, s.y, s.w, s.h + (s.y + s.h >= 600 ? 400 : 0));
-      ctx.fillStyle = lava ? '#2e2420' : theme === 'ice' ? '#ffffff' : '#6fa35a';
+      ctx.fillStyle = lava ? '#2e2420' : theme === 'ice' ? '#ffffff' : theme === 'fort' ? '#b4b9c0' : '#6fa35a';
       ctx.fillRect(s.x, s.y, s.w, Math.min(12, s.h));
     });
     // Hakenringe
@@ -416,7 +428,7 @@ window.SF = window.SF || {};
     // Krabben
     L.crabs.forEach(c => {
       if (!c.alive) return;
-      ctx.fillStyle = theme === 'ice' ? '#4a8ac8' : '#d0402a'; // im Eis: Eiskrabben
+      ctx.fillStyle = theme === 'ice' ? '#4a8ac8' : theme === 'fort' ? '#d4a017' : '#d0402a'; // im Eis: Eiskrabben, in der Festung: Bernsteinkrabben
       ctx.beginPath();
       ctx.ellipse(c.x + c.w / 2, c.y + c.h * 0.6, c.w / 2, c.h / 2, 0, 0, Math.PI * 2);
       ctx.fill();

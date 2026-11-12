@@ -1,4 +1,5 @@
 // Story: Bildergeschichten (SVG-Bilder mit Text, Antippen = weiter), Story-Schritte mit Ziel und das Logbuch.
+// Die Schritte aller Kapitel stehen in STEPS (in der Reihenfolge der Geschichte, siehe SF.story.reached).
 // Stufe 1: Prolog „Der Raub“, „Der letzte Tag der Dublone“ (js/lastday.js), Abend in Port Dublone und die erste
 // Spur des Diebes: Bernsteinbucht → Schmugglerinsel → Vulkaninsel.
 window.SF = window.SF || {};
@@ -22,10 +23,21 @@ window.SF = window.SF || {};
     traitor: { text: () => `Jemand an Bord verrät deinen Kurs an Long John! Hinweise: ${SF.chapter ? SF.chapter.clueCount() : 0} von 3 – frag in den Kneipen herum. Anklagen kannst du in der Kajüte.` },
     'find-dragon': { goal: 'dragon', text: 'Fiete hat geredet: Long Johns Versteck liegt an der Drachenküste im Südosten. Geh dort an Land!' },
     finale: { goal: 'mist', text: 'Long John ist mit dem Fliegenden Holländer ins Nebelmeer im Osten geflohen. Segle hinterher!' },
-    done: { text: '' }, // durchgespielt: freies Segeln, Geheimnisse für 100 %
+    done: { text: '' }, // Long John besiegt – geht gleich mit Kapitel 4 weiter (SF.chapter.migrate)
+    // Kapitel 4 „Der Auftraggeber“ und Kapitel 5 „Die Bernsteinfestung“ (js/chapter.js)
+    jail: { goal: 'dublone', text: 'Post aus Port Dublone: Long John sitzt im Hafenkerker und will auspacken. Besuch ihn – der Kerker liegt gleich neben der Kneipe.' },
+    couriers: { text: () => `Der Bernstein-Baron steckt hinter allem! Seine Kuriere mit den goldenen Segeln kreuzen mitten auf der See, weit östlich von Port Dublone. Entere sie und erbeute ihre Briefe: ${SF.chapter ? SF.chapter.letters() : 0} von 3.` },
+    decode: { goal: 'smuggler', text: 'Die Briefe des Barons sind in Geheimschrift geschrieben. Einauge Ede auf der Schmugglerinsel kennt sich mit so etwas aus.' },
+    codebook: { goal: 'reef', text: 'Das Codebuch des Barons liegt in einem gesunkenen Kurierschiff am Korallenriff. Tauche danach und komm heil wieder hoch!' },
+    'find-fort': { goal: 'fort', text: 'Die Briefe sind entschlüsselt: Der Baron sitzt in der Bernsteinfestung im Nordwesten. Segle hin und geh an Land!' },
+    baron: { goal: 'fort', text: 'Der Bernstein-Baron flieht mit seinem Flaggschiff „Goldene Gier“! Stell ihn vor der Festung – und entere ihn.' },
+    done2: { text: '' }, // ganz durchgespielt: freies Segeln, Geheimnisse für 100 %
   };
+  const ORDER = Object.keys(STEPS);
 
   const step = () => SF.state.story.step;
+  // Ist die Story schon bei diesem Schritt angekommen (oder weiter)?
+  const reached = id => ORDER.indexOf(step()) >= ORDER.indexOf(id);
   const goal = () => (STEPS[step()] || {}).goal || '';
   const goalText = () => {
     const t = (STEPS[step()] || {}).text || '';
@@ -363,5 +375,5 @@ window.SF = window.SF || {};
     ];
   }
 
-  SF.story = { STEPS, step, goal, goalText, setStep, log, day, flag, setFlag, play, next, bind, prologScenes, eveningScenes, ART };
+  SF.story = { STEPS, step, reached, goal, goalText, setStep, log, day, flag, setFlag, play, next, bind, prologScenes, eveningScenes, ART };
 })();

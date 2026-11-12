@@ -317,4 +317,18 @@ module.exports = async function (page, label, assert, shot) {
   await noScroll('Abspann');
   await page.click('#credits-done');
   await page.waitForSelector('#screen-sea:not([hidden])');
+  // Nach dem ersten Ende geht es weiter: Post aus Port Dublone (Kapitel 4)
+  await page.waitForSelector('#dialog-layer h2', { timeout: 4000 });
+  assert((await page.textContent('#dialog-layer h2')).includes('Post aus Port Dublone') && await page.evaluate(() => SF.story.step() === 'jail'), `${label}: nach dem Abspann beginnt Kapitel 4`);
+  await shot(page, `kapitel4-${label}`);
+  await page.click('#dialog-layer .btn-primary');
+  // Kerker in Port Dublone: Long John will Rum, dann packt er aus
+  await page.evaluate(() => { SF.state.cargo.rum = 2; SF.harbor.open('dublone'); });
+  await page.click('#harbor-tab-tavern');
+  await page.waitForSelector('[data-act="lj-rum"]', { timeout: 3000 });
+  await page.click('[data-act="lj-rum"]');
+  await page.waitForSelector('#dialog-layer h2', { timeout: 4000 });
+  assert((await page.textContent('#dialog-layer h2')).includes('Long John packt aus') && await page.evaluate(() => SF.story.step() === 'couriers'), `${label}: Long John packt aus, Kuriere suchen`);
+  await page.click('#dialog-layer .btn-primary');
+  await noScroll('Kerker');
 };
