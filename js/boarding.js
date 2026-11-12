@@ -388,7 +388,6 @@ window.SF = window.SF || {};
   let flash = 0;          // roter Rand nach einem Treffer
   let fx = [];            // Effekte: Staub, Sterne, Splitter, Zahlen
   let shipImg = null;     // das eigene Schiff im Hintergrund
-  const imgs = {};        // Figuren als Bilder
   const keys = { left: false, right: false, jump: false };
   let jumpQueued = false;
 
@@ -413,14 +412,7 @@ window.SF = window.SF || {};
     dutchman: { sky: ['#05080f', '#111c2e', '#2c4256'], sea: ['#143040', '#08131b'], wood: '#66727c', light: '#8996a0', dark: '#3d474f', hull: '#2f383f', orb: '#eaf2ff', glow: 'rgba(170,220,235,.28)', cloud: 'rgba(120,150,170,.28)', ghost: true },
   };
 
-  function figure(code) {
-    if (!imgs[code]) {
-      const im = new Image();
-      im.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(SF.figure.svg(code));
-      imgs[code] = im;
-    }
-    return imgs[code];
-  }
+  const figure = code => SF.sprite.figure(code);
 
   function resize() {
     if (!canvas) return;
@@ -925,32 +917,8 @@ window.SF = window.SF || {};
     }
   }
 
-  // Figur mit Beinen: Oberkörper aus js/figure.js, darunter Hose und Stiefel, die beim Laufen wippen
-  function drawChar(code, cx, by, face, size, walking, air) {
-    const ph = time * 14 + cx * 0.05;
-    const a = air ? 0.9 : walking ? Math.sin(ph) : 0;
-    const lift = walking && !air ? Math.max(0, Math.cos(ph)) * 4 : 0;
-    const bob = walking && !air ? Math.abs(Math.sin(ph)) * 2 : 0;
-    const k = size / 64;
-    ctx.fillStyle = '#3d2e22';
-    ctx.fillRect(cx - 9 * k, by - 20 * k, 18 * k, 12 * k);
-    ctx.fillStyle = INK;
-    rr(cx - 11 * k + a * 6 * k, by - 9 * k - lift, 11 * k, 9 * k, 3);
-    ctx.fill();
-    rr(cx - a * 6 * k, by - 9 * k - (walking && !air ? Math.max(0, -Math.cos(ph)) * 4 : 0), 11 * k, 9 * k, 3);
-    ctx.fill();
-    const im = figure(code);
-    if (im.complete && im.naturalWidth) {
-      ctx.save();
-      ctx.translate(cx, by - 12 * k - bob);
-      ctx.scale(face, 1);
-      ctx.drawImage(im, -size / 2, -size + 2, size, size);
-      ctx.restore();
-    } else {
-      ctx.fillStyle = '#7a1f1f';
-      ctx.fillRect(cx - 14, by - 50, 28, 34);
-    }
-  }
+  // Figur mit Beinen (js/sprite.js)
+  const drawChar = (code, cx, by, face, size, walking, air) => SF.sprite.char(ctx, code, cx, by, face, size, walking, air, time);
 
   function drawSaber(x, y, ang, face) {
     ctx.save();
@@ -1016,23 +984,8 @@ window.SF = window.SF || {};
       SF.icons.draw(ctx, 'chest', cx, l.y + 12, 50);
       return;
     }
-    const cy = l.y + l.h / 2 + bob;
-    const g = ctx.createRadialGradient(cx - 4, cy - 4, 1, cx, cy, 12);
-    g.addColorStop(0, '#fff1c0');
-    g.addColorStop(0.45, '#ffc04a');
-    g.addColorStop(1, '#d87a08');
-    ctx.fillStyle = g;
-    ctx.beginPath();
-    ctx.ellipse(cx, cy, 10, 12, 0.3, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.strokeStyle = 'rgba(90,40,0,.7)';
-    ctx.lineWidth = 2;
-    ctx.stroke();
-    if (Math.sin(time * 6 + l.x) > 0.6) {
-      ctx.fillStyle = '#fff';
-      ctx.fillRect(cx + 6, cy - 10, 2, 8);
-      ctx.fillRect(cx + 3, cy - 7, 8, 2);
-    }
+    void bob;
+    SF.sprite.gem(ctx, cx, l.y + l.h / 2, time, l.x);
   }
 
   function drawShot(T, q) {
