@@ -30,7 +30,9 @@ window.SF = window.SF || {};
     decode: { goal: 'smuggler', text: 'Die Briefe des Barons sind in Geheimschrift geschrieben. Einauge Ede auf der Schmugglerinsel kennt sich mit so etwas aus.' },
     codebook: { goal: 'reef', text: 'Das Codebuch des Barons liegt in einem gesunkenen Kurierschiff am Korallenriff. Tauche danach und komm heil wieder hoch!' },
     'find-fort': { goal: 'fort', text: 'Die Briefe sind entschlüsselt: Der Baron sitzt in der Bernsteinfestung im Nordwesten. Segle hin und geh an Land!' },
-    baron: { goal: 'fort', text: 'Der Bernstein-Baron flieht mit seinem Flaggschiff „Goldene Gier“! Stell ihn vor der Festung – und entere ihn.' },
+    baron: { goal: 'fort', text: () => (SF.chapter && SF.chapter.baronWaiting()
+      ? 'Die „Goldene Gier“ hat sich in den Hafen der Festung zurückgezogen. Fahr vor die Bernsteinfestung und tippe auf „Goldene Gier herausfordern“!'
+      : 'Der Bernstein-Baron flieht mit seinem Flaggschiff „Goldene Gier“! Stell ihn vor der Festung – und entere ihn.') },
     done2: { text: '' }, // ganz durchgespielt: freies Segeln, Geheimnisse für 100 %
   };
   const ORDER = Object.keys(STEPS);
