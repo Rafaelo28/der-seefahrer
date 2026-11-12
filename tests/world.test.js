@@ -5,7 +5,7 @@ const Wo = SF.world;
 
 // ---------- Orte ----------
 {
-  assert(Wo.PLACES.length === 11, '11 Orte: 3 Häfen, die Ziele aus Gamble Klicker, Bernsteinfestung, Nebelmeer und Bermuda-Dreieck');
+  assert(Wo.PLACES.length === 12, '12 Orte der Alten See: 3 Häfen, die Ziele aus Gamble Klicker, Bernsteinfestung, Sturmtor, Nebelmeer und Bermuda-Dreieck');
   ['bay', 'reef', 'smuggler', 'volcano', 'ice', 'dragon'].forEach(id => assert(Wo.placeById[id] && Wo.placeById[id].gk, `Ziel aus Gamble Klicker: ${id}`));
   assert(Wo.PLACES.filter(p => p.harbor).length === 3, 'Drei Häfen');
   Wo.PLACES.forEach(p => {

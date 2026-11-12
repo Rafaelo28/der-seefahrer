@@ -33,7 +33,18 @@ window.SF = window.SF || {};
     baron: { goal: 'fort', text: () => (SF.chapter && SF.chapter.baronWaiting()
       ? 'Die „Goldene Gier“ hat sich in den Hafen der Festung zurückgezogen. Fahr vor die Bernsteinfestung und tippe auf „Goldene Gier herausfordern“!'
       : 'Der Bernstein-Baron flieht mit seinem Flaggschiff „Goldene Gier“! Stell ihn vor der Festung – und entere ihn.') },
-    done2: { text: '' }, // ganz durchgespielt: freies Segeln, Geheimnisse für 100 %
+    done2: { text: '' }, // Baron besiegt – geht gleich mit Kapitel 6 weiter (SF.chapter.migrate)
+    // Kapitel 6 „Der lange Winter“ (Alte See) und Kapitel 7 „Die Smaragdsee“ (neue Karte)
+    winter: { goal: 'dublone', text: 'Das Eis kommt! Das Eismeer wächst nach Süden, bald friert Port Dublone zu. Hafenmeister Hinnerk hat einen Plan – besuch ihn in der Kneipe.' },
+    supplies: { goal: 'dublone', text: () => {
+      const n = SF.chapter ? SF.chapter.supplies() : { fish: 0, cloth: 0 };
+      return `Die Flotte braucht Vorräte für die große Fahrt. Bring sie in die Kneipe von Port Dublone: Fisch ${n.fish} von 6, Tuch ${n.cloth} von 4.`;
+    } },
+    exodus: { goal: 'stormgate', text: 'Die Flotte von Port Dublone ist bereit. Führe sie zum Sturmtor ganz im Süden – dahinter soll eine warme See liegen. Es gibt kein schnelles Zurück!' },
+    landfall: { goal: 'haven', text: 'Die Smaragdsee! Im Süden liegt eine grüne Insel mit einer geschützten Bucht. Bring die Flotte dorthin und geh vor Anker.' },
+    water: { goal: 'spring', text: 'Neu-Dublone braucht Trinkwasser. Auf der Quelleninsel im Südwesten soll es eine Quelle geben – geh dort an Land.' },
+    kraken: { goal: 'krakenlair', text: 'Die Fischer trauen sich nicht hinaus: Am Krakengrund im Nordwesten haust der Krakenkönig. Stell dich ihm – entern kann man ihn nicht, nur versenken!' },
+    done3: { text: '' }, // ganz durchgespielt: freies Segeln zwischen beiden Seen, Geheimnisse für 100 %
   };
   const ORDER = Object.keys(STEPS);
 
@@ -127,6 +138,40 @@ window.SF = window.SF || {};
       ${waves(190)}
       <g class="sc-bob" style="animation-delay:-1s">${ship('brig', 10, 108, 110)}</g>
       <g class="sc-bob" style="animation-delay:-2s">${ship('galleon', 286, 112, 106)}</g>
+    </svg>`,
+
+    // Kapitel 6: Port Dublone friert zu
+    eis: () => `${svgOpen}
+      <defs><linearGradient id="sc-e-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5f7896"/><stop offset="1" stop-color="#dfeaf2"/></linearGradient></defs>
+      <rect width="400" height="240" fill="url(#sc-e-sky)"/>
+      ${clouds([[70, 40, 1.3], [210, 28, 1], [330, 46, 1.2]], '#eef4f8', 0.8)}
+      ${houses(172, false)}
+      ${[[0, 50, 46], [44, 38, 60], [78, 46, 40], [262, 44, 52], [302, 40, 38], [338, 62, 56]].map(([x, w, h]) => `<path d="M${x - 4} ${172 - h} L${x + w / 2} ${172 - h - 19} L${x + w + 4} ${172 - h} Q${x + w / 2} ${172 - h - 6} ${x - 4} ${172 - h} Z" fill="#ffffff" ${LINE}/>`).join('')}
+      <rect x="0" y="172" width="400" height="68" fill="#7fa8c4"/>
+      <rect x="120" y="168" width="160" height="8" fill="#6b4a2a"/>
+      ${[[20, 190, 70], [110, 206, 90], [230, 192, 80], [320, 212, 70], [60, 224, 80], [200, 226, 100]].map(([x, y, w]) => `<path d="M${x} ${y} l${w * 0.3} -7 l${w * 0.5} 3 l${w * 0.2} 8 l-${w * 0.4} 6 l-${w * 0.5} -3 Z" fill="#f4faff" stroke="#9fc0d6" stroke-width="1.5"/>`).join('')}
+      <g>${ship('brig', 150, 108, 104)}</g>
+      <path d="M150 184 q52 -8 104 0 l-6 6 q-46 -5 -92 0 Z" fill="#ffffff" stroke="#9fc0d6" stroke-width="1.5"/>
+      ${[30, 80, 130, 180, 240, 290, 340, 380].map((x, i) => `<circle cx="${x}" cy="${30 + (i * 53) % 130}" r="${1.6 + (i % 3) * 0.6}" fill="#fff" class="sc-twinkle" style="animation-delay:${i * 0.3}s"/>`).join('')}
+    </svg>`,
+
+    // Kapitel 7: Ankunft in der Smaragdsee
+    smaragd: () => `${svgOpen}
+      <defs><linearGradient id="sc-s-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3fa0dc"/><stop offset="1" stop-color="#c8f0e0"/></linearGradient></defs>
+      <rect width="400" height="240" fill="url(#sc-s-sky)"/>
+      <circle cx="80" cy="70" r="40" fill="#fff6c2" opacity=".35"/>
+      <circle cx="80" cy="70" r="24" fill="#fff6c2"/>
+      ${clouds([[230, 40, 1.2], [340, 64, 0.9]])}
+      ${gulls([[150, 60], [185, 46]])}
+      <path d="M150 150 Q210 70 270 120 Q320 60 400 110 L400 160 L150 160 Z" fill="#3f9a5a" ${LINE}/>
+      <path d="M220 150 Q280 96 340 132 Q370 110 400 128 L400 160 L220 160 Z" fill="#57b46a"/>
+      <rect x="0" y="150" width="400" height="90" fill="#2fb0a8"/>
+      <path d="M130 240 C200 176 300 170 400 168 L400 240 Z" fill="#f2dfa8" ${LINE}/>
+      ${waves(166, 'rgba(255,255,255,.5)')}
+      ${[[300, 176, 1], [350, 172, 0.8], [250, 190, 0.9]].map(([x, y, k]) => `<path d="M${x} ${y} q${6 * k} -${24 * k} ${2 * k} -${46 * k}" stroke="#7a5a34" stroke-width="${4 * k}" fill="none" stroke-linecap="round"/>
+        <path d="M${x + 2 * k} ${y - 46 * k} q-${14 * k} -${10 * k} -${26 * k} ${2 * k} M${x + 2 * k} ${y - 46 * k} q${14 * k} -${12 * k} ${26 * k} 0 M${x + 2 * k} ${y - 46 * k} q-${6 * k} -${16 * k} -${18 * k} -${14 * k} M${x + 2 * k} ${y - 46 * k} q${8 * k} -${16 * k} ${20 * k} -${12 * k}" stroke="#2f8f4a" stroke-width="${5 * k}" fill="none" stroke-linecap="round"/>`).join('')}
+      <g class="sc-bob">${ship('frigate', 40, 96, 120)}</g>
+      <g class="sc-bob" style="animation-delay:-1.4s">${ship('sloop', 150, 124, 60)}</g>
     </svg>`,
 
     // Die Goldene Dublone im Tresor

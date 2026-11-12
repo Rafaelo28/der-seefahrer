@@ -159,17 +159,59 @@ window.SF = window.SF || {};
     Object.assign({ id: 'amberbay', name: 'Bernsteinbucht', icon: 'anchor', harbor: true }, coast('amber', -0.55, 0.85)),
     Object.assign({ id: 'smuggler', name: 'Schmugglerinsel', icon: 'skull', harbor: true, gk: true }, coast('smuggler', -1, -0.25)),
     Object.assign({ id: 'bay', name: 'Nahe Bucht', icon: 'palm', gk: true, reward: 15 }, coast('bay', 0.7, 0.75, 30)),
-    { id: 'reef', name: 'Korallenriff', icon: 'coral', gk: true, reward: 20, x: 1380, y: 1820 },
+    { id: 'reef', name: 'Korallenriff', icon: 'coral', gk: true, dive: true, reward: 20, x: 1380, y: 1820 },
     Object.assign({ id: 'volcano', name: 'Vulkaninsel', icon: 'volcano', gk: true, reward: 30 }, coast('volcano', -0.85, 0.5)),
     { id: 'ice', name: 'Eismeer', icon: 'ice', gk: true, reward: 40, x: 1500, y: 330 },
     Object.assign({ id: 'dragon', name: 'Drachenküste', icon: 'dragon', gk: true, reward: 50 }, coast('dragon', -0.75, -0.65)),
     // Finale und Geheimnis: auf offener See (open), das Bermuda-Dreieck ist versteckt (erst nach dem Besuch auf der Karte)
     Object.assign({ id: 'fort', name: 'Bernsteinfestung', icon: 'shield', reward: 60 }, coast('fort', 0.5, 0.85)),
+    { id: 'stormgate', name: 'Sturmtor', icon: 'wind', open: true, gate: 'emerald', x: 1760, y: 2335 }, // Kapitel 6: Tor zur Smaragdsee
     { id: 'mist', name: 'Nebelmeer', icon: 'skull', open: true, x: 3050, y: 1250 },
     { id: 'bermuda', name: 'Bermuda-Dreieck', icon: 'compass', open: true, hidden: true, x: 450, y: 2300 },
   ];
   const placeById = Object.fromEntries(PLACES.map(p => [p.id, p]));
-  const START = placeById.dublone;
+
+  // ---------- Zweite Karte: die Smaragdsee (Kapitel 7) ----------
+  // Es ist immer nur eine Karte „aktiv“: ISLANDS und PLACES enthalten die Inseln und Orte der aktiven Karte
+  // (SF.world.use wechselt). placeById kennt die Orte beider Karten; p.map sagt, auf welcher Karte ein Ort liegt.
+
+  const ISLANDS2 = [
+    { id: 'haven', name: 'Smaragdstrand', kind: 'jungle', town: true, palms: true, circles: blob(1500, 960, 210, 301, 7) },
+    { id: 'pearl', name: 'Perleninsel', kind: 'sand', town: true, palms: true, circles: blob(2650, 1560, 150, 311, 6) },
+    { id: 'spring', name: 'Quelleninsel', kind: 'jungle', palms: true, circles: blob(650, 1760, 190, 323, 6) },
+    { id: 'turtle', name: 'Schildkröteninsel', kind: 'sand', palms: true, circles: blob(2520, 480, 120, 331, 5) },
+  ];
+  [[400, 720, 70], [900, 400, 50], [1100, 1560, 60], [1900, 1900, 80], [2200, 1050, 55], [2950, 900, 60], [1400, 2150, 50], [2900, 2100, 70],
+    [300, 1200, 45], [2050, 300, 45], [1050, 2080, 40], [1760, 1480, 35]]
+    .forEach(([x, y, r], i) => ISLANDS2.push({ id: 'atoll' + i, kind: i % 3 ? 'sand' : 'jungle', palms: true, circles: blob(x, y, r, 400 + i, 4) }));
+  ISLANDS2.forEach(isle => {
+    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    isle.circles.forEach(([x, y, r]) => { x0 = Math.min(x0, x - r); y0 = Math.min(y0, y - r); x1 = Math.max(x1, x + r); y1 = Math.max(y1, y + r); });
+    isle.box = [x0, y0, x1, y1];
+  });
+  const ISLANDS1 = ISLANDS.slice();
+  const PLACES1 = PLACES.slice();
+  // Orte der Smaragdsee (die Küstenpunkte brauchen kurz die Inseln der zweiten Karte)
+  ISLANDS.length = 0;
+  ISLANDS.push(...ISLANDS2);
+  const PLACES2 = [
+    Object.assign({ id: 'haven', name: 'Neu-Dublone', icon: 'anchor', harbor: true }, coast('haven', 0.15, -1)),
+    Object.assign({ id: 'pearlport', name: 'Perlenhafen', icon: 'pearl', harbor: true }, coast('pearl', -1, -0.35)),
+    Object.assign({ id: 'spring', name: 'Quelleninsel', icon: 'palm', reward: 40 }, coast('spring', 0.8, -0.6, 30)),
+    { id: 'lagoon', name: 'Türkislagune', icon: 'coral', dive: true, reward: 30, x: 2330, y: 660 },
+    { id: 'northgate', name: 'Sturmtor', icon: 'wind', open: true, gate: 'old', x: 1600, y: 100 },
+    { id: 'krakenlair', name: 'Krakengrund', icon: 'kraken', open: true, x: 520, y: 380 },
+  ];
+  ISLANDS.length = 0;
+  ISLANDS.push(...ISLANDS1);
+  PLACES1.forEach(p => { p.map = 'old'; });
+  PLACES2.forEach(p => { p.map = 'emerald'; placeById[p.id] = p; });
+  const MAPS = {
+    old: { name: 'Alte See', islands: ISLANDS1, places: PLACES1, start: placeById.dublone },
+    emerald: { name: 'Smaragdsee', islands: ISLANDS2, places: PLACES2, start: placeById.haven },
+  };
+  let current = 'old';
+  let mapVersion = 0; // steigt bei jedem Kartenwechsel (die Seekarte baut dann ihre Zierde neu)
 
   // Nächster Ort in Reichweite (oder null)
   function placeNear(x, y, range = 110, filter) {
@@ -347,8 +389,28 @@ window.SF = window.SF || {};
     return out;
   }
 
+  // Karte wechseln: Inseln und Orte austauschen, Nebel und Wegsuche zurücksetzen (den Nebel lädt der Spielstand)
+  function use(id) {
+    if (!MAPS[id] || id === current) return false;
+    current = id;
+    ISLANDS.length = 0;
+    ISLANDS.push(...MAPS[id].islands);
+    PLACES.length = 0;
+    PLACES.push(...MAPS[id].places);
+    nav = null;
+    fog = new Uint8Array(Math.ceil(FOG_W * FOG_H / 8));
+    fogVersion++;
+    mapVersion++;
+    return true;
+  }
+
   SF.world = {
-    W, H, EDGE, FOG_CELL, FOG_W, FOG_H, SIGHT, SHIP_PAD, PLAN_PAD, ISLANDS, PLACES, placeById, START,
+    W, H, EDGE, FOG_CELL, FOG_W, FOG_H, SIGHT, SHIP_PAD, PLAN_PAD, ISLANDS, PLACES, placeById, MAPS,
+    get START() { return MAPS[current].start; }, // Heimathafen der aktiven Karte
+    use,
+    map: () => current,
+    mapVersion: () => mapVersion,
+    placesOf: id => (MAPS[id] ? MAPS[id].places : []),
     isLand, isWater, inWorld, segmentClear, lastFree, placeNear, route,
     reveal, known, knownAt, explored, fogToString, fogFromString,
     fogVersion: () => fogVersion,

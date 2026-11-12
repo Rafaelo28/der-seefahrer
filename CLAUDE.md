@@ -28,6 +28,10 @@ Der ganze Plan mit allen Ausbaustufen steht in `PROJEKTPLAN.md` (Häkchen nach j
 - **Kleine Zahlen**: Bernstein-Preise bleiben im Bereich von ein paar bis ein paar tausend. Fortschritt über
   Schiffe, Crew, Karte und Story – nicht über immer größere Zahlen.
 - **Bernstein** nur über `SF.amber.add` / `SF.amber.spend` bewegen.
+- **Zwei Karten** (`js/world.js`): die Alte See (`old`) und die Smaragdsee (`emerald`, ab Kapitel 7). Aktiv ist immer nur
+  eine (`SF.world.use`, `SF.world.map()`); `ISLANDS`, `PLACES` und `START` gehören zur aktiven Karte, `placeById` kennt
+  alle Orte (`p.map`). Wer feste Orte prüft (z. B. Nebelmeer, Festung), fragt auch die Karte ab. Der Wechsel läuft über
+  `SF.chapter.travel` (merkt den Nebel je Karte in `state.fogs`).
 - **Zielgerät**: iPad 8. Generation (810 × 1080 hochkant, 1080 × 810 quer, Touch). Große Tippflächen, kein
   Doppeltipp-Zoom, Hover-Effekte nur in `@media (hover: hover)`. Seekarte, Häfen und Geschichte hoch und quer;
   Schlacht und Jump'n'Run nur quer.
@@ -73,6 +77,8 @@ Der ganze Plan mit allen Ausbaustufen steht in `PROJEKTPLAN.md` (Häkchen nach j
   - `finale.test.js` – Finale: Holländer sinkt nicht, Long John bewacht die Kajüte, Ende, Geheimnisse, Bermuda, Schwer-Modus.
   - `baron.test.js` – Kapitel 4 und 5: weiter nach dem ersten Ende, Long John im Kerker, Kuriere entern, Briefe, Codebuch
     am Riff, Bernsteinfestung, Flaggschiff des Barons, zweites Ende.
+  - `emerald.test.js` – Kapitel 6 und 7: Vorräte für die Flotte, Sturmtor, zweite Karte (Inseln, Orte, Nebel, Piraten,
+    Märkte je Karte), Neu-Dublone, Quelleninsel, Krakenkönig (nicht zu entern), drittes Ende, Tore danach in beide Richtungen.
   - `friends.test.js` – Rangliste mit Freunden und Flaschenpost (Grenzen, nur einmal öffnen, kaputte Codes).
   - `duel.test.js` – Online-Seeschlacht: zweites Schiff vom Menschen gesteuert, Schnappschuss gespiegelt, Schutz vor
     kaputten Angaben, Raum-Codes, lokale Verbindung.

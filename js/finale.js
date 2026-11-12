@@ -21,7 +21,7 @@ window.SF = window.SF || {};
   // Taucht der Holländer jetzt auf?
   function ready() {
     const s = st();
-    if (SF.story.step() !== 'finale' || !s.pos || s.docked) return false;
+    if (SF.story.step() !== 'finale' || !s.pos || s.docked || SF.world.map() !== 'old') return false;
     const m = SF.world.placeById.mist;
     const d = Math.hypot(s.pos.x - m.x, s.pos.y - m.y);
     if (d > LEAVE) flags().mistLeft = true;
@@ -97,7 +97,7 @@ window.SF = window.SF || {};
 
   const SECRETS = [
     { id: 'dublone', name: 'Die Goldene Dublone zurückgebracht', hint: 'Die ganze Geschichte', check: () => SF.story.reached('done') },
-    { id: 'places', name: 'Alle Orte entdeckt', hint: 'Segle überall hin', check: () => SF.world.PLACES.filter(p => !p.hidden).every(p => st().visited[p.id]) },
+    { id: 'places', name: 'Alle Orte entdeckt', hint: 'Segle überall hin', check: () => SF.world.placesOf('old').filter(p => !p.hidden && !p.gate).every(p => st().visited[p.id]) },
     { id: 'islands', name: 'Alle vier Inseln geschafft', hint: 'An Land gehen', check: () => ['bay', 'volcano', 'ice', 'dragon'].every(id => st().islands && st().islands[id]) },
     { id: 'bluebeard', name: 'Käpt’n Blaubart besiegt', hint: 'An der Drachenküste kreuzt er', check: () => !!flags()['beat-bluebeard'] },
     { id: 'crew', name: 'Karla und Nils an Bord', hint: 'Kneipen', check: () => SF.crew.has('karla') && SF.crew.has('nils') },
@@ -147,7 +147,7 @@ window.SF = window.SF || {};
   function compassCrazy() {
     const s = st();
     const b = SF.world.placeById.bermuda;
-    return !!s.pos && Math.hypot(s.pos.x - b.x, s.pos.y - b.y) < 450;
+    return !!s.pos && SF.world.map() === 'old' && Math.hypot(s.pos.x - b.x, s.pos.y - b.y) < 450;
   }
 
   SF.finale = { MIST_RANGE, LEAVE, dutchman, ready, afterBattle, ending, endingScenes, credits, SECRETS, has, count, percent, found, check, onBermuda, compassCrazy };

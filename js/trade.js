@@ -20,6 +20,11 @@ window.SF = window.SF || {};
       text: 'Die Fischer der Bernsteinbucht fangen viel Fisch – und brauchen Salz, um ihn haltbar zu machen.' },
     smuggler: { fish: 1.35, salt: 1.0, rum: 0.65, cloth: 1.45, spice: 0.7, food: 5,
       text: 'Auf der Schmugglerinsel gibt es Rum und Gewürze billig. Woher? Frag lieber nicht.' },
+    // Smaragdsee (zweite Karte)
+    haven: { fish: 0.7, salt: 1.3, rum: 1.45, cloth: 1.4, spice: 0.6, food: 3,
+      text: 'In Neu-Dublone wachsen Gewürze an jedem Strauch und das Meer ist voller Fisch. Tuch, Salz und Rum fehlen den Siedlern.' },
+    pearlport: { fish: 1.3, salt: 0.85, rum: 0.75, cloth: 0.9, spice: 1.35, food: 4,
+      text: 'Die Perlentaucher brennen Rum aus Zuckerrohr und sieden Salz in der Lagune. Für Fisch und Gewürze zahlen sie gut.' },
   };
 
   const SPREAD = 0.85;       // Verkaufspreis = 85 % vom Kaufpreis
@@ -117,7 +122,8 @@ window.SF = window.SF || {};
 
   // Wo ist eine Ware gerade am günstigsten bzw. am teuersten? (für Gerüchte in der Kneipe)
   function best(g) {
-    const hs = Object.keys(MARKETS);
+    // nur Häfen der Karte, auf der man gerade segelt
+    const hs = Object.keys(MARKETS).filter(h => !SF.world || !SF.world.placeById[h] || SF.world.placeById[h].map === SF.world.map());
     const prices = hs.map(h => ({ h, buy: buyPrice(h, g), sell: sellPrice(h, g) }));
     return {
       cheap: prices.reduce((a, b) => (b.buy < a.buy ? b : a)),

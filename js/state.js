@@ -36,6 +36,8 @@ window.SF = window.SF || {};
       course: [],          // gezeichneter Kurs als flache Liste [x1, y1, x2, y2, …]
       docked: '',          // Hafen, in dem das Schiff liegt ('' = auf See)
       fog: '',             // aufgedeckte Karte (Bitfeld als Base64, js/world.js)
+      map: 'old',          // aktive Karte: 'old' (Alte See) oder 'emerald' (Smaragdsee, ab Kapitel 7)
+      fogs: {},            // aufgedeckte Karte der jeweils anderen Karten (je Karte ein Bitfeld)
       visited: {},         // { ortId: Zeitpunkt des ersten Besuchs }
       market: {},          // Angebot und Nachfrage: { hafenId: { warenId: Druck } } (js/trade.js)
       wind: null,          // { x, y, s, next } (js/voyage.js)
@@ -145,6 +147,8 @@ window.SF = window.SF || {};
     if (!isObj(s.wind)) s.wind = null;
     if (!isObj(s.gk)) s.gk = null;
     if (typeof s.fog !== 'string') s.fog = '';
+    if (s.map !== 'emerald') s.map = 'old';
+    if (!s.fogs || typeof s.fogs !== 'object') s.fogs = {};
     if (typeof s.docked !== 'string') s.docked = '';
     s.amber = Math.max(0, Math.floor(num(s.amber, 0)));
     s.food = Math.max(0, num(s.food, 0));

@@ -54,6 +54,14 @@ window.SF = window.SF || {};
           <p class="muted small">Das stimmt: Schieß ihn schwer an, dann <b>entere</b> ihn und besiege Long John.</p>`,
         buttons: [{ label: `${SF.icon('swords')} Auf ihn!`, value: true, kind: 'primary' }],
       });
+    } else if (p.kind === 'kraken') {
+      await SF.ui.dialog({
+        title: `${SF.icon('kraken')} Der Krakenkönig!`,
+        html: `<p>Das Wasser wird schwarz. Dann hebt sich etwas aus der Tiefe, groß wie eine Galeone, mit acht Fangarmen und einer
+          winzigen goldenen Krone: der <b>Krakenkönig</b>!</p>
+          <p class="muted small">Er spuckt Tinte wie Kanonenkugeln. Entern kannst du ihn nicht – nur <b>versenken</b>. Bleib in Bewegung und zeig ihm die Breitseite!</p>`,
+        buttons: [{ label: `${SF.icon('swords')} Feuer frei!`, value: true, kind: 'primary' }],
+      });
     } else if (p.kind === 'baron') {
       await SF.ui.dialog({
         title: `${SF.icon('coin')} Die „Goldene Gier“!`,
@@ -196,6 +204,15 @@ window.SF = window.SF || {};
         // Long John besiegt: weiter mit dem Ende (Bildergeschichte und Abspann)
         SF.save();
         setTimeout(() => { b = null; SF.finale.ending(); }, 700);
+        return;
+      }
+    }
+    if (pirate.kind === 'kraken') {
+      SF.chapter.afterKraken(result);
+      if (result === 'sunk') {
+        // der Krakenkönig ist besiegt: drittes Ende mit Bildergeschichte und Abspann
+        SF.save();
+        setTimeout(() => { b = null; SF.chapter.ending3(); }, 900);
         return;
       }
     }
@@ -367,7 +384,8 @@ window.SF = window.SF || {};
       const by = s.y + s.hy * s.len * 0.52;
       [-1, 1].forEach(d => { ctx.moveTo(bx, by); ctx.lineTo(bx - s.hx * 26 + d * -s.hy * 16, by - s.hy * 26 + d * s.hx * 16); });
       ctx.stroke();
-      SF.ships.drawTop(ctx, s.type, s.x, s.y, s.hx, s.hy, SF.battle.SCALE, sway, s.colors);
+      if (s.skin === 'kraken') drawKraken(s);
+      else SF.ships.drawTop(ctx, s.type, s.x, s.y, s.hx, s.hy, SF.battle.SCALE, sway, s.colors);
       if (s.hp < s.maxHp * 0.5) {
         // Rauch aus dem beschädigten Rumpf
         const t = (time * 0.7) % 1;
@@ -485,6 +503,68 @@ window.SF = window.SF || {};
 
   // Liegt der Gegner vor dieser Breitseite und in Reichweite? (dann leuchten Bereich und Knopf)
   const aimed = side => !!SF.battle.inArc(b, b.player, side, SF.battle.AIM_CONE, 1);
+
+  // Der Krakenkönig von oben: Kopf mit Krone und Augen, acht Fangarme, die sich winden
+  function drawKraken(s) {
+    const R = s.len * 0.46;
+    const a0 = Math.atan2(s.hy, s.hx);
+    ctx.lineCap = 'round';
+    for (let pass = 0; pass < 2; pass++) {
+      for (let i = 0; i < 8; i++) {
+        const a = a0 + Math.PI + (i - 3.5) * 0.42;
+        const wob = Math.sin(time * 2.4 + i * 1.3) * 0.5;
+        const x1 = s.x + Math.cos(a) * R * 1.2;
+        const y1 = s.y + Math.sin(a) * R * 1.2;
+        const x2 = s.x + Math.cos(a + wob * 0.6) * R * 2.3;
+        const y2 = s.y + Math.sin(a + wob * 0.6) * R * 2.3;
+        const x3 = s.x + Math.cos(a - wob) * R * 3.2;
+        const y3 = s.y + Math.sin(a - wob) * R * 3.2;
+        ctx.strokeStyle = pass ? '#9a6ad8' : '#2a1d10';
+        ctx.lineWidth = pass ? 9 : 14;
+        ctx.beginPath();
+        ctx.moveTo(s.x + Math.cos(a) * R * 0.6, s.y + Math.sin(a) * R * 0.6);
+        ctx.bezierCurveTo(x1, y1, x2, y2, x3, y3);
+        ctx.stroke();
+      }
+    }
+    ctx.save();
+    ctx.translate(s.x, s.y);
+    ctx.rotate(a0);
+    ctx.beginPath();
+    ctx.ellipse(0, 0, R * 1.25, R, 0, 0, Math.PI * 2);
+    ctx.fillStyle = '#8a5ac8';
+    ctx.fill();
+    ctx.strokeStyle = '#2a1d10';
+    ctx.lineWidth = 4;
+    ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,.2)';
+    ctx.beginPath();
+    ctx.ellipse(-R * 0.3, -R * 0.35, R * 0.5, R * 0.25, 0.3, 0, Math.PI * 2);
+    ctx.fill();
+    // Augen (schauen nach vorn) und Krone
+    [-1, 1].forEach(d => {
+      ctx.beginPath();
+      ctx.arc(R * 0.62, d * R * 0.42, R * 0.26, 0, Math.PI * 2);
+      ctx.fillStyle = '#fffaf0';
+      ctx.fill();
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+      ctx.fillStyle = '#2a1d10';
+      ctx.beginPath();
+      ctx.arc(R * 0.7, d * R * 0.42, R * 0.12, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    ctx.beginPath();
+    ctx.moveTo(-R * 0.5, -R * 0.3);
+    ctx.lineTo(-R * 0.2, -R * 0.3); ctx.lineTo(-R * 0.05, 0); ctx.lineTo(-R * 0.2, R * 0.3); ctx.lineTo(-R * 0.5, R * 0.3);
+    ctx.lineTo(-R * 0.32, R * 0.15); ctx.lineTo(-R * 0.5, 0); ctx.lineTo(-R * 0.32, -R * 0.15);
+    ctx.closePath();
+    ctx.fillStyle = '#f5c542';
+    ctx.fill();
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+    ctx.restore();
+  }
 
   // ---------- Anzeigen ----------
 

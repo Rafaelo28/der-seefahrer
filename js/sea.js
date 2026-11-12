@@ -14,6 +14,7 @@ window.SF = window.SF || {};
 
   const COLORS = {
     green: ['#7a5a2a', '#e8d39a', '#6fa35a'],
+    jungle: ['#5a4a2a', '#f0e0a8', '#3f9a5a'], // Smaragdsee
     sand: ['#8a6a3a', '#efdcaa', '#d7bd78'],
     volcano: ['#2e2420', '#8a7a6a', '#5a4a3e'],
     ice: ['#7aa0b8', '#d8eef8', '#ffffff'],
@@ -35,6 +36,7 @@ window.SF = window.SF || {};
   let time = 0;
   let fogCanvas = null;
   let fogVer = -1;
+  let mapVer = 0;         // Karte gewechselt? Dann Zierde und Nebel neu aufbauen
   let deco = null;
   const $ = id => document.getElementById(id);
 
@@ -96,6 +98,11 @@ window.SF = window.SF || {};
     // Kapitel 5: das Flaggschiff des Barons vor der Festung
     if (SF.chapter && SF.battleView && !SF.battleView.busy() && SF.chapter.baronReady()) {
       SF.battleView.start(SF.chapter.baronShip());
+      return;
+    }
+    // Kapitel 7: der Krakenkönig am Krakengrund
+    if (SF.chapter && SF.battleView && !SF.battleView.busy() && SF.chapter.krakenReady()) {
+      SF.battleView.start(SF.chapter.krakenShip());
       return;
     }
     if (SF.pirates && SF.battleView && !SF.battleView.busy()) {
@@ -180,6 +187,10 @@ window.SF = window.SF || {};
 
   // Texte beim Entdecken der Ziele aus Gamble Klicker
   const DISCOVER_TEXT = {
+    stormgate: 'Eine Wand aus Wolken und Blitzen von Horizont zu Horizont. Da kommt kein Schiff durch – jedenfalls nicht ohne guten Grund.',
+    northgate: 'Hier seid ihr herausgekommen. Der Sturm tobt noch immer.',
+    spring: 'Dichter Dschungel bis ans Wasser, Papageien kreischen. Irgendwo plätschert es.',
+    lagoon: 'Türkises Wasser, so klar, dass man die Muscheln am Grund zählen kann. Hier kann man tauchen!',
     fort: 'Graue Mauern, gelbe Fahnen und kein einziges Fischerboot. Wer wohnt hier so allein?',
     bay: 'Früher ist deine Flotte nur auf Zeit hierher gefahren – jetzt bist du selbst da! Im Sand liegt eine kleine Kiste.',
     reef: 'Unter dem Schiff schimmern Korallen und Muscheln. Hier kannst du nach Perlen tauchen!',
@@ -302,6 +313,7 @@ window.SF = window.SF || {};
     const Wo = SF.world;
     const s = SF.state;
     const z = cam.z;
+    if (mapVer !== Wo.mapVersion()) { mapVer = Wo.mapVersion(); deco = null; fogVer = -1; }
     if (!deco) buildDeco();
     if (fogVer < 0) buildFog();
 
@@ -409,7 +421,7 @@ window.SF = window.SF || {};
 
     // Nebelbänke im Nebelmeer (ziehen langsam)
     const mist = Wo.placeById.mist;
-    if (mist && mist.x > x0 - 600 && mist.x < x1 + 600 && mist.y > y0 - 600 && mist.y < y1 + 600) {
+    if (mist && mist.map === Wo.map() && mist.x > x0 - 600 && mist.x < x1 + 600 && mist.y > y0 - 600 && mist.y < y1 + 600) {
       for (let i = 0; i < 9; i++) {
         const mx = mist.x + Math.sin(i * 2.1) * 260 + Math.sin(time * 0.15 + i) * 40;
         const my = mist.y + Math.cos(i * 1.7) * 230;
@@ -458,6 +470,19 @@ window.SF = window.SF || {};
 
     // Ab hier in Bildschirmpunkten: Ortsnamen, Ziel
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    // Kapitel 6: Der lange Winter – in der Alten See schneit es, alles wird kälter
+    if (Wo.map() === 'old' && SF.story.reached('winter')) {
+      ctx.fillStyle = 'rgba(205,228,250,.16)';
+      ctx.fillRect(0, 0, vw, vh);
+      ctx.fillStyle = 'rgba(255,255,255,.85)';
+      for (let i = 0; i < 46; i++) {
+        const fx = ((i * 137 + time * (18 + (i % 5) * 6) + Math.sin(time * 0.8 + i) * 20) % (vw + 40) + vw + 40) % (vw + 40) - 20;
+        const fy = ((i * 89 + time * (34 + (i % 4) * 10)) % (vh + 40)) - 20;
+        ctx.beginPath();
+        ctx.arc(fx, fy, 1.6 + (i % 3), 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
     const goal = SF.story.goal();
     Wo.PLACES.forEach(p => {
       const isGoal = p.id === goal;
@@ -721,8 +746,11 @@ window.SF = window.SF || {};
     // Insel mit Jump'n'Run in der Nähe? (nur wenn das Schiff steht)
     const isle = SF.island && !SF.voyage.moving() ? SF.world.placeNear(s.pos.x, s.pos.y, 170, p => !!SF.island.LEVELS[p.id]) : null;
     $('sea-land').hidden = !isle || !!near;
-    const reef = SF.dive && !SF.voyage.moving() ? SF.world.placeNear(s.pos.x, s.pos.y, 170, p => p.id === 'reef') : null;
+    const reef = SF.dive && !SF.voyage.moving() ? SF.world.placeNear(s.pos.x, s.pos.y, 170, p => !!p.dive) : null;
     $('sea-dive').hidden = !reef;
+    // Sturmtor: Übergang zur anderen Karte (wenn die Story es erlaubt)
+    const gate = !SF.voyage.moving() && SF.chapter ? SF.world.placeNear(s.pos.x, s.pos.y, 180, p => SF.chapter.gateOpen(p)) : null;
+    $('sea-gate').hidden = !gate;
     $('hud-pearls').hidden = !s.pearls;
     if (s.pearls) SF.setHTML($('hud-pearls'), `${SF.icon('pearl')}${s.pearls}`);
     if (isle) {
@@ -930,7 +958,22 @@ window.SF = window.SF || {};
     $('sea-dive').addEventListener('click', () => {
       SF.sound.play('splash');
       SF.voyage.setCourse([]);
-      SF.dive.start('reef');
+      const site = SF.world.placeNear(SF.state.pos.x, SF.state.pos.y, 170, p => !!p.dive);
+      SF.dive.start(site ? site.id : 'reef');
+    });
+    $('sea-gate').addEventListener('click', async () => {
+      const s = SF.state;
+      const gate = SF.world.placeNear(s.pos.x, s.pos.y, 180, p => SF.chapter.gateOpen(p));
+      if (!gate) return;
+      SF.sound.play('tap');
+      SF.voyage.setCourse([]);
+      const first = SF.story.step() === 'exodus';
+      const ok = await SF.ui.confirm('Durch das Sturmtor segeln?', first
+        ? '<p>Hinter dem Sturmtor liegt eine <b>neue Karte</b>. Die Alte See mit Port Dublone, der Bernsteinbucht und der Schmugglerinsel lässt du zurück – erst viel später gibt es einen Weg zurück.</p><p>Schiff, Crew, Bernstein, Ladung und Perlen kommen mit.</p>'
+        : `<p>Durch das Sturmtor in die <b>${SF.world.MAPS[gate.gate].name}</b> segeln?</p>`, 'Durch das Sturmtor!');
+      if (!ok) return;
+      SF.sound.play('horn');
+      SF.chapter.passGate(gate, () => open());
     });
     $('sea-cabin').addEventListener('click', () => { SF.sound.play('tap'); if (SF.cabin) SF.cabin.open(); });
   }
