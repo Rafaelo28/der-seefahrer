@@ -317,8 +317,12 @@ window.SF = window.SF || {};
     const x1 = cam.x + vw / 2 / z;
     const y1 = cam.y + vh / 2 / z;
 
-    // Meer
-    ctx.fillStyle = '#4b8fae';
+    // Meer: im Norden kühler, im Süden türkis
+    const seaG = ctx.createLinearGradient(0, 0, 0, Wo.H);
+    seaG.addColorStop(0, '#3f7ba6');
+    seaG.addColorStop(0.5, '#4b8fae');
+    seaG.addColorStop(1, '#4aa3b0');
+    ctx.fillStyle = seaG;
     ctx.fillRect(0, 0, Wo.W, Wo.H);
 
     // Wellen
@@ -342,7 +346,9 @@ window.SF = window.SF || {};
       const b = isle.box;
       if (b[2] + 20 < x0 || b[0] - 20 > x1 || b[3] + 20 < y0 || b[1] - 20 > y1) return;
       const col = COLORS[isle.kind] || COLORS.green;
-      [[9, col[0]], [6, col[1]], [-2, col[2]]].forEach(([pad, color]) => {
+      // flaches Wasser und Brandung rund um die Insel, dann Strand, Rand und Land
+      const surf = 13 + Math.sin(time * 1.6 + idx) * 2.5;
+      [[38, 'rgba(150,215,225,.28)'], [24, 'rgba(175,228,235,.38)'], [surf, 'rgba(255,255,255,.6)'], [9, col[0]], [6, col[1]], [-2, col[2]]].forEach(([pad, color]) => {
         ctx.beginPath();
         isle.circles.forEach(c => {
           const r = Math.max(2, c[2] + pad);

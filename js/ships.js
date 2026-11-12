@@ -121,23 +121,34 @@ window.SF = window.SF || {};
     let out = '<svg class="ship-svg" viewBox="0 0 120 92" aria-hidden="true">';
     xs.forEach((x, i) => {
       const top = i === Math.floor(xs.length / 2) ? 8 : 16;
-      out += `<path d="M${x} 60 L${x} ${top}" stroke="#4a2d14" stroke-width="2.5"/>`;
+      out += `<path d="M${x} 60 L${x} ${top}" stroke="#2a1a0c" stroke-width="3.6" stroke-linecap="round"/><path d="M${x} 60 L${x} ${top}" stroke="#6b4423" stroke-width="2" stroke-linecap="round"/>`;
       const sail = (y, w, h) => {
         const bottom = s.ghost
           ? `L${x + w - 2} ${y + h} L${x + 4} ${y + h - 4} L${x} ${y + h + 1} L${x - 5} ${y + h - 4} L${x - w + 2} ${y + h}`
           : `Q${x} ${y + h + 4} ${x - w + 2} ${y + h}`;
-        return `<path d="M${x - w} ${y} Q${x} ${y - 4} ${x + w} ${y} L${x + w - 2} ${y + h} ${bottom} Z" fill="${s.sail}" ${s.ghost ? 'fill-opacity="0.8"' : ''} ${line}/>`;
+        // Segel mit Schatten auf der abgewandten Seite und einer Naht
+        return `<path d="M${x - w} ${y} Q${x} ${y - 4} ${x + w} ${y} L${x + w - 2} ${y + h} ${bottom} Z" fill="${s.sail}" ${s.ghost ? 'fill-opacity="0.8"' : ''} ${line}/>
+          <path d="M${x + w * 0.3} ${y - 1.6} Q${x + w * 0.7} ${y - 1.2} ${x + w - 0.8} ${y + 0.6} L${x + w - 2.6} ${y + h - 0.6} Q${x + w * 0.6} ${y + h + 1.4} ${x + w * 0.25} ${y + h + (s.ghost ? -2 : 1.8)} Z" fill="rgba(0,0,0,.13)"/>
+          <path d="M${x - w + 2.5} ${y + h * 0.5} Q${x} ${y + h * 0.5 - 2.5} ${x + w - 2.5} ${y + h * 0.5}" fill="none" stroke="rgba(42,26,12,.25)" stroke-width="0.8"/>`;
       };
       out += sail(top + 5, s.masts === 1 ? 18 : 13, s.masts === 3 ? 13 : 18);
       if (s.masts > 1) out += sail(top + (s.masts === 3 ? 22 : 27), s.masts === 3 ? 11 : 12, s.masts === 3 ? 13 : 14);
       if (s.masts === 1) out += `<path d="M${x + 2} ${top + 30} L${x + 28} 54 L${x + 2} 54 Z" fill="${s.sail}" ${line}/>`;
     });
     const main = xs[Math.floor(xs.length / 2)];
-    out += `<path d="M${main} 8 L${main + 14} 11 L${main} 14 Z" fill="${s.flag || (s.ghost ? '#cfe0f0' : '#16181d')}"/>`;
-    out += `<path d="M8 58 L112 58 L100 80 Q60 86 20 80 Z" fill="${s.hull}" ${line}/>`;
-    out += `<path d="M10 62 L110 62" stroke="${s.gold ? '#f5c542' : 'rgba(255,255,255,.25)'}" stroke-width="${s.gold ? 2.4 : 1.2}"/>`;
-    if (s.ports) [30, 45, 60, 75, 90].forEach(x => { out += `<circle cx="${x}" cy="70" r="2.6" fill="#1a1008" stroke="${s.gold ? '#f5c542' : '#8a6a4a'}" stroke-width="0.8"/>`; });
-    out += '<path d="M104 58 L116 52" stroke="#4a2d14" stroke-width="2.2"/>';
+    const fore = xs[xs.length - 1];
+    // Klüver am Bugspriet (bei mehreren Masten), wehende Flagge
+    if (s.masts > 1) out += `<path d="M${fore + 2.5} 20 L116 52 L${fore + 2.5} 55 Z" fill="${s.sail}" ${s.ghost ? 'fill-opacity="0.8"' : ''} ${line}/>`;
+    out += `<path d="M${main} 7 q4 -2.4 7.5 0 t7.5 0 l-1.5 6.4 q-3.5 -2.2 -6.5 0 t-7 0 Z" fill="${s.flag || (s.ghost ? '#cfe0f0' : '#16181d')}" stroke="#2a1a0c" stroke-width="0.8"/>`;
+    // Rumpf: hochgezogenes Heck (links) mit Fenster, Bug mit Bugspriet (rechts), dunklerer Kiel, Planken
+    out += `<path d="M7 49 L27 49 L29 58 L104 58 Q110 58 114 54.5 L102 80 Q60 86 20 80 Q10 68 7 49 Z" fill="${s.hull}" ${line}/>`;
+    out += '<path d="M12.4 68 L107.4 68 L102 80 Q60 86 20 80 Q15 75 12.4 68 Z" fill="rgba(0,0,0,.2)"/>';
+    out += '<path d="M10.5 62.5 L110 62.5 M15 74.5 L104.6 74.5" stroke="rgba(0,0,0,.22)" stroke-width="0.9" fill="none"/>';
+    out += `<path d="M9 53.2 L28 53.2 L29.6 61 L110.6 61" stroke="${s.gold ? '#f5c542' : 'rgba(255,255,255,.28)'}" stroke-width="${s.gold ? 2.2 : 1.2}" fill="none" stroke-linejoin="round"/>`;
+    out += `<rect x="13" y="55.5" width="7" height="6" rx="1.4" fill="${s.ghost ? '#8fe0c0' : '#ffd27a'}" stroke="#2a1a0c" stroke-width="1"/>`;
+    out += '<path d="M8 47 L26.5 47 M10.5 47 v-3.4 M16.5 47 v-3.4 M22.5 47 v-3.4 M8 43.6 L26.5 43.6" stroke="#4a2d14" stroke-width="1.3" fill="none"/>';
+    if (s.ports) [36, 50, 64, 78, 92].forEach(x => { out += `<circle cx="${x}" cy="67.5" r="2.6" fill="#1a1008" stroke="${s.gold ? '#f5c542' : '#8a6a4a'}" stroke-width="0.8"/>`; });
+    out += '<path d="M103 58.5 L117 51.5" stroke="#2a1a0c" stroke-width="3.4" stroke-linecap="round"/><path d="M103 58.5 L117 51.5" stroke="#6b4423" stroke-width="1.8" stroke-linecap="round"/>';
     if (s.head && SF.icon) out += SF.icon(s.head).replace('<svg ', '<svg x="103" y="56" width="16" height="16" ');
     out += '</svg>';
     svgCache[key] = out;
