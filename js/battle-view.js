@@ -156,6 +156,7 @@ window.SF = window.SF || {};
     switch (e.type) {
       case 'fire':
         SF.sound.play('cannon');
+        fx.push({ k: 'flash', x: e.x + e.nx * 34, y: e.y + e.ny * 34, t: 0, life: 0.16 });
         for (let i = 0; i < Math.min(e.count, 6); i++) {
           fx.push({ k: 'smoke', c: e.by === 'player' && SF.cosmetics ? SF.cosmetics.value('smoke') : '230,230,230', x: e.x + e.nx * 30 + (Math.random() - 0.5) * 40, y: e.y + e.ny * 30 + (Math.random() - 0.5) * 40, t: 0, life: 1.1, vx: e.nx * 30, vy: e.ny * 30 });
         }
@@ -263,7 +264,11 @@ window.SF = window.SF || {};
     ctx.setTransform(dpr * z, 0, 0, dpr * z, dpr * (vw / 2 - cam.x * z), dpr * (vh / 2 - cam.y * z));
     const W = SF.battle.ARENA_W;
     const H = SF.battle.ARENA_H;
-    ctx.fillStyle = '#2f6f8f';
+    // Wasser: in der Mitte heller, zum Rand hin dunkler
+    const sea = ctx.createRadialGradient(W / 2, H / 2, 100, W / 2, H / 2, W * 0.62);
+    sea.addColorStop(0, '#3d86a6');
+    sea.addColorStop(1, '#255d7c');
+    ctx.fillStyle = sea;
     ctx.fillRect(0, 0, W, H);
     // Wellen
     const x0 = cam.x - vw / 2 / z;
@@ -345,6 +350,23 @@ window.SF = window.SF || {};
     // Schiffe
     const sway = (Math.sin(time * 2.2) + 1) / 2;
     [b.enemy, b.player].forEach(s => {
+      // Schatten und Bugwelle unter dem Schiff
+      ctx.save();
+      ctx.translate(s.x + 7, s.y + 11);
+      ctx.rotate(Math.atan2(s.hy, s.hx));
+      ctx.fillStyle = 'rgba(8,30,44,.28)';
+      ctx.beginPath();
+      ctx.ellipse(0, 0, s.len * 0.56, s.len * 0.22, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+      ctx.strokeStyle = 'rgba(255,255,255,.55)';
+      ctx.lineWidth = 3;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      const bx = s.x + s.hx * s.len * 0.52;
+      const by = s.y + s.hy * s.len * 0.52;
+      [-1, 1].forEach(d => { ctx.moveTo(bx, by); ctx.lineTo(bx - s.hx * 26 + d * -s.hy * 16, by - s.hy * 26 + d * s.hx * 16); });
+      ctx.stroke();
       SF.ships.drawTop(ctx, s.type, s.x, s.y, s.hx, s.hy, SF.battle.SCALE, sway, s.colors);
       if (s.hp < s.maxHp * 0.5) {
         // Rauch aus dem beschädigten Rumpf
@@ -357,10 +379,22 @@ window.SF = window.SF || {};
     });
 
     // Kugeln
-    ctx.fillStyle = '#111';
+    // Kugeln mit Rauchspur und Glanzlicht
     b.balls.forEach(ball => {
+      const sp = Math.sqrt(ball.vx * ball.vx + ball.vy * ball.vy) || 1;
+      for (let i = 1; i <= 3; i++) {
+        ctx.fillStyle = `rgba(235,235,235,${0.3 - i * 0.07})`;
+        ctx.beginPath();
+        ctx.arc(ball.x - ball.vx / sp * i * 11, ball.y - ball.vy / sp * i * 11, 6 - i, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.fillStyle = '#16181c';
       ctx.beginPath();
-      ctx.arc(ball.x, ball.y, 5, 0, Math.PI * 2);
+      ctx.arc(ball.x, ball.y, 5.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = 'rgba(255,255,255,.45)';
+      ctx.beginPath();
+      ctx.arc(ball.x - 1.6, ball.y - 1.8, 1.6, 0, Math.PI * 2);
       ctx.fill();
     });
 
@@ -372,12 +406,31 @@ window.SF = window.SF || {};
         ctx.beginPath();
         ctx.arc(f.x + f.vx * f.t, f.y + f.vy * f.t, 14 + f.t * 30, 0, Math.PI * 2);
         ctx.fill();
+      } else if (f.k === 'flash') {
+        // Mündungsfeuer
+        ctx.fillStyle = `rgba(255,236,150,${a})`;
+        ctx.beginPath();
+        ctx.arc(f.x, f.y, 10 + f.t * 90, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = `rgba(255,150,50,${a * 0.8})`;
+        ctx.beginPath();
+        ctx.arc(f.x, f.y, 5 + f.t * 50, 0, Math.PI * 2);
+        ctx.fill();
       } else if (f.k === 'splash') {
         ctx.strokeStyle = `rgba(255,255,255,${0.8 * a})`;
         ctx.lineWidth = 3;
         ctx.beginPath();
         ctx.arc(f.x, f.y, 6 + f.t * 30, 0, Math.PI * 2);
         ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(f.x, f.y, 3 + f.t * 16, 0, Math.PI * 2);
+        ctx.stroke();
+        // Tropfen spritzen hoch
+        ctx.fillStyle = `rgba(255,255,255,${0.9 * a})`;
+        for (let i = 0; i < 5; i++) {
+          const dx = (i - 2) * 7 * (1 + f.t * 2);
+          ctx.fillRect(f.x + dx - 1.5, f.y - 30 * f.t * (1 - f.t * 0.9) * (1.6 - Math.abs(i - 2) * 0.3) - 2, 3, 5);
+        }
       } else {
         ctx.fillStyle = `rgba(255,160,40,${a})`;
         ctx.beginPath();

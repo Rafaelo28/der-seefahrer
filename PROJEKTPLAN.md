@@ -346,6 +346,11 @@ grünen Tests, einem Pull Request nach `main` und dem Merge.
       Figur mit Beinen (`js/sprite.js`, auch fürs Entern). Titelbild mit Sternen und der Goldenen Dublone als
       Abendsonne. Hafenbilder zeigen den Streifen mit Häusern und Schiffen, Häuser mit Umriss, Tür und Fenstern.
 
+- [x] **Seekarte, Seeschlacht und Bilder schöner:** Seekarte mit flachem Wasser und Brandung um die Inseln und einem
+      Meer, das nach Süden türkis wird. Seeschlacht mit Schatten und Bugwelle unter den Schiffen, Mündungsfeuer,
+      Kugeln mit Rauchspur, Wasserfontänen. Schiffe von der Seite neu (Heck mit Fenster und Reling, Klüver, Schatten
+      auf den Segeln, wehende Flagge) – das wirkt in allen Bildergeschichten, in Werft, Kajüte, beim Entern und Tauchen.
+
 ### Ideen für danach
 
 - Weitere Meeresgebiete (Sargassosee mit Algen, in denen das Schiff stecken bleibt), mehr Inseln und Wracks zum Tauchen
