@@ -60,6 +60,7 @@ window.SF = window.SF || {};
       aim: o.aim || 0, delay: o.delay || 0, aimClock: 0,
       colors: o.colors || null,
       noSink: !!o.noSink, // Geisterschiff: sinkt nicht, man muss entern
+      skin: o.skin || '', // 'kraken': kein Schiff (anders gezeichnet, nicht zu entern)
     };
   }
 
@@ -303,7 +304,7 @@ window.SF = window.SF || {};
 
   // Kann man entern?
   function canBoard(b) {
-    if (b.over) return false;
+    if (b.over || b.enemy.skin === 'kraken') return false;
     const p = b.player;
     const e = b.enemy;
     const dx = e.x - p.x;

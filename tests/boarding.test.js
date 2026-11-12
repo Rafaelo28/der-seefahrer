@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 load('format', 'state', 'boarding');
 const Bo = SF.boarding;
-const KINDS = ['raider', 'shark', 'bluebeard', 'dutchman', 'courier', 'baron'];
+const KINDS = ['raider', 'shark', 'bluebeard', 'dutchman', 'courier', 'baron', 'corsair'];
 const run = (L, secs, input) => { const ev = []; for (let t = 0; t < secs && !L.over; t += 1 / 60) ev.push(...Bo.step(L, 1 / 60, typeof input === 'function' ? input(L) : input)); return ev; };
 // leeres Deck zum Ausprobieren einzelner Dinge
 const empty = (kind = 'raider') => {

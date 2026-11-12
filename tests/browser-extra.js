@@ -331,4 +331,35 @@ module.exports = async function (page, label, assert, shot) {
   assert((await page.textContent('#dialog-layer h2')).includes('Long John packt aus') && await page.evaluate(() => SF.story.step() === 'couriers'), `${label}: Long John packt aus, Kuriere suchen`);
   await page.click('#dialog-layer .btn-primary');
   await noScroll('Kerker');
+  // Kapitel 6 und 7: durch das Sturmtor auf die zweite Karte, dort im neuen Hafen anlegen
+  await page.evaluate(() => {
+    const s = SF.state;
+    s.story.step = 'exodus';
+    s.docked = '';
+    const g = SF.world.placeById.stormgate;
+    s.pos = { x: g.x - 30, y: g.y - 70, dx: 1, dy: 0 };
+    s.course = [];
+    s.pirates = [];
+    SF.sea.open();
+  });
+  await page.waitForSelector('#sea-gate:not([hidden])', { timeout: 4000 });
+  await shot(page, `winter-${label}`);
+  await page.click('#sea-gate');
+  await page.waitForSelector('#dialog-layer .btn-primary', { timeout: 4000 });
+  await page.click('#dialog-layer .btn-primary');
+  await page.waitForSelector('#screen-story:not([hidden])', { timeout: 5000 });
+  await page.waitForTimeout(400);
+  await shot(page, `sturmtor-${label}`);
+  await page.click('#story-skip');
+  await page.waitForSelector('#screen-sea:not([hidden])');
+  assert(await page.evaluate(() => SF.world.map() === 'emerald' && SF.state.map === 'emerald' && SF.story.step() === 'landfall'), `${label}: durch das Sturmtor in die Smaragdsee`);
+  await page.waitForTimeout(500);
+  await shot(page, `smaragdsee-${label}`);
+  await noScroll('Smaragdsee');
+  await page.evaluate(() => { SF.harbor.open('haven'); });
+  await page.waitForSelector('#dialog-layer h2', { timeout: 4000 });
+  assert((await page.textContent('#dialog-layer h2')).includes('Neu-Dublone') && await page.evaluate(() => SF.story.step() === 'water'), `${label}: Neu-Dublone gegründet`);
+  await page.click('#dialog-layer .btn-primary');
+  await shot(page, `neu-dublone-${label}`);
+  await noScroll('Neu-Dublone');
 };

@@ -21,6 +21,11 @@ window.SF = window.SF || {};
     // Kapitel 5: das Flaggschiff des Barons – sinkt nicht (zu viel Gold im Bauch), man muss es entern
     baron: { name: 'Die Goldene Gier', ship: 'galleon', hp: 280, cannons: 8, aim: 0.045, delay: 0.3, speed: 58, bounty: 400, cargo: 0,
       sail: '#f0a030', names: ['Die Goldene Gier'], boss: true, noSink: true },
+    // Kapitel 7 (Smaragdsee): Korsaren mit grünen Segeln und der Krakenkönig (kein Schiff: man kann ihn nicht entern)
+    corsair: { name: 'Korsar', ship: 'frigate', hp: 120, cannons: 5, aim: 0.07, delay: 0.45, speed: 58, bounty: 110, cargo: 4,
+      sail: '#1f8a5a', names: ['Smaragd-Sina', 'Papageien-Paule', 'Kokos-Karl', 'Muschel-Marta'] },
+    kraken: { name: 'Der Krakenkönig', ship: 'galleon', hp: 320, cannons: 8, aim: 0.06, delay: 0.5, speed: 44, bounty: 600, cargo: 0,
+      sail: '#8a5ac8', names: ['Der Krakenkönig'], boss: true, skin: 'kraken' },
   };
 
   // Gebiete: Mittelpunkt, Radius, welche Piraten, wie viele gleichzeitig
@@ -31,6 +36,9 @@ window.SF = window.SF || {};
     { id: 'west', x: 380, y: 2000, r: 330, kinds: ['raider', 'shark'], max: 1 },
     { id: 'dragon', x: 2750, y: 1950, r: 380, kinds: ['bluebeard'], max: 1 },
     { id: 'couriers', x: 1900, y: 1250, r: 360, kinds: ['courier'], max: 2, step: 'couriers' }, // nur in diesem Story-Schritt
+    // Smaragdsee (zweite Karte)
+    { id: 'emerald-east', map: 'emerald', x: 2500, y: 1100, r: 380, kinds: ['corsair', 'shark'], max: 2 },
+    { id: 'emerald-south', map: 'emerald', x: 1500, y: 1950, r: 360, kinds: ['corsair', 'raider'], max: 2 },
   ];
 
   const SIGHT = 280;       // so weit sehen Piraten
@@ -79,8 +87,8 @@ window.SF = window.SF || {};
     if (!s.pirateClock || typeof s.pirateClock !== 'object') s.pirateClock = {};
     const now = SF.story ? SF.story.step() : '';
     ZONES.forEach(z => {
-      if (z.step && z.step !== now) {
-        // Gebiet gehört zu einem Story-Schritt, der gerade nicht läuft: Schiffe ziehen ab
+      if ((z.step && z.step !== now) || (z.map || 'old') !== SF.world.map()) {
+        // Gebiet gehört zu einem Story-Schritt, der gerade nicht läuft, oder zur anderen Karte: Schiffe ziehen ab
         for (let i = list().length - 1; i >= 0; i--) if (list()[i].zone === z.id) list().splice(i, 1);
         return;
       }
@@ -143,7 +151,7 @@ window.SF = window.SF || {};
     const k = KINDS[p.kind];
     const hard = SF.state.hard ? 1.5 : 1; // Schwer-Modus: stärkere Gegner
     const hp = Math.round(k.hp * hard);
-    return { type: k.ship, hp, maxHp: hp, cannons: k.cannons, aim: k.aim / hard, delay: k.delay / hard, speed: k.speed, colors: { sail: k.sail }, noSink: !!k.noSink };
+    return { type: k.ship, hp, maxHp: hp, cannons: k.cannons, aim: k.aim / hard, delay: k.delay / hard, speed: k.speed, colors: { sail: k.sail }, noSink: !!k.noSink, skin: k.skin || '' };
   }
 
   // Ergebnis der Schlacht anwenden; gibt eine Beschreibung zurück

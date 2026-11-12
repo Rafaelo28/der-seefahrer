@@ -61,6 +61,18 @@ window.SF = window.SF || {};
       amber: [[690, 300], [1110, 320], [1430, 300], [2100, 300], [2780, 300], [3270, 340]],
       chest: [3680, 480],
     },
+    // Kapitel 7: durch den Dschungel zur Quelle
+    spring: {
+      name: 'Quelleninsel', theme: 'jungle', w: 4000, time: 115, reward: 80,
+      start: [80, 380],
+      solids: [[0, 480, 540, 120], [880, 480, 380, 120], [1060, 365, 120, 20], [1640, 480, 320, 120], [2300, 480, 320, 120],
+        [2980, 480, 300, 120], [3280, 430, 720, 170]],
+      anchors: [[710, 185], [1450, 190], [2120, 195], [2800, 190]],
+      hazards: [[540, 520, 340, 80, 'water'], [1260, 520, 380, 80, 'water'], [1960, 520, 340, 80, 'water'], [2620, 520, 360, 80, 'water']],
+      crabs: [[960, 890, 1240], [1740, 1650, 1900], [2400, 2310, 2560], [3500, 3300, 3800]],
+      amber: [[710, 300], [1120, 325], [1450, 300], [2120, 300], [2800, 300], [3400, 370], [3600, 370]],
+      chest: [3880, 430],
+    },
     // Kapitel 5: über den Burggraben in die Bernsteinfestung
     fort: {
       name: 'Bernsteinfestung', theme: 'fort', w: 4400, time: 120, reward: 100,
@@ -82,6 +94,7 @@ window.SF = window.SF || {};
     volcano: { sky: ['#3a2038', '#e8794a'], far: '#2a1c26', near: '#3a2a2a', ground: '#4a3a32', top: '#2e2420', plat: '#5a4a42', crab: '#e0503a', orb: '#ffb060', glow: 'rgba(255,140,70,.3)', cloud: 'rgba(90,60,70,.7)' },
     dragon: { sky: ['#200c14', '#c84a2a'], far: '#140c10', near: '#1e1418', ground: '#3e302c', top: '#241c1a', plat: '#4a3a34', crab: '#e0503a', orb: '#ff8a4a', glow: 'rgba(255,110,60,.3)', cloud: 'rgba(60,34,40,.75)' },
     ice: { sky: ['#6fa8dc', '#eaf4fb'], far: '#cfe2f2', near: '#f4faff', ground: '#cfe4f2', top: '#ffffff', plat: '#a8d0ea', crab: '#4a8ac8', orb: '#ffffff', glow: 'rgba(255,255,255,.4)', cloud: 'rgba(255,255,255,.9)' },
+    jungle: { sky: ['#3fa0dc', '#d8f4d0'], far: '#57b46a', near: '#2f8f4a', ground: '#8a6a44', top: '#4fa85a', plat: '#b08a50', crab: '#f0803a', orb: '#fff6c2', glow: 'rgba(255,240,170,.35)', cloud: 'rgba(255,255,255,.92)' },
     fort: { sky: ['#34466a', '#f2b866'], far: '#5a6272', near: '#4b525e', ground: '#8a8f96', top: '#b4b9c0', plat: '#a4a9b0', crab: '#d4a017', orb: '#ffe0a0', glow: 'rgba(255,200,120,.35)', cloud: 'rgba(255,214,170,.6)' },
   };
 
@@ -433,7 +446,7 @@ window.SF = window.SF || {};
       ctx.fill();
       if (layer === 1) {
         for (let x = Math.floor(a / 760) * 760; x <= e; x += 760) {
-          if (theme === 'beach') {
+          if (theme === 'beach' || theme === 'jungle') {
             // Palmen auf den Hügeln
             [x + 180, x + 520].forEach((px, i) => {
               const py = base + Math.sin(px / wave * 6.28 + 2) * amp + 8;
@@ -572,7 +585,7 @@ window.SF = window.SF || {};
       ctx.beginPath();
       ctx.moveTo(s.x, s.y + 600); ctx.lineTo(s.x, s.y); ctx.lineTo(s.x + s.w, s.y); ctx.lineTo(s.x + s.w, s.y + 600);
       ctx.stroke();
-      if (theme === 'beach') {
+      if (theme === 'beach' || theme === 'jungle') {
         // Grasbüschel
         ctx.strokeStyle = '#4f8f4a';
         ctx.lineWidth = 3;

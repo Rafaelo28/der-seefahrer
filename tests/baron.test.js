@@ -149,7 +149,7 @@ const P = SF.world.placeById;
   const t = C.tavern('dublone');
   assert(t[0].who === 'longjohn' && t[0].text.includes('Zelle nebenan'), 'Long John hat jetzt einen Nachbarn');
   C.migrate();
-  assert(step() === 'done2', 'Ganz durchgespielt bleibt ganz durchgespielt');
+  assert(step() === 'winter' && C.news().title.includes('Eis'), 'Nach dem zweiten Ende geht es mit Kapitel 6 weiter (das Eis kommt)');
 }
 
 // ---------- Alte Spielstände mitten im Spiel bleiben, wo sie sind ----------

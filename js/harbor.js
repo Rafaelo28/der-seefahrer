@@ -10,6 +10,8 @@ window.SF = window.SF || {};
   const HARBOR_ART = {
     dublone: { icon: 'anchor', scene: 'hafen', band: 86, text: 'Der Hafen von Gamble Klicker. Seit dem Raub ist die Dublone nichts mehr wert – hier zahlt man jetzt mit Bernstein.' },
     amberbay: { icon: 'fish', scene: 'fischer', band: 106, text: 'Ein Fischerdorf an der Bernsteinküste. Nach Stürmen glänzt der Strand golden vom angespülten Bernstein.' },
+    haven: { icon: 'palm', scene: 'smaragd', band: 110, text: 'Zelte, erste Hütten und der alte Wegweiser „Port Dublone“ – diesmal mit einem „Neu-“ davor. Hier fängt alles neu an.' },
+    pearlport: { icon: 'pearl', scene: 'smaragd', band: 110, text: 'Ein Dorf auf Pfählen in der Lagune. Die Perlentaucher kennen jede Strömung der Smaragdsee.' },
     smuggler: { icon: 'skull', scene: 'schmuggler', band: 100, text: 'Ein Nest aus Holzhütten und Spelunken. Wer hier fragt, woher die Ware kommt, bekommt keine Antwort.' },
   };
 
@@ -33,6 +35,13 @@ window.SF = window.SF || {};
     SF.save();
     SF.track('seefahrer-hafen-' + id);
     if (SF.finale) SF.finale.check();
+    // Story: Ankunft in einem Hafen (z. B. die Gründung von Neu-Dublone)
+    const arrive = SF.chapter && SF.chapter.onArrive ? SF.chapter.onArrive(id) : null;
+    if (arrive) {
+      SF.save();
+      render();
+      setTimeout(() => SF.ui.dialog({ title: arrive.title, html: arrive.html, buttons: [{ label: 'Weiter', value: true, kind: 'primary' }] }), 300);
+    }
     // Kapitel 3: Aus der Schiffskasse fehlt etwas
     const theft = SF.chapter ? SF.chapter.onDock(id) : '';
     if (theft) {

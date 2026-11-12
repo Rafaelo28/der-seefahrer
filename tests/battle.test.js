@@ -183,7 +183,7 @@ const player = (o = {}) => Object.assign({ type: 'frigate', hp: 130, maxHp: 130,
   assert(list.every(p => SF.world.isWater(p.x, p.y)), 'Piraten schwimmen im Wasser');
   const start = SF.world.START;
   assert(list.every(p => Math.hypot(p.x - start.x, p.y - start.y) > 600), 'Rund um Port Dublone ist es sicher');
-  assert(SF.pirates.ZONES.every(z => Math.hypot(z.x - start.x, z.y - start.y) > z.r + 400), 'Kein Gebiet nahe am Start');
+  assert(SF.pirates.ZONES.filter(z => !z.map).every(z => Math.hypot(z.x - start.x, z.y - start.y) > z.r + 400), 'Kein Gebiet nahe am Start');
   // Ein Pirat sieht das Schiff, jagt es und greift an
   const p = list[0];
   SF.state.pirates = [p]; // nur dieser eine Pirat, damit kein anderer zuerst angreift

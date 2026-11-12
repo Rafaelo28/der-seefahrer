@@ -316,6 +316,18 @@ grünen Tests, einem Pull Request nach `main` und dem Merge.
       nicht): entern, auf dem Deck den Baron besiegen (drei Treffer, wirft Flaschen, Fässer rollen). Zweites Ende mit
       Bildergeschichte und Abspann, danach freies Segeln.
 
+### Stufe 7 – Eine neue Welt
+
+- [x] **Kapitel 6 „Der lange Winter“:** Nach dem Baron wächst das Eismeer nach Süden – auf der Seekarte schneit es.
+      Hafenmeister Hinnerk plant den Auszug: 6 Kisten Fisch und 4 Kisten Tuch für die Flotte sammeln, dann führt man
+      ganz Port Dublone zum **Sturmtor** im Süden. Rückfrage vor der Durchfahrt: Die Alte See bleibt zurück.
+- [x] **Zweite Karte „Smaragdsee“** (`SF.world.use`): eigene Inseln, Orte, Nebel, Piraten-Gebiete und Märkte. Schiff,
+      Crew, Bernstein, Ladung und Perlen kommen mit. Zwei neue Häfen (Neu-Dublone, Perlenhafen), Türkislagune zum
+      Tauchen, Korsaren mit grünen Segeln.
+- [x] **Kapitel 7 „Die Smaragdsee“:** Neu-Dublone gründen, auf der **Quelleninsel** (neue Dschungel-Insel) die Quelle
+      finden, am Krakengrund den **Krakenkönig** versenken (kein Schiff: nicht zu entern, eigene Zeichnung mit
+      Fangarmen). Drittes Ende; danach ist das Sturmtor in beide Richtungen offen.
+
 ### Feinschliff
 
 - [x] **Schönere Symbole:** Alle Symbole mit Schatten und Glanzlicht; Enterhaken, Seeungeheuer, Drache, Meerjungfrau,

@@ -29,6 +29,7 @@ window.SF = window.SF || {};
     dutchman: { n: 6, time: 100, amber: 5, pool: ['planken', 'saebel', 'kanone', 'werfer', 'doppelluke', 'netz', 'kanonenluke', 'werferplanke'] },
     // Kapitel 4 und 5: Kurier des Barons und sein Flaggschiff
     courier: { n: 5, time: 75, amber: 3, pool: ['kisten', 'planken', 'saebel', 'kanone', 'werfer', 'doppelluke', 'netz'] },
+    corsair: { n: 6, time: 85, amber: 4, pool: ['planken', 'saebel', 'kanone', 'werfer', 'doppelluke', 'netz', 'kanonenluke', 'werferplanke'] },
     baron: { n: 6, time: 105, amber: 6, pool: ['planken', 'saebel', 'kanone', 'werfer', 'doppelluke', 'netz', 'kanonenluke', 'werferplanke'] },
   };
 
@@ -103,7 +104,7 @@ window.SF = window.SF || {};
     add.amber(QX + 190, up + 110);
     add.amber(QX + 290, up + 110);
     if (kind === 'raider') add.walker(QX + 120, QX + 420, up);
-    else if (kind === 'shark' || kind === 'courier') { add.saber(QX + 110, QX + 440, up); add.walker(QX + 60, QX + 200, up); }
+    else if (kind === 'shark' || kind === 'courier' || kind === 'corsair') { add.saber(QX + 110, QX + 440, up); add.walker(QX + 60, QX + 200, up); }
     else {
       const lj = kind === 'dutchman';
       const baron = kind === 'baron';
@@ -408,6 +409,7 @@ window.SF = window.SF || {};
     shark: { sky: ['#3b2a5e', '#d9655a', '#fbc56e'], sea: ['#8a5f8e', '#3a2f5e'], wood: '#a26a38', light: '#c88c50', dark: '#6a3f1f', hull: '#57341a', orb: '#ffd98a', glow: 'rgba(255,190,110,.4)', cloud: 'rgba(255,196,160,.8)' },
     bluebeard: { sky: ['#182238', '#3a5270', '#8fa4b2'], sea: ['#2c5068', '#132a38'], wood: '#8f6a44', light: '#b08a5c', dark: '#5a3e24', hull: '#4a321c', orb: '', glow: '', cloud: 'rgba(58,72,94,.95)', storm: true },
     courier: 'raider',
+    corsair: 'raider',
     baron: 'shark',
     dutchman: { sky: ['#05080f', '#111c2e', '#2c4256'], sea: ['#143040', '#08131b'], wood: '#66727c', light: '#8996a0', dark: '#3d474f', hull: '#2f383f', orb: '#eaf2ff', glow: 'rgba(170,220,235,.28)', cloud: 'rgba(120,150,170,.28)', ghost: true },
   };

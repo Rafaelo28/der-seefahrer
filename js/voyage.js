@@ -23,6 +23,7 @@ window.SF = window.SF || {};
   // Schiff an den Start setzen (Port Dublone), falls es noch keine Position hat
   function ensurePos() {
     const s = st();
+    if (SF.world.map() !== (s.map || 'old')) SF.world.use(s.map || 'old'); // Spielstand liegt auf der anderen Karte
     if (!s.pos) {
       const p = SF.world.placeById[s.docked] || SF.world.START;
       s.pos = { x: p.x, y: p.y, dx: 1, dy: 0 };
