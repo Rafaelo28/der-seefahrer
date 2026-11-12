@@ -27,6 +27,9 @@ window.SF = window.SF || {};
     shark: { n: 5, time: 75, amber: 3, pool: ['kisten', 'luke', 'planken', 'saebel', 'kanone', 'werfer', 'doppelluke', 'netz'] },
     bluebeard: { n: 6, time: 90, amber: 4, pool: ['planken', 'saebel', 'kanone', 'werfer', 'doppelluke', 'netz', 'kanonenluke', 'werferplanke'] },
     dutchman: { n: 6, time: 100, amber: 5, pool: ['planken', 'saebel', 'kanone', 'werfer', 'doppelluke', 'netz', 'kanonenluke', 'werferplanke'] },
+    // Kapitel 4 und 5: Kurier des Barons und sein Flaggschiff
+    courier: { n: 5, time: 75, amber: 3, pool: ['kisten', 'planken', 'saebel', 'kanone', 'werfer', 'doppelluke', 'netz'] },
+    baron: { n: 6, time: 105, amber: 6, pool: ['planken', 'saebel', 'kanone', 'werfer', 'doppelluke', 'netz', 'kanonenluke', 'werferplanke'] },
   };
 
   // Fester Zufall (gleiche Zahlenfolge auf allen Geräten); der Stand steckt im Level
@@ -100,14 +103,16 @@ window.SF = window.SF || {};
     add.amber(QX + 190, up + 110);
     add.amber(QX + 290, up + 110);
     if (kind === 'raider') add.walker(QX + 120, QX + 420, up);
-    else if (kind === 'shark') { add.saber(QX + 110, QX + 440, up); add.walker(QX + 60, QX + 200, up); }
+    else if (kind === 'shark' || kind === 'courier') { add.saber(QX + 110, QX + 440, up); add.walker(QX + 60, QX + 200, up); }
     else {
       const lj = kind === 'dutchman';
-      // Kapitän: mehrere Treffer, stürmt los wie ein Säbel-Pirat; die Tür ist erst offen, wenn er besiegt ist
-      L.enemies.push({ type: 'boss', boss: true, longjohn: lj, x: QX + 380, y: QUARTER - 60, w: 40, h: 60, vx: -80, x0: QX + 90, x1: QX + 450,
-        alive: true, lives: lj ? 3 : 2, mode: 'walk', clock: 0, stun: 0, tclock: 2.5, period: 3 });
+      const baron = kind === 'baron';
+      // Kapitän: mehrere Treffer, stürmt los wie ein Säbel-Pirat; die Tür ist erst offen, wenn er besiegt ist.
+      // Long John und der Baron werfen außerdem Flaschen, wenn man Abstand hält.
+      L.enemies.push({ type: 'boss', boss: true, longjohn: lj, baron, throws: lj || baron, x: QX + 380, y: QUARTER - 60, w: 40, h: 60, vx: -80, x0: QX + 90, x1: QX + 450,
+        alive: true, lives: lj || baron ? 3 : 2, mode: 'walk', clock: 0, stun: 0, tclock: 2.5, period: baron ? 2.6 : 3 });
       L.locked = true;
-      if (!lj) L.roller = { x: QX - 30, period: 3.6, clock: 2 }; // Blaubarts Crew rollt Fässer über das Deck
+      if (!lj) L.roller = { x: QX - 30, period: baron ? 3.2 : 3.6, clock: 2 }; // die Crew rollt Fässer über das Deck
       else add.walker(QX + 60, QX + 200, up);
     }
     return L;
@@ -158,7 +163,7 @@ window.SF = window.SF || {};
     const level = p.y + PH - (e.y + e.h);
     const sameLevel = (level < 0 ? -level : level) < 70;
     if (e.stun > 0) { e.stun -= dt; return; }
-    if (e.type === 'thrower' || (e.longjohn && adx > 190)) {
+    if (e.type === 'thrower' || (e.throws && adx > 190)) {
       const c = e.type === 'thrower' ? 'clock' : 'tclock';
       e[c] -= dt;
       if (e[c] <= 0 && adx < 560 && !L.p.hurt) {
@@ -179,7 +184,7 @@ window.SF = window.SF || {};
       } else if (e.mode === 'warn' && e.clock <= 0) {
         e.mode = 'charge';
         e.clock = 0.95;
-        e.vx = e.face * (e.type === 'boss' ? 250 + (e.longjohn ? 30 : 0) : 230);
+        e.vx = e.face * (e.type === 'boss' ? 250 + (e.throws ? 30 : 0) : 230);
       } else if (e.mode === 'charge' && e.clock <= 0) {
         e.mode = 'rest';
         e.clock = e.type === 'boss' ? 0.9 : 1.2;
@@ -394,6 +399,7 @@ window.SF = window.SF || {};
     thrower: ['0.9.6.5.3.2.0', '2.2.6.5.3.8.0'],
     boss: ['0.3.1.2.2.0.0'],
     longjohn: ['1.1.3.3.2.4.1'],
+    baron: ['0.5.3.3.1.6.2'], // Zylinder, Monokel, Schnurrbart, Anzug in Gold, Goldkette
     ghost: { walker: ['4.2.0.1.2.5.0', '4.9.0.0.0.5.0'], saber: ['4.1.0.1.2.5.0'], thrower: ['4.9.0.5.3.5.0'] },
   };
 
@@ -402,6 +408,8 @@ window.SF = window.SF || {};
     raider: { sky: ['#4f9fe0', '#b9e0f5', '#fdeec6'], sea: ['#3a94bd', '#1d5f85'], wood: '#a9743c', light: '#cf9a58', dark: '#6f4521', hull: '#5d3a1d', orb: '#fff6c2', glow: 'rgba(255,240,170,.35)', cloud: 'rgba(255,255,255,.92)' },
     shark: { sky: ['#3b2a5e', '#d9655a', '#fbc56e'], sea: ['#8a5f8e', '#3a2f5e'], wood: '#a26a38', light: '#c88c50', dark: '#6a3f1f', hull: '#57341a', orb: '#ffd98a', glow: 'rgba(255,190,110,.4)', cloud: 'rgba(255,196,160,.8)' },
     bluebeard: { sky: ['#182238', '#3a5270', '#8fa4b2'], sea: ['#2c5068', '#132a38'], wood: '#8f6a44', light: '#b08a5c', dark: '#5a3e24', hull: '#4a321c', orb: '', glow: '', cloud: 'rgba(58,72,94,.95)', storm: true },
+    courier: 'raider',
+    baron: 'shark',
     dutchman: { sky: ['#05080f', '#111c2e', '#2c4256'], sea: ['#143040', '#08131b'], wood: '#66727c', light: '#8996a0', dark: '#3d474f', hull: '#2f383f', orb: '#eaf2ff', glow: 'rgba(170,220,235,.28)', cloud: 'rgba(120,150,170,.28)', ghost: true },
   };
 
@@ -434,7 +442,7 @@ window.SF = window.SF || {};
     // jedem Piraten ein Gesicht geben
     const ghost = L.kind === 'dutchman';
     L.enemies.forEach((e, i) => {
-      const set = e.longjohn ? LOOKS.longjohn : e.boss ? LOOKS.boss : (ghost ? LOOKS.ghost : LOOKS)[e.type];
+      const set = e.longjohn ? LOOKS.longjohn : e.baron ? LOOKS.baron : e.boss ? LOOKS.boss : (ghost ? LOOKS.ghost : LOOKS)[e.type];
       e.look = set[i % set.length];
       figure(e.look);
     });
@@ -1100,7 +1108,8 @@ window.SF = window.SF || {};
   }
 
   function draw(scale) {
-    const T = THEMES[L.kind] || THEMES.raider;
+    let T = THEMES[L.kind] || THEMES.raider;
+    if (typeof T === 'string') T = THEMES[T];
     drawBackdrop(T, scale);
     const oy = vh - 600 * scale;
     ctx.setTransform(dpr * scale, 0, 0, dpr * scale, -camX * scale * dpr, dpr * oy);

@@ -190,14 +190,15 @@ window.SF = window.SF || {};
       const ok = D.over === 'surfaced';
       const found = D.pearls;
       const keep = finish(D);
+      const story = SF.chapter && SF.chapter.onDive ? SF.chapter.onDive(D.site, ok) : ''; // Story: das Codebuch im Wrack
       SF.save();
-      SF.sound.play(ok ? (keep ? 'fanfare' : 'splash') : 'lose');
+      SF.sound.play(ok ? (keep || story ? 'fanfare' : 'splash') : 'lose');
       setTimeout(async () => {
         await SF.ui.dialog({
           title: ok ? `${SF.icon('diver')} Aufgetaucht!` : `${SF.icon('bubbles')} Keine Luft mehr!`,
-          html: ok
+          html: (ok
             ? `<p>${keep ? `Du bringst <b>${keep} Perle${keep > 1 ? 'n' : ''}</b> ${SF.icon('pearl')} mit an Bord.` : 'Diesmal keine Perlen – die Muscheln waren zu.'}</p>`
-            : `<p>Die Crew zieht dich an der Leine hoch. Dabei fällt die Hälfte der Perlen ins Meer: Du behältst <b>${keep}</b> von ${found}.</p>`,
+            : `<p>Die Crew zieht dich an der Leine hoch. Dabei fällt die Hälfte der Perlen ins Meer: Du behältst <b>${keep}</b> von ${found}.</p>`) + story,
           buttons: [{ label: 'Zurück aufs Schiff', value: true, kind: 'primary' }],
         });
         if (keep) SF.story.log(`Am Korallenriff getaucht: ${keep} Perlen.`);

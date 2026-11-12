@@ -54,6 +54,15 @@ window.SF = window.SF || {};
           <p class="muted small">Das stimmt: Schieß ihn schwer an, dann <b>entere</b> ihn und besiege Long John.</p>`,
         buttons: [{ label: `${SF.icon('swords')} Auf ihn!`, value: true, kind: 'primary' }],
       });
+    } else if (p.kind === 'baron') {
+      await SF.ui.dialog({
+        title: `${SF.icon('coin')} Die „Goldene Gier“!`,
+        html: `<p>Hinter der Festung schiebt sich eine riesige Galeone mit bernsteingelben Segeln aus der Bucht. Am Heck steht der
+          <b>Bernstein-Baron</b> mit Zylinder und Monokel.</p>
+          <p>„Mein Schiff ist so voll mit Gold, das versenkt keiner!“</p>
+          <p class="muted small">Schieß die Galeone schwer an, dann <b>entere</b> sie und besiege den Baron.</p>`,
+        buttons: [{ label: `${SF.icon('swords')} Auf ihn!`, value: true, kind: 'primary' }],
+      });
     } else await SF.ui.dialog({
       title: `${SF.icon('skull')} ${SF.escape(p.name)} greift an!`,
       html: `<p>${k.name === p.name ? '' : `Ein ${k.name} in einer ${SF.ships.byId[k.ship].name}. `}Kopfgeld: ${SF.amberHTML(k.bounty)}</p>
@@ -189,6 +198,15 @@ window.SF = window.SF || {};
         return;
       }
     }
+    if (pirate.kind === 'baron') {
+      SF.chapter.afterBaron(result);
+      if (result === 'boarded') {
+        // der Baron ist besiegt: zweites Ende mit Bildergeschichte und Abspann
+        SF.save();
+        setTimeout(() => { b = null; SF.chapter.ending2(); }, 700);
+        return;
+      }
+    }
     const k = SF.pirates.KINDS[pirate.kind];
     const goods = o => Object.entries(o).map(([g, n]) => `${n}× ${SF.icon(SF.trade.byId[g].icon)} ${SF.trade.byId[g].name}`).join(', ');
     let title = '';
@@ -223,6 +241,7 @@ window.SF = window.SF || {};
       title = 'Entkommen!';
       html = `<p>Du bist ${SF.escape(pirate.name)} entkommen.</p>`;
     }
+    if (SF.chapter && SF.chapter.onBattle) html += SF.chapter.onBattle(pirate, result); // Story: Briefe der Kuriere
     SF.save();
     setTimeout(async () => {
       await SF.ui.dialog({ title, html, buttons: [{ label: 'Weiter', value: true, kind: 'primary' }] });

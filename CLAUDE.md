@@ -71,6 +71,8 @@ Der ganze Plan mit allen Ausbaustufen steht in `PROJEKTPLAN.md` (Häkchen nach j
   - `cosmetics.test.js` – Cosmetics: nur mit Perlen, Kaufen legt an, kaputte Werte, Farben beim Zeichnen.
   - `crew.test.js` – Crew: anheuern, Vorteile (Proviant, Tempo, Nachladen), von Bord; alte Flotte und Umsteigen.
   - `finale.test.js` – Finale: Holländer sinkt nicht, Long John bewacht die Kajüte, Ende, Geheimnisse, Bermuda, Schwer-Modus.
+  - `baron.test.js` – Kapitel 4 und 5: weiter nach dem ersten Ende, Long John im Kerker, Kuriere entern, Briefe, Codebuch
+    am Riff, Bernsteinfestung, Flaggschiff des Barons, zweites Ende.
   - `friends.test.js` – Rangliste mit Freunden und Flaschenpost (Grenzen, nur einmal öffnen, kaputte Codes).
   - `duel.test.js` – Online-Seeschlacht: zweites Schiff vom Menschen gesteuert, Schnappschuss gespiegelt, Schutz vor
     kaputten Angaben, Raum-Codes, lokale Verbindung.

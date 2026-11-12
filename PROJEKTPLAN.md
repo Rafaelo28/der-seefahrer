@@ -303,6 +303,18 @@ grünen Tests, einem Pull Request nach `main` und dem Merge.
       Bestzeiten der vier Inseln, Geheimnisse). Die Kajüte zeigt eine Rangliste mit allen Freunden und wie oft man
       gegen sie gewonnen hat.
 
+### Stufe 6 – Die Story geht weiter (nach dem ersten Ende)
+
+- [x] **Kapitel 4 „Der Auftraggeber“:** Durchgespielte Spielstände gehen automatisch weiter (Post aus Port Dublone).
+      Long John packt im Hafenkerker aus (für 2 Kisten Rum): Der **Bernstein-Baron** hat vor dem Raub allen Bernstein
+      aufgekauft und die Goldene Dublone stehlen lassen. Drei **Kurierschiffe** mit goldenen Segeln entern (versenken
+      zählt nicht) und ihre Briefe erbeuten, Einauge Ede erkennt die Geheimschrift, das **Codebuch** liegt in einem
+      Wrack am Korallenriff (tauchen und heil auftauchen).
+- [x] **Kapitel 5 „Die Bernsteinfestung“:** Neue Insel im Nordwesten mit eigener Jump'n'Run-Insel (Burggraben,
+      Bernsteinkrabben). In der Schatzkammer flieht der Baron mit dem Flaggschiff **„Goldene Gier“** (Galeone, sinkt
+      nicht): entern, auf dem Deck den Baron besiegen (drei Treffer, wirft Flaschen, Fässer rollen). Zweites Ende mit
+      Bildergeschichte und Abspann, danach freies Segeln.
+
 ### Feinschliff
 
 - [x] **Schönere Symbole:** Alle Symbole mit Schatten und Glanzlicht; Enterhaken, Seeungeheuer, Drache, Meerjungfrau,

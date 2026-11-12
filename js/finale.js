@@ -78,12 +78,12 @@ window.SF = window.SF || {};
       <h3>Kapitän</h3><p>${name()}${s.gk ? ` <span class="cr-small">(${SF.rank.title(s.gk.rank)})</span>` : ''}</p>
       <h3>Crew</h3><p>${crew.join('<br>')}</p>
       <h3>In weiteren Rollen</h3><p>Long John · Käpt’n Blaubart · Haifisch-Hein · Einauge Ede<br>Fischerin Frieda · Hafenmeister Hinnerk · Bäckerin Berta
-        · Smutje Fiete<br>Bootsmann Bruno · Schiffsjunge Jan · der Fliegende Holländer</p>
+        · Smutje Fiete<br>Bootsmann Bruno · Schiffsjunge Jan · der Fliegende Holländer${SF.story.reached('done2') ? '<br>und als Bernstein-Baron: der Bernstein-Baron' : ''}</p>
       <h3>Deine Fahrt</h3><p>${SF.story.day()} Tage auf See · ${SF.formatInt(s.stats.distance / 10)} Seemeilen<br>
         ${SF.formatInt(s.stats.wins || 0)} Seeschlachten gewonnen · ${SF.formatInt(s.stats.pearls || 0)} Perlen gefunden<br>
         ${SF.formatInt(s.stats.amberEarned)} Bernstein verdient</p>
       <h3>Geheimnisse</h3><p>${count()} von ${SECRETS.length} gefunden – finde alle für 100 %!</p>
-      <h3>Neu freigeschaltet</h3><p>Schwer-Modus beim nächsten neuen Abenteuer</p>
+      <h3>Neu freigeschaltet</h3><p>${SF.story.reached('done2') ? 'Freies Segeln – und der Schwer-Modus für ein neues Abenteuer' : 'Schwer-Modus beim nächsten neuen Abenteuer'}</p>
       <h3>Programmiert mit</h3><p>Claude</p>
       <p class="cr-end">Danke fürs Spielen!</p>`;
     SF.ui.show('credits');
@@ -96,7 +96,7 @@ window.SF = window.SF || {};
   // ---------- Geheimnisse für 100 % ----------
 
   const SECRETS = [
-    { id: 'dublone', name: 'Die Goldene Dublone zurückgebracht', hint: 'Die ganze Geschichte', check: () => SF.story.step() === 'done' },
+    { id: 'dublone', name: 'Die Goldene Dublone zurückgebracht', hint: 'Die ganze Geschichte', check: () => SF.story.reached('done') },
     { id: 'places', name: 'Alle Orte entdeckt', hint: 'Segle überall hin', check: () => SF.world.PLACES.filter(p => !p.hidden).every(p => st().visited[p.id]) },
     { id: 'islands', name: 'Alle vier Inseln geschafft', hint: 'An Land gehen', check: () => ['bay', 'volcano', 'ice', 'dragon'].every(id => st().islands && st().islands[id]) },
     { id: 'bluebeard', name: 'Käpt’n Blaubart besiegt', hint: 'An der Drachenküste kreuzt er', check: () => !!flags()['beat-bluebeard'] },

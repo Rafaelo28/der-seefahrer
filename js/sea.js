@@ -59,6 +59,9 @@ window.SF = window.SF || {};
     const s = SF.state;
     s.docked = '';
     SF.ui.show('sea');
+    // Neuigkeiten aus der Story (z. B. Post nach dem ersten Ende)
+    const news = SF.chapter ? SF.chapter.news() : null;
+    if (news) setTimeout(() => SF.ui.dialog({ title: news.title, html: news.html, buttons: [{ label: 'Auf nach Port Dublone!', value: true, kind: 'primary' }] }), 500);
     resize();
     cam.x = s.pos.x;
     cam.y = s.pos.y;
@@ -88,6 +91,11 @@ window.SF = window.SF || {};
     // Finale: der Fliegende Holländer im Nebelmeer
     if (SF.finale && SF.battleView && !SF.battleView.busy() && SF.finale.ready()) {
       SF.battleView.start(SF.finale.dutchman());
+      return;
+    }
+    // Kapitel 5: das Flaggschiff des Barons vor der Festung
+    if (SF.chapter && SF.battleView && !SF.battleView.busy() && SF.chapter.baronReady()) {
+      SF.battleView.start(SF.chapter.baronShip());
       return;
     }
     if (SF.pirates && SF.battleView && !SF.battleView.busy()) {
@@ -172,6 +180,7 @@ window.SF = window.SF || {};
 
   // Texte beim Entdecken der Ziele aus Gamble Klicker
   const DISCOVER_TEXT = {
+    fort: 'Graue Mauern, gelbe Fahnen und kein einziges Fischerboot. Wer wohnt hier so allein?',
     bay: 'Früher ist deine Flotte nur auf Zeit hierher gefahren – jetzt bist du selbst da! Im Sand liegt eine kleine Kiste.',
     reef: 'Unter dem Schiff schimmern Korallen. Hier könnte man tauchen … das kommt später.',
     ice: 'Eisschollen knirschen am Rumpf. Bitterkalt ist es im Eismeer!',
@@ -230,6 +239,7 @@ window.SF = window.SF || {};
         const [cx, cy, r] = isle.circles[0];
         items.push({ t: 'peak', x: isle.kind === 'dragon' ? cx - r * 0.45 : cx, y: isle.kind === 'dragon' ? cy - r * 0.45 : cy, s: isle.kind === 'dragon' ? 1.6 : 1, smoke: isle.kind === 'volcano' });
       }
+      if (isle.fort) items.push({ t: 'fort', x: isle.circles[0][0], y: isle.circles[0][1] });
       if (isle.amber) {
         isle.circles.forEach(c => items.push({ t: 'amber', x: c[0] + (rnd() - 0.5) * c[2] * 1.6, y: c[1] + (rnd() - 0.5) * c[2] * 1.6 }));
       }
@@ -559,6 +569,25 @@ window.SF = window.SF || {};
         ctx.fillStyle = '#3f7a3a';
         ctx.beginPath();
         for (let i = 0; i < 5; i++) ctx.arc(d.x + (i % 3) * 16 - 16, d.y + Math.floor(i / 3) * 14, 10, 0, Math.PI * 2);
+        ctx.fill();
+        break;
+      case 'fort':
+        // Bernsteinfestung: Mauer mit Zinnen, Turm und gelber Fahne
+        ctx.fillStyle = '#8a8f96';
+        ctx.fillRect(d.x - 34, d.y - 8, 68, 26);
+        for (let i = 0; i < 5; i++) ctx.fillRect(d.x - 34 + i * 15, d.y - 15, 9, 8);
+        ctx.fillStyle = '#a4a9b0';
+        ctx.fillRect(d.x - 11, d.y - 40, 22, 58);
+        ctx.fillStyle = '#5a5e66';
+        ctx.fillRect(d.x - 14, d.y - 46, 28, 8);
+        ctx.fillRect(d.x - 5, d.y + 2, 10, 16);
+        ctx.fillRect(d.x - 1, d.y - 66, 2, 20);
+        ctx.fillStyle = '#f0a030';
+        ctx.beginPath();
+        ctx.moveTo(d.x + 1, d.y - 66);
+        ctx.lineTo(d.x + 19, d.y - 60);
+        ctx.lineTo(d.x + 1, d.y - 54);
+        ctx.closePath();
         ctx.fill();
         break;
       case 'house':
