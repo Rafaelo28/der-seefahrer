@@ -182,7 +182,7 @@ window.SF = window.SF || {};
   const DISCOVER_TEXT = {
     fort: 'Graue Mauern, gelbe Fahnen und kein einziges Fischerboot. Wer wohnt hier so allein?',
     bay: 'Früher ist deine Flotte nur auf Zeit hierher gefahren – jetzt bist du selbst da! Im Sand liegt eine kleine Kiste.',
-    reef: 'Unter dem Schiff schimmern Korallen. Hier könnte man tauchen … das kommt später.',
+    reef: 'Unter dem Schiff schimmern Korallen und Muscheln. Hier kannst du nach Perlen tauchen!',
     ice: 'Eisschollen knirschen am Rumpf. Bitterkalt ist es im Eismeer!',
     dragon: 'Rauch steigt aus den Felsen, irgendwo brüllt etwas. Besser schnell weiter …',
     volcano: 'Schwarzer Rauch steigt aus dem Vulkan, die Luft riecht nach Schwefel.',

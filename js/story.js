@@ -89,11 +89,20 @@ window.SF = window.SF || {};
 
   const svgOpen = '<svg class="scene-svg" viewBox="0 0 400 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true">';
 
+  const LINE = 'stroke="#2a1d10" stroke-width="1.5" stroke-linejoin="round"';
+  // Wolken und Möwen für die Hafenbilder
+  const clouds = (list, color = '#ffffff', op = 0.85) => list.map(([x, y, k]) => `<g class="sc-drift" opacity="${op}" fill="${color}">
+      <ellipse cx="${x}" cy="${y}" rx="${22 * k}" ry="${9 * k}"/><ellipse cx="${x - 10 * k}" cy="${y - 6 * k}" rx="${11 * k}" ry="${8 * k}"/><ellipse cx="${x + 8 * k}" cy="${y - 8 * k}" rx="${13 * k}" ry="${10 * k}"/></g>`).join('');
+  const gulls = list => `<g class="sc-bob" fill="none" stroke="#2a1d10" stroke-width="1.8" stroke-linecap="round">${list.map(([x, y]) => `<path d="M${x} ${y} q5 -6 10 0 q5 -6 10 0"/>`).join('')}</g>`;
+
   function houses(y, gold) {
     const list = [[0, 50, 46], [44, 38, 60], [78, 46, 40], [262, 44, 52], [302, 40, 38], [338, 62, 56]];
-    return list.map(([x, w, h], i) => `<rect x="${x}" y="${y - h}" width="${w}" height="${h}" fill="${['#7a4a3a', '#5d6b7a', '#8a6a4a', '#6a4a6a', '#4a6a5a', '#7a5a3a'][i]}"/>
-      <path d="M${x - 3} ${y - h} L${x + w / 2} ${y - h - 18} L${x + w + 3} ${y - h} Z" fill="${gold ? '#d4a017' : '#5a2d1c'}"/>
-      <rect x="${x + w / 2 - 5}" y="${y - h + 10}" width="10" height="10" fill="#ffd27a" class="flicker" style="animation-delay:${i * 0.4}s"/>`).join('');
+    return list.map(([x, w, h], i) => `<rect x="${x + w * 0.68}" y="${y - h - 22}" width="7" height="16" fill="#5a4a42" ${LINE}/>
+      <rect x="${x}" y="${y - h}" width="${w}" height="${h}" fill="${['#8a5444', '#66788a', '#9a7852', '#7a5678', '#56786a', '#8a6844'][i]}" ${LINE}/>
+      <path d="M${x - 4} ${y - h} L${x + w / 2} ${y - h - 19} L${x + w + 4} ${y - h} Z" fill="${gold ? '#d4a017' : '#6a3420'}" ${LINE}/>
+      <rect x="${x + 6}" y="${y - h + 9}" width="11" height="11" fill="#ffd27a" ${LINE} class="flicker" style="animation-delay:${i * 0.4}s"/>
+      <path d="M${x + 11.5} ${y - h + 9} v11 M${x + 6} ${y - h + 14.5} h11" stroke="#2a1d10" stroke-width="1"/>
+      <rect x="${x + w - 17}" y="${y - 17}" width="10" height="17" rx="2" fill="#4a2d14" ${LINE}/>`).join('');
   }
 
   const ART = {
@@ -101,7 +110,10 @@ window.SF = window.SF || {};
     hafen: () => `${svgOpen}
       <defs><linearGradient id="sc-h-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2b2350"/><stop offset=".6" stop-color="#c8556b"/><stop offset="1" stop-color="#f6b25e"/></linearGradient></defs>
       <rect width="400" height="240" fill="url(#sc-h-sky)"/>
-      <circle cx="330" cy="150" r="26" fill="#ffd27a" opacity=".9"/>
+      <circle cx="330" cy="150" r="40" fill="#ffd27a" opacity=".3"/>
+      <circle cx="330" cy="150" r="26" fill="#ffd27a" opacity=".95"/>
+      ${clouds([[70, 44, 1.1], [300, 30, 0.8]], '#f6b8a0', 0.55)}
+      ${gulls([[110, 70], [140, 56]])}
       ${houses(172, true)}
       <rect x="140" y="104" width="120" height="68" fill="#e6d3a8"/>
       <path d="M132 104 L200 72 L268 104 Z" fill="#d4a017" stroke="#8a6508" stroke-width="2"/>
@@ -212,12 +224,17 @@ window.SF = window.SF || {};
     fischer: () => `${svgOpen}
       <defs><linearGradient id="sc-f-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5a8ac8"/><stop offset="1" stop-color="#f4c890"/></linearGradient></defs>
       <rect width="400" height="240" fill="url(#sc-f-sky)"/>
-      <circle cx="320" cy="120" r="24" fill="#ffe0a0" opacity=".9"/>
+      <circle cx="320" cy="120" r="38" fill="#ffe0a0" opacity=".3"/>
+      <circle cx="320" cy="120" r="24" fill="#ffe0a0" opacity=".95"/>
+      ${clouds([[80, 50, 1.2], [220, 34, 0.9]])}
+      ${gulls([[150, 84], [185, 72]])}
       <rect x="0" y="150" width="400" height="90" fill="#2a6a8e"/>
       ${waves(166)}
       <path d="M0 196 C90 170 200 178 400 204 L400 240 L0 240 Z" fill="#e8d39a"/>
-      ${[[30, 44, '#7a4a3a'], [86, 36, '#5d6b7a'], [130, 40, '#8a6a4a']].map(([x, h, c]) => `<rect x="${x}" y="${190 - h}" width="40" height="${h}" fill="${c}"/>
-        <path d="M${x - 4} ${190 - h} L${x + 20} ${170 - h} L${x + 44} ${190 - h} Z" fill="#a83a2a"/>`).join('')}
+      ${[[30, 44, '#7a4a3a'], [86, 36, '#5d6b7a'], [130, 40, '#8a6a4a']].map(([x, h, c]) => `<rect x="${x}" y="${190 - h}" width="40" height="${h}" fill="${c}" ${LINE}/>
+        <path d="M${x - 4} ${190 - h} L${x + 20} ${170 - h} L${x + 44} ${190 - h} Z" fill="#b8402e" ${LINE}/>
+        <rect x="${x + 6}" y="${198 - h}" width="10" height="10" fill="#ffe9a8" ${LINE}/>
+        <rect x="${x + 24}" y="${190 - 16}" width="9" height="16" rx="2" fill="#4a2d14" ${LINE}/>`).join('')}
       <path d="M210 168 L222 140 L234 168 M216 156 L230 156" stroke="#6b4a2a" stroke-width="3" fill="none"/>
       <path d="M180 192 q20 -24 40 0 q20 -24 40 0" stroke="#c8b48a" stroke-width="2" fill="none"/>
       <g class="sc-bob">${ship('sloop', 280, 120, 80)}</g>

@@ -8,9 +8,9 @@ window.SF = window.SF || {};
   let tab = 'market';
 
   const HARBOR_ART = {
-    dublone: { icon: 'anchor', scene: 'hafen', text: 'Der Hafen von Gamble Klicker. Seit dem Raub ist die Dublone nichts mehr wert – hier zahlt man jetzt mit Bernstein.' },
-    amberbay: { icon: 'fish', scene: 'fischer', text: 'Ein Fischerdorf an der Bernsteinküste. Nach Stürmen glänzt der Strand golden vom angespülten Bernstein.' },
-    smuggler: { icon: 'skull', scene: 'schmuggler', text: 'Ein Nest aus Holzhütten und Spelunken. Wer hier fragt, woher die Ware kommt, bekommt keine Antwort.' },
+    dublone: { icon: 'anchor', scene: 'hafen', band: 86, text: 'Der Hafen von Gamble Klicker. Seit dem Raub ist die Dublone nichts mehr wert – hier zahlt man jetzt mit Bernstein.' },
+    amberbay: { icon: 'fish', scene: 'fischer', band: 106, text: 'Ein Fischerdorf an der Bernsteinküste. Nach Stürmen glänzt der Strand golden vom angespülten Bernstein.' },
+    smuggler: { icon: 'skull', scene: 'schmuggler', band: 100, text: 'Ein Nest aus Holzhütten und Spelunken. Wer hier fragt, woher die Ware kommt, bekommt keine Antwort.' },
   };
 
   function open(id) {
@@ -58,7 +58,8 @@ window.SF = window.SF || {};
     const art = HARBOR_ART[harbor] || {};
     const st = SF.ships.stats();
     SF.setHTML($('harbor-icon'), SF.icon(art.icon || 'anchor'));
-    SF.setHTML($('harbor-banner'), SF.story.ART[art.scene || 'hafen']());
+    // Bild des Hafens: nur der Streifen mit den Häusern und Schiffen (das ganze Bild ist für die Geschichte gedacht)
+    SF.setHTML($('harbor-banner'), SF.story.ART[art.scene || 'hafen']().replace('viewBox="0 0 400 240"', `viewBox="0 ${art.band || 100} 400 96"`));
     SF.setText($('harbor-name'), p.name);
     SF.setHTML($('harbor-text'), art.text || '');
     SF.setHTML($('harbor-stats'), `<span>${SF.amberHTML(s.amber)}</span>

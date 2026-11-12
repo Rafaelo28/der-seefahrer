@@ -293,16 +293,44 @@ h2 .ic, h3 .ic { width: 1.35em; height: 1.35em; vertical-align: -0.3em; margin-r
   align-items: flex-start;
   justify-content: center;
   overflow: hidden;
-  background: linear-gradient(180deg, #0b1830 0%, #234a7a 45%, #e8a060 85%, #f6c27a 100%);
+  background: linear-gradient(180deg, #0b1830 0%, #1d3f6e 38%, #7a5a86 58%, #e8894a 72%, #f6c27a 100%);
   min-height: calc(100vh - 40px);
   min-height: calc(100dvh - 40px);
+}
+/* Sterne am Abendhimmel (funkeln nur über die Deckkraft) */
+.title-sky::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 45% 0;
+  background-image:
+    radial-gradient(circle, #fff4d6 0 1.6px, transparent 2px), radial-gradient(circle, #fff4d6 0 1.2px, transparent 1.6px),
+    radial-gradient(circle, #fff 0 1px, transparent 1.4px), radial-gradient(circle, #fff4d6 0 1.4px, transparent 1.8px);
+  background-size: 310px 230px, 190px 170px, 130px 110px, 410px 290px;
+  background-position: 20px 30px, 110px 80px, 60px 10px, 240px 140px;
+  opacity: .85;
+  animation: twinkle 4s ease-in-out infinite;
+  pointer-events: none;
+}
+/* Die Goldene Dublone geht als Abendsonne hinter dem Schiff unter */
+.title-sky::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 30%;
+  width: min(56vw, 40vh, 360px);
+  height: min(56vw, 40vh, 360px);
+  margin-left: calc(min(56vw, 40vh, 360px) / -2);
+  margin-bottom: calc(min(56vw, 40vh, 360px) / -4);
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 34%, #fff6c8 0%, #ffd85a 34%, #f0b023 62%, #d48a12 70%, rgba(255, 176, 74, .35) 71%, rgba(255, 176, 74, 0) 100%);
+  pointer-events: none;
 }
 .title-box { position: relative; z-index: 2; text-align: center; padding: calc(8vh + var(--safe-top)) 16px 0; }
 .title-small { font-family: var(--font-display); color: var(--amber-light); letter-spacing: .08em; font-size: .95rem; }
 .title-logo {
   font-size: clamp(2.6rem, 10vw, 5.2rem);
   color: var(--gold);
-  text-shadow: 0 3px 0 #7a4a08, 0 8px 20px rgba(0, 0, 0, .5);
+  text-shadow: 0 2px 0 #c38d12, 0 5px 0 #7a4a08, 0 10px 24px rgba(0, 0, 0, .55), 0 0 40px rgba(255, 200, 90, .35);
   margin: .1em 0 .4em;
 }
 .title-buttons { display: flex; flex-direction: column; align-items: center; gap: 12px; }
@@ -310,7 +338,7 @@ h2 .ic, h3 .ic { width: 1.35em; height: 1.35em; vertical-align: -0.3em; margin-r
 .title-info { margin-top: 14px; color: var(--parchment); font-weight: 600; }
 .title-sound { position: absolute; z-index: 3; top: calc(12px + var(--safe-top)); right: 12px; }
 .title-foot { text-align: center; margin: 0; padding: 10px 16px calc(10px + var(--safe-bottom)); color: var(--muted-light); font-size: .85rem; }
-.title-sea { position: absolute; left: 0; right: 0; bottom: 0; height: 30%; }
+.title-sea { position: absolute; z-index: 1; left: 0; right: 0; bottom: 0; height: 30%; }
 .title-wave {
   position: absolute;
   left: -10%;
@@ -327,9 +355,10 @@ h2 .ic, h3 .ic { width: 1.35em; height: 1.35em; vertical-align: -0.3em; margin-r
   z-index: 1;
   left: 50%;
   bottom: 62%;
-  width: 180px;
-  height: 138px;
-  margin-left: -90px;
+  width: min(46vw, 250px);
+  height: calc(min(46vw, 250px) * .767);
+  margin-left: calc(min(46vw, 250px) / -2);
+  filter: drop-shadow(0 6px 0 rgba(0, 0, 0, .18));
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 92'%3E%3Cpath d='M60 60 L60 8' stroke='%234a2d14' stroke-width='2.5'/%3E%3Cpath d='M36 60 L36 16 M84 60 L84 16' stroke='%234a2d14' stroke-width='2.5'/%3E%3Cpath d='M23 21 Q36 17 49 21 L47 34 Q36 38 25 34 Z M47 13 Q60 9 73 13 L71 26 Q60 30 49 26 Z M71 21 Q84 17 97 21 L95 34 Q84 38 73 34 Z M25 38 Q36 34 47 38 L45 51 Q36 55 27 51 Z M49 30 Q60 26 71 30 L69 43 Q60 47 51 43 Z M73 38 Q84 34 95 38 L93 51 Q84 55 75 51 Z' fill='%23ece4cc' stroke='%232a1a0c' stroke-width='1.5'/%3E%3Cpath d='M60 8 L74 11 L60 14 Z' fill='%2316181d'/%3E%3Cpath d='M8 58 L112 58 L100 80 Q60 86 20 80 Z' fill='%233b2a1a' stroke='%232a1a0c' stroke-width='1.5'/%3E%3Cpath d='M104 58 L116 52' stroke='%234a2d14' stroke-width='2.2'/%3E%3C/svg%3E") center / contain no-repeat;
   animation: bob 3.2s ease-in-out infinite;
 }
@@ -546,7 +575,7 @@ body[data-screen="boarding"] .klabauter-tip { bottom: auto; top: calc(84px + var
 
 /* ---------- Hafen ---------- */
 .harbor-head { margin-bottom: 10px; padding-top: 0; overflow: hidden; }
-.harbor-banner { height: 150px; margin: 0 -20px 12px; border-bottom: 3px solid var(--parchment-line); overflow: hidden; }
+.harbor-banner { height: 190px; margin: 0 -20px 12px; border-bottom: 3px solid var(--parchment-line); overflow: hidden; }
 .harbor-banner .scene-svg { width: 100%; height: 100%; }
 .harbor-title { display: flex; align-items: center; gap: 12px; }
 .harbor-title h2 { margin: 0; }

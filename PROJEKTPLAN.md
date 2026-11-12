@@ -153,6 +153,7 @@ index.html            Einstieg: alle Bildschirme (Titel, Geschichte, Laden, Seek
 css/style.css         Aussehen (Seekarte, Pergament, Bernstein)
 icons/                Webseiten-Icon: Vorlagen icon.svg und favicon.svg, daraus die PNGs (node tools/icons.js)
 js/icons.js           Eigene Symbole statt Emojis (24 × 24, als SVG im HTML und auf dem Canvas)
+js/sprite.js          Zeichen-Helfer für Entern und Inseln: Figuren mit Beinen, Bernstein-Stücke
 js/format.js          Zahlen und Zeiten auf Deutsch, Anzeigen nur bei Änderung schreiben
 js/state.js           Spielstand: Standardwerte, Speichern, Laden, Export/Import, Bernstein
 js/rank.js            Ränge aus Gamble Klicker (für den Titel)
@@ -335,6 +336,15 @@ grünen Tests, einem Pull Request nach `main` und dem Merge.
       an kniffligen Stellen – die Ladung der Piraten gibt es nur noch aus den Schatzkisten, und nur, wenn man die Kajüte
       erreicht. Neu gezeichnet: Himmel je Gegner (Tag, Abendrot, Sturm mit Regen, Geisternacht), Masten mit Segeln und
       Wanten, Reling, Kajüte, das eigene Schiff längsseits, Piraten als Figuren mit Beinen.
+
+- [x] **Tauchen neu gezeichnet:** Sonnenstrahlen im Wasser, ferne Riffe, Fischschwärme, Sandgrund mit Seesternen,
+      Felsen, vier Arten Korallen, wehendes Seegras, Wrack mit Mast und Segelfetzen, Muscheln mit Rippen, die weich
+      auf- und zuklappen und leuchten, Quallen mit Schirm und Tentakeln, Taucher mit Messinghelm und Flossen am
+      Luftschlauch, das eigene Schiff an der Oberfläche. Es ist unten nicht mehr so dunkel.
+- [x] **Inseln, Titel und Häfen schöner:** Inseln mit Sonne, Wolken und eigenem Hintergrund je Ort (Palmenhügel,
+      Vulkan mit Glut, Eisberge, die Festung mit Türmen), Wasser mit Wellen, Lava mit Blasen, Krabben mit Stielaugen,
+      Figur mit Beinen (`js/sprite.js`, auch fürs Entern). Titelbild mit Sternen und der Goldenen Dublone als
+      Abendsonne. Hafenbilder zeigen den Streifen mit Häusern und Schiffen, Häuser mit Umriss, Tür und Fenstern.
 
 ### Ideen für danach
 
