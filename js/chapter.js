@@ -355,6 +355,10 @@ window.SF = window.SF || {};
 
   // Nach einer Schlacht: Zusatz für das Ergebnis-Fenster (Briefe der Kuriere)
   function onBattle(p, result) {
+    if (p && p.kind === 'baron' && step() === 'baron' && result !== 'boarded') {
+      return `<p class="muted small">Die „Goldene Gier“ zieht sich in den Hafen der Festung zurück. Neuer Versuch: Fahr vor die
+        <b>Bernsteinfestung</b> und tippe auf <b>„Goldene Gier herausfordern“</b>.</p>`;
+    }
     if (!p || p.kind !== 'courier' || step() !== 'couriers') return '';
     if (result === 'sunk') return '<p class="muted small">Der Brief des Barons ist mit dem Schiff versunken. Kuriere musst du <b>entern</b>!</p>';
     if (result !== 'boarded') return '';
@@ -390,7 +394,7 @@ window.SF = window.SF || {};
   // ---------- Kapitel 5: Die Bernsteinfestung ----------
 
   const BARON_RANGE = 200;
-  const BARON_LEAVE = 420;
+  const BARON_LEAVE = 280; // nach einer Niederlage: so weit weg und wieder heran – oder vor der Festung herausfordern
 
   function baronShip() {
     const f = SF.world.placeById.fort;
@@ -409,6 +413,18 @@ window.SF = window.SF || {};
 
   function afterBaron(result) {
     if (result !== 'boarded') SF.state.story.flags.fortLeft = false;
+  }
+
+  // Hat sich die „Goldene Gier“ nach einem verlorenen Kampf in den Festungshafen zurückgezogen?
+  function baronWaiting() {
+    return step() === 'baron' && SF.state.story.flags.fortLeft === false;
+  }
+
+  // Vor der Festung herausfordern: die „Goldene Gier“ läuft sofort wieder aus (neuer Versuch)
+  function challengeBaron() {
+    if (step() !== 'baron') return false;
+    SF.state.story.flags.fortLeft = true;
+    return true;
   }
 
   function ending2Scenes() {
@@ -465,5 +481,5 @@ window.SF = window.SF || {};
   }
 
   SF.chapter = { PEOPLE, CLUES, LETTERS, BARON_RANGE, BARON_LEAVE, tavern, act, onDiscover, onIsland, onDock, accuse, suspects, clue, clueCount, addClue, migrate, rumor, who, hireable,
-    letters, onBattle, onDive, baronShip, baronReady, afterBaron, ending2, ending2Scenes, news };
+    letters, onBattle, onDive, baronShip, baronReady, afterBaron, baronWaiting, challengeBaron, ending2, ending2Scenes, news };
 })();

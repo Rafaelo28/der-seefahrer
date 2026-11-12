@@ -719,7 +719,11 @@ window.SF = window.SF || {};
     $('sea-dive').hidden = !reef;
     $('hud-pearls').hidden = !s.pearls;
     if (s.pearls) SF.setHTML($('hud-pearls'), `${SF.icon('pearl')}${s.pearls}`);
-    if (isle) SF.setHTML($('sea-land'), `${SF.icon('palm')} ${isle.name}: an Land gehen`);
+    if (isle) {
+      SF.setHTML($('sea-land'), isle.id === 'fort' && SF.chapter && SF.chapter.baronWaiting()
+        ? `${SF.icon('swords')} Goldene Gier herausfordern` // Kapitel 5: neuer Versuch gegen den Baron
+        : `${SF.icon('palm')} ${isle.name}: an Land gehen`);
+    }
   }
 
   // ---------- Bedienung ----------
@@ -910,6 +914,11 @@ window.SF = window.SF || {};
       if (!isle) return;
       SF.sound.play('tap');
       SF.voyage.setCourse([]);
+      // Kapitel 5: nach einem verlorenen Kampf läuft die „Goldene Gier“ hier wieder aus (statt an Land zu gehen)
+      if (isle.id === 'fort' && SF.chapter && SF.chapter.baronWaiting()) {
+        SF.chapter.challengeBaron();
+        return;
+      }
       SF.island.start(isle.id);
     });
     $('sea-dive').addEventListener('click', () => {

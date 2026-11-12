@@ -118,6 +118,19 @@ const P = SF.world.placeById;
   SF.state.docked = 'dublone';
   assert(!C.baronReady(), 'Im Hafen passiert nichts');
   SF.state.docked = '';
+  // Beim Entern verloren (zurückgeschlagen): man bleibt vor der Festung und bekommt trotzdem einen neuen Versuch
+  C.afterBaron('repelled');
+  assert(!C.baronReady() && C.baronWaiting(), 'Zurückgeschlagen: die Goldene Gier wartet im Festungshafen');
+  assert(SF.story.goal() === 'fort' && SF.story.goalText().includes('herausfordern'), 'Die Anzeige sagt, wie es weitergeht');
+  assert(C.onBattle(ship, 'repelled').includes('herausfordern') && C.onBattle(ship, 'boarded') === '', 'Hinweis nach dem Kampf');
+  SF.state.pos = { x: f.x + 30, y: f.y };
+  assert(C.challengeBaron() && !C.baronWaiting() && C.baronReady(), 'Vor der Festung herausgefordert: neuer Versuch');
+  C.afterBaron('repelled');
+  SF.state.pos = { x: f.x + C.BARON_LEAVE + 10, y: f.y };
+  C.baronReady();
+  SF.state.pos = { x: f.x + 50, y: f.y };
+  assert(C.baronReady(), 'Ein Stück weg und wieder heran: auch ein neuer Versuch');
+  assert(C.BARON_LEAVE > C.BARON_RANGE + 50, 'Nicht sofort wieder (erst ein Stück wegsegeln)');
 }
 
 // ---------- Deck des Barons, zweites Ende ----------
